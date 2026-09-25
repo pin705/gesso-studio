@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" data-type="icon" data-style="dark-fantasy">
+  <defs>
+    <clipPath id="fantasy-potion-health-inner"><circle cx="128" cy="160" r="73"/></clipPath>
+    <radialGradient id="fantasy-potion-health-back" cx="112" cy="140" r="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#262c33"/>
+      <stop offset="1" stop-color="#0b0d10"/>
+    </radialGradient>
+    <linearGradient id="fantasy-potion-health-liquid" x1="0" y1="126" x2="0" y2="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b0221c"/>
+      <stop offset=".45" stop-color="#7d1414"/>
+      <stop offset="1" stop-color="#4a0b0d"/>
+    </linearGradient>
+    <radialGradient id="fantasy-potion-health-glow" cx="152" cy="192" r="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff9a3c" stop-opacity=".85"/>
+      <stop offset=".4" stop-color="#e8561e" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#b0221c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fantasy-potion-health-surface" x1="0" y1="118" x2="0" y2="138" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff9a3c"/>
+      <stop offset="1" stop-color="#d94a2b"/>
+    </linearGradient>
+    <linearGradient id="fantasy-potion-health-iron" x1="104" y1="0" x2="152" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5f6973"/>
+      <stop offset=".3" stop-color="#9aa3aa"/>
+      <stop offset=".55" stop-color="#3c444d"/>
+      <stop offset="1" stop-color="#171b20"/>
+    </linearGradient>
+    <linearGradient id="fantasy-potion-health-cork" x1="112" y1="0" x2="144" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7a5233"/>
+      <stop offset=".5" stop-color="#533522"/>
+      <stop offset="1" stop-color="#342116"/>
+    </linearGradient>
+    <radialGradient id="fantasy-potion-health-limb" cx="128" cy="160" r="73" gradientUnits="userSpaceOnUse">
+      <stop offset=".55" stop-color="#1f0405" stop-opacity="0"/>
+      <stop offset="1" stop-color="#1f0405" stop-opacity=".75"/>
+    </radialGradient>
+    <linearGradient id="fantasy-potion-health-caustic" x1="190" y1="170" x2="150" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff9a3c" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffd9a0"/>
+      <stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="fantasy-potion-health-crisp" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2"/></filter>
+    <filter id="fantasy-potion-health-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="fantasy-potion-health-bloom" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+  </defs>
+
+  <g transform="translate(10.24 12) scale(.92) translate(0 -10) rotate(-8 128 150)">
+    <!-- outline backing: union of all parts, 3.5px outside -->
+    <g fill="#0b0d10" stroke="#0b0d10" stroke-width="7" stroke-linejoin="round">
+      <circle cx="128" cy="160" r="80"/>
+      <rect x="110" y="60" width="36" height="44"/>
+      <rect x="100" y="50" width="56" height="16" rx="6"/>
+      <rect x="104" y="92" width="48" height="14" rx="5"/>
+      <path d="M112 30 Q112 22 128 22 Q144 22 144 30 L142 52 L114 52 Z"/>
+    </g>
+
+    <!-- glass back wall -->
+    <circle cx="128" cy="160" r="80" fill="url(#fantasy-potion-health-back)"/>
+    <rect x="110" y="60" width="36" height="36" fill="url(#fantasy-potion-health-back)"/>
+
+    <!-- liquid -->
+    <g clip-path="url(#fantasy-potion-health-inner)">
+      <rect x="40" y="128" width="176" height="120" fill="url(#fantasy-potion-health-liquid)"/>
+      <circle cx="152" cy="192" r="58" fill="url(#fantasy-potion-health-glow)"/>
+      <circle cx="152" cy="192" r="16" fill="#ffd9a0" opacity=".35" filter="url(#fantasy-potion-health-soft)"/>
+      <circle cx="128" cy="160" r="73" fill="url(#fantasy-potion-health-limb)"/>
+      <path d="M196 176 A70 70 0 0 1 148 228 A64 64 0 0 0 190 178 Z" fill="url(#fantasy-potion-health-caustic)" filter="url(#fantasy-potion-health-crisp)"/>
+      <ellipse cx="128" cy="128" rx="67" ry="10" fill="url(#fantasy-potion-health-surface)"/>
+      <ellipse cx="128" cy="130.5" rx="61" ry="6.5" fill="#b0221c" opacity=".75"/>
+      <path d="M66 126.5 Q128 112 190 126.5" fill="none" stroke="#ffd9a0" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+      <path d="M62 129 Q128 146 194 129" fill="none" stroke="#4a0b0d" stroke-width="2" opacity=".8"/>
+      <!-- bubbles rising toward the surface -->
+      <g fill="#d94a2b" fill-opacity=".35" stroke="#ff9a3c" stroke-opacity=".75" stroke-width="1.5">
+        <circle cx="146" cy="172" r="6"/>
+        <circle cx="162" cy="152" r="4"/>
+        <circle cx="136" cy="146" r="3"/>
+        <circle cx="118" cy="190" r="4.5"/>
+      </g>
+      <g fill="#ffd9a0">
+        <circle cx="144" cy="170" r="1.6"/>
+        <circle cx="161" cy="151" r="1.1"/>
+        <circle cx="117" cy="188.5" r="1.2"/>
+      </g>
+      <!-- core shadow of the liquid volume, left side (light passes through, exits bottom-right) -->
+      <path d="M52 140 Q60 206 116 236 L52 236 Z" fill="#1f0405" opacity=".55" filter="url(#fantasy-potion-health-soft)"/>
+    </g>
+
+    <!-- inner light bloom through the glass -->
+    <circle cx="150" cy="190" r="34" fill="#e8561e" opacity=".22" filter="url(#fantasy-potion-health-bloom)" style="mix-blend-mode:screen"/>
+
+    <!-- glass: tint, rims, window highlight -->
+    <circle cx="128" cy="160" r="80" fill="#d6cbb0" opacity=".05"/>
+    <circle cx="128" cy="160" r="78" fill="none" stroke="#0b0d10" stroke-width="3" opacity=".6"/>
+    <path d="M62.2 198 A76 76 0 0 1 90 94.2" fill="none" stroke="#d6cbb0" stroke-width="2.5" stroke-linecap="round" opacity=".55"/>
+    <path d="M64.1 136.7 A68 68 0 0 1 92 102.3 Q97 104 98.3 112.5 A56 56 0 0 0 75.4 140.8 Q68 142 64.1 136.7 Z" fill="#d6cbb0" opacity=".88"/>
+    <circle cx="70" cy="156" r="3.2" fill="#d6cbb0" opacity=".8"/>
+    <path d="M196.4 128.6 A76 76 0 0 1 203.5 170.6" fill="none" stroke="#7b848c" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+    <path d="M195.7 184.6 A72 72 0 0 1 174.3 215.2" fill="none" stroke="#ff9a3c" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+
+    <!-- neck glass -->
+    <rect x="110" y="60" width="36" height="36" fill="#d6cbb0" opacity=".05"/>
+    <line x1="111.5" y1="64" x2="111.5" y2="94" stroke="#5f6973" stroke-width="1.5"/>
+    <line x1="144.5" y1="64" x2="144.5" y2="94" stroke="#3c444d" stroke-width="1.5"/>
+    <rect x="114" y="66" width="7" height="26" rx="3.5" fill="#d6cbb0" opacity=".28"/>
+    <line x1="116.5" y1="68" x2="116.5" y2="90" stroke="#d6cbb0" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>
+    <line x1="139.5" y1="70" x2="139.5" y2="86" stroke="#9aa3aa" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+
+    <!-- glass lip -->
+    <rect x="100" y="50" width="56" height="16" rx="6" fill="#262c33"/>
+    <rect x="100" y="50" width="56" height="16" rx="6" fill="none" stroke="#5f6973" stroke-width="1.5"/>
+    <path d="M104 54.5 L140 54.5" stroke="#d6cbb0" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+
+    <!-- forged iron collar with rivets -->
+    <rect x="104" y="92" width="48" height="14" rx="5" fill="url(#fantasy-potion-health-iron)"/>
+    <path d="M107 94.5 L149 94.5" stroke="#b9c0c4" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+    <path d="M107 104 L149 104" stroke="#0b0d10" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+    <circle cx="112" cy="99" r="2.6" fill="#3c444d" stroke="#0b0d10" stroke-width="1"/>
+    <circle cx="111.3" cy="98.3" r="1" fill="#b9c0c4"/>
+    <circle cx="144" cy="99" r="2.6" fill="#262c33" stroke="#0b0d10" stroke-width="1"/>
+    <circle cx="143.3" cy="98.3" r=".9" fill="#7b848c"/>
+
+    <!-- cork -->
+    <path d="M112 30 Q112 22 128 22 Q144 22 144 30 L142 52 L114 52 Z" fill="url(#fantasy-potion-health-cork)"/>
+    <ellipse cx="128" cy="27" rx="15" ry="4.5" fill="#7a5233"/>
+    <path d="M117 26 Q124 23.5 133 24" fill="none" stroke="#aa9b7b" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>
+    <g fill="#1c120b" opacity=".7">
+      <circle cx="120" cy="36" r="1.2"/><circle cx="131" cy="42" r="1"/><circle cx="137" cy="33" r="1.3"/><circle cx="124" cy="47" r="1"/>
+    </g>
+    <path d="M114 52 L142 52" stroke="#1c120b" stroke-width="2"/>
+  </g>
+</svg>

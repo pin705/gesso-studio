@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="376" height="132" viewBox="0 0 376 132" data-type="button" data-style="xianxia" data-nine-slice="30 84 30 84">
+  <defs>
+    <linearGradient id="xianxia-btn-jade-gold" x1="0" y1="22" x2="0" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff4d2"/>
+      <stop offset=".12" stop-color="#d9a441"/>
+      <stop offset=".3" stop-color="#6b3b10"/>
+      <stop offset=".5" stop-color="#a86a1f"/>
+      <stop offset=".72" stop-color="#f3d27c"/>
+      <stop offset="1" stop-color="#3a1e08"/>
+    </linearGradient>
+    <linearGradient id="xianxia-btn-jade-face" x1="0" y1="27" x2="0" y2="97" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3a977d"/>
+      <stop offset=".35" stop-color="#20705f"/>
+      <stop offset=".72" stop-color="#154b45"/>
+      <stop offset="1" stop-color="#20705f"/>
+    </linearGradient>
+    <linearGradient id="xianxia-btn-jade-milk" x1="0" y1="29" x2="0" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d3f0dc" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#d3f0dc" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="xianxia-btn-jade-sss" x1="0" y1="70" x2="0" y2="97" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#78c7a5" stop-opacity="0"/>
+      <stop offset="1" stop-color="#78c7a5" stop-opacity=".5"/>
+    </linearGradient>
+    <radialGradient id="xianxia-btn-jade-ring" cx=".36" cy=".3" r=".8">
+      <stop offset="0" stop-color="#fff4d2"/>
+      <stop offset=".3" stop-color="#f3d27c"/>
+      <stop offset=".62" stop-color="#a86a1f"/>
+      <stop offset="1" stop-color="#3a1e08"/>
+    </radialGradient>
+    <radialGradient id="xianxia-btn-jade-disc" cx=".38" cy=".32" r=".75">
+      <stop offset="0" stop-color="#78c7a5"/>
+      <stop offset=".45" stop-color="#20705f"/>
+      <stop offset="1" stop-color="#0c2e30"/>
+    </radialGradient>
+    <clipPath id="xianxia-btn-jade-face-clip"><rect x="47" y="27" width="282" height="70" rx="13"/></clipPath>
+    <filter id="xianxia-btn-jade-veins" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".012 .05" numOctaves="3" seed="11"/>
+      <feColorMatrix values="0 0 0 0 .83  0 0 0 0 .94  0 0 0 0 .86  1.4 0 0 0 -.62"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <filter id="xianxia-btn-jade-shadow" x="-10%" y="-20%" width="120%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>
+    <g id="xianxia-btn-jade-medallion">
+      <circle r="31.5" fill="#3a1e08"/>
+      <circle r="30" fill="url(#xianxia-btn-jade-ring)"/>
+      <circle r="24.5" fill="#6b3b10"/>
+      <circle r="23" fill="#3a1e08"/>
+      <circle r="22" fill="url(#xianxia-btn-jade-disc)"/>
+      <ellipse cx="-7" cy="-9" rx="10" ry="6" transform="rotate(-30 -7 -9)" fill="#d3f0dc" opacity=".45"/>
+      <path d="M-24.5 -9 A26 26 0 0 1 -9 -24.5" fill="none" stroke="#fff4d2" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+      <g fill="#fff4d2" opacity=".75">
+        <circle cx="0" cy="-27" r="1.2"/><circle cx="19.1" cy="-19.1" r="1.2"/><circle cx="27" cy="0" r="1.2"/><circle cx="19.1" cy="19.1" r="1.2"/>
+        <circle cx="0" cy="27" r="1.2"/><circle cx="-19.1" cy="19.1" r="1.2"/><circle cx="-27" cy="0" r="1.2"/><circle cx="-19.1" cy="-19.1" r="1.2"/>
+      </g>
+    </g>
+    <g id="xianxia-btn-jade-curl">
+      <path d="M-3 1 A2 2 0 0 1 1 1 A4 4 0 0 1 -7 1 A6 6 0 0 1 5 1 A3 3 0 0 0 11 1 A2 2 0 0 0 7 1 A1 1 0 0 0 9 1" fill="none" stroke="#3a1e08" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2.8 1.3) scale(1.4)"/>
+      <path d="M-3 1 A2 2 0 0 1 1 1 A4 4 0 0 1 -7 1 A6 6 0 0 1 5 1 A3 3 0 0 0 11 1 A2 2 0 0 0 7 1 A1 1 0 0 0 9 1" fill="none" stroke="#f3d27c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2.8 0) scale(1.4)"/>
+    </g>
+  </defs>
+
+  <!-- soft shadow under the whole plaque -->
+  <g fill="#0c2e30" opacity=".45" filter="url(#xianxia-btn-jade-shadow)" transform="translate(0 7)">
+    <rect x="42" y="22" width="292" height="80" rx="18"/>
+    <circle cx="42" cy="62" r="31"/><circle cx="334" cy="62" r="31"/>
+  </g>
+
+  <!-- gold frame band with a dark outer line -->
+  <rect x="40.5" y="20.5" width="295" height="83" rx="19.5" fill="#3a1e08"/>
+  <rect x="42" y="22" width="292" height="80" rx="18" fill="url(#xianxia-btn-jade-gold)"/>
+  <rect x="45.5" y="25.5" width="285" height="73" rx="14.5" fill="#3a1e08"/>
+
+  <!-- jade face -->
+  <g clip-path="url(#xianxia-btn-jade-face-clip)">
+    <rect x="47" y="27" width="282" height="70" fill="#d3f0dc"/>
+    <rect x="47" y="29" width="282" height="70" rx="13" fill="#0c2e30"/>
+    <rect x="47" y="29" width="282" height="66" rx="13" fill="url(#xianxia-btn-jade-face)"/>
+    <rect x="47" y="27" width="282" height="70" fill="#ffffff" filter="url(#xianxia-btn-jade-veins)" opacity=".5"/>
+    <rect x="47" y="29" width="282" height="26" fill="url(#xianxia-btn-jade-milk)"/>
+    <rect x="47" y="68" width="282" height="29" fill="url(#xianxia-btn-jade-sss)"/>
+    <!-- inner gold pinline -->
+    <rect x="55.5" y="34.5" width="265" height="55" rx="8" fill="none" stroke="#d9a441" stroke-width="1" opacity=".55"/>
+  </g>
+
+  <!-- end medallions (all ornament lives in the 9-slice caps) -->
+  <use href="#xianxia-btn-jade-medallion" transform="translate(42 62)"/>
+  <use href="#xianxia-btn-jade-medallion" transform="translate(334 62)"/>
+  <!-- curls mirror so they face inward; the lighting does not -->
+  <use href="#xianxia-btn-jade-curl" transform="translate(42 62)"/>
+  <use href="#xianxia-btn-jade-curl" transform="translate(334 62) scale(-1 1)"/>
+</svg>

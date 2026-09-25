@@ -87,6 +87,19 @@ function lintInPage({ id, types }) {
   const animated = document.getAnimations().length > 0 || !!document.querySelector('animate, animateTransform, animateMotion, set');
   const duration = Number.parseFloat(svg.getAttribute('data-duration') ?? '');
   if (animated && !(duration > 0)) warnings.push('Animated asset: set data-duration="<seconds>" (and optionally data-frames) so frames can be reviewed and exported.');
+  // Browsers silently ignore SMIL animations with inconsistent timing lists, so check them here.
+  for (const animation of document.querySelectorAll('animate, animateTransform, animateMotion')) {
+    const list = (name) => (animation.getAttribute(name) ?? '').split(';').map((part) => part.trim()).filter(Boolean);
+    const [values, keyTimes, keySplines] = [list('values'), list('keyTimes'), list('keySplines')];
+    const mode = animation.getAttribute('calcMode') ?? (animation.localName === 'animateMotion' ? 'paced' : 'linear');
+    const where = `<${animation.localName} attributeName="${animation.getAttribute('attributeName') ?? ''}"> in #${animation.parentElement?.id || animation.parentElement?.localName}`;
+    const problems = [];
+    if (keyTimes.length && values.length && keyTimes.length !== values.length) problems.push(`${values.length} values but ${keyTimes.length} keyTimes`);
+    if (keyTimes.length && Number(keyTimes[0]) !== 0) problems.push('keyTimes must start at 0');
+    if (keyTimes.length && mode !== 'discrete' && Number(keyTimes.at(-1)) !== 1) problems.push('keyTimes must end at 1');
+    if (mode === 'spline' && keySplines.length !== Math.max(0, (keyTimes.length || values.length) - 1)) problems.push(`calcMode="spline" needs ${Math.max(0, (keyTimes.length || values.length) - 1)} keySplines, found ${keySplines.length}`);
+    if (problems.length) errors.push(`${where}: ${problems.join('; ')}. The browser ignores this animation entirely.`);
+  }
 
   let nineSlice = null;
   const slice = (svg.getAttribute('data-nine-slice') ?? '').trim();

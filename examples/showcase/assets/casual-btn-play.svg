@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="192" viewBox="0 0 180 192" data-type="button" data-style="casual">
+  <defs>
+    <linearGradient id="casual-btn-play-lip" x1="0" y1="96" x2="0" y2="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2e8519"/>
+      <stop offset="1" stop-color="#1d5410"/>
+    </linearGradient>
+    <linearGradient id="casual-btn-play-face" x1="0" y1="12" x2="0" y2="158" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#86dd45"/>
+      <stop offset=".55" stop-color="#5fc22f"/>
+      <stop offset="1" stop-color="#4fb526"/>
+    </linearGradient>
+    <radialGradient id="casual-btn-play-bloom" cx="62" cy="52" r="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c9f98e" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#c9f98e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="casual-btn-play-gloss" x1="0" y1="20" x2="0" y2="74" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".04"/>
+    </linearGradient>
+    <linearGradient id="casual-btn-play-glyph" x1="0" y1="56" x2="0" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d8efff"/>
+    </linearGradient>
+    <clipPath id="casual-btn-play-face-clip"><circle cx="90" cy="84" r="74"/></clipPath>
+    <filter id="casual-btn-play-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+
+  <!-- drop shadow -->
+  <rect x="11" y="13" width="158" height="170" rx="79" fill="#241640" opacity=".3" filter="url(#casual-btn-play-soft)"/>
+  <!-- outline backing (union of face and lip, 5px outside) -->
+  <rect x="11" y="5" width="158" height="172" rx="79" fill="#241640"/>
+  <!-- lip / thickness -->
+  <circle cx="90" cy="98" r="74" fill="url(#casual-btn-play-lip)"/>
+  <!-- face -->
+  <g clip-path="url(#casual-btn-play-face-clip)">
+    <circle cx="90" cy="84" r="74" fill="#c9f98e"/>
+    <circle cx="90" cy="88" r="74" fill="url(#casual-btn-play-face)"/>
+    <circle cx="90" cy="84" r="74" fill="url(#casual-btn-play-bloom)"/>
+    <!-- inner bottom shade so the face bulges -->
+    <path d="M16 96 A74 74 0 0 0 164 96 A74 46 0 0 1 16 96 Z" fill="#2e8519" opacity=".5" filter="url(#casual-btn-play-soft)"/>
+  </g>
+  <!-- gloss capsule -->
+  <path d="M40 60 C40 34 62 22 90 22 C118 22 140 34 140 60 C124 52 108 49 90 49 C72 49 56 52 40 60 Z" fill="url(#casual-btn-play-gloss)"/>
+  <!-- speculars -->
+  <ellipse cx="46" cy="58" rx="8" ry="5" transform="rotate(-50 46 58)" fill="#ffffff" opacity=".95"/>
+  <circle cx="38" cy="74" r="2.6" fill="#ffffff" opacity=".85"/>
+
+  <!-- play glyph: shadow, outline, fill, top light -->
+  <path d="M74 64 Q74 54 83 59 L121 81 Q129 86 121 91 L83 113 Q74 118 74 108 Z" fill="#2e8519" opacity=".7" transform="translate(0 6)"/>
+  <path d="M74 64 Q74 54 83 59 L121 81 Q129 86 121 91 L83 113 Q74 118 74 108 Z" fill="url(#casual-btn-play-glyph)" stroke="#241640" stroke-width="5" stroke-linejoin="round" paint-order="stroke"/>
+  <path d="M80 66 Q80 62 84 64 L108 78" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+</svg>

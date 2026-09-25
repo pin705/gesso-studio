@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="220" viewBox="0 0 320 220" data-type="panel" data-style="sci-fi" data-nine-slice="44 40 40 40">
+  <defs>
+    <linearGradient id="scifi-panel-holo-glass" x1="0" y1="10" x2="0" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16263b" stop-opacity=".9"/>
+      <stop offset=".25" stop-color="#101a28" stop-opacity=".86"/>
+      <stop offset="1" stop-color="#0a1019" stop-opacity=".92"/>
+    </linearGradient>
+    <linearGradient id="scifi-panel-holo-header" x1="0" y1="15" x2="0" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22c3e6" stop-opacity=".28"/>
+      <stop offset=".5" stop-color="#108aa6" stop-opacity=".1"/>
+      <stop offset="1" stop-color="#108aa6" stop-opacity=".18"/>
+    </linearGradient>
+    <pattern id="scifi-panel-holo-scan" width="4" height="3" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#7fe8ff" opacity=".12"/>
+    </pattern>
+    <clipPath id="scifi-panel-holo-inner"><path d="M34 15 L300 15 L305 20 L305 186 L286 205 L20 205 L15 200 L15 34 Z"/></clipPath>
+    <filter id="scifi-panel-holo-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="scifi-panel-holo-haze" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+
+  <!-- outer haze so the edge reads as light, not ink -->
+  <path d="M32 10 L302 10 L310 18 L310 188 L288 210 L18 210 L10 202 L10 32 Z" fill="none" stroke="#22c3e6" stroke-width="6" opacity=".14" filter="url(#scifi-panel-holo-haze)"/>
+
+  <!-- holographic glass -->
+  <path d="M32 10 L302 10 L310 18 L310 188 L288 210 L18 210 L10 202 L10 32 Z" fill="url(#scifi-panel-holo-glass)"/>
+
+  <!-- header strip: scanlines only here, where stretching is horizontal -->
+  <g clip-path="url(#scifi-panel-holo-inner)">
+    <rect x="15" y="15" width="290" height="25" fill="url(#scifi-panel-holo-header)"/>
+    <rect x="15" y="15" width="290" height="25" fill="url(#scifi-panel-holo-scan)"/>
+  </g>
+  <line x1="15" y1="40.5" x2="305" y2="40.5" stroke="#108aa6" stroke-width="1" opacity=".8"/>
+  <line x1="15" y1="42.5" x2="305" y2="42.5" stroke="#0b5468" stroke-width="1" opacity=".6"/>
+
+  <!-- structure lines -->
+  <path d="M34 15 L300 15 L305 20 L305 186 L286 205 L20 205 L15 200 L15 34 Z" fill="none" stroke="#108aa6" stroke-width="1" opacity=".55"/>
+  <path d="M32 10 L302 10 L310 18 L310 188 L288 210 L18 210 L10 202 L10 32 Z" fill="none" stroke="#22c3e6" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- focus: corner brackets, all inside the 9-slice corners -->
+  <g fill="none" stroke="#7fe8ff" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter" filter="url(#scifi-panel-holo-glow)">
+    <path d="M10 40 L10 32 L32 10 L40 10"/>
+    <path d="M310 180 L310 188 L288 210 L280 210"/>
+    <path d="M296 10 L302 10 L310 18 L310 24"/>
+    <path d="M10 196 L10 202 L18 210 L24 210"/>
+  </g>
+
+  <!-- header status light (amber = secondary accent) -->
+  <rect x="22" y="22" width="9" height="9" fill="#ffb52e" filter="url(#scifi-panel-holo-glow)"/>
+  <rect x="23.5" y="23.5" width="3" height="3" fill="#ffe0a0"/>
+  <!-- top-right marker -->
+  <path d="M288 21 L298 21 L293 29 Z" fill="none" stroke="#7fe8ff" stroke-width="1" stroke-linejoin="round" opacity=".9"/>
+  <!-- bottom-left ticks -->
+  <g stroke="#22c3e6" stroke-width="1" opacity=".85">
+    <line x1="22.5" y1="194" x2="22.5" y2="200"/>
+    <line x1="26.5" y1="196" x2="26.5" y2="200"/>
+    <line x1="30.5" y1="196" x2="30.5" y2="200"/>
+    <line x1="34.5" y1="192" x2="34.5" y2="200"/>
+  </g>
+  <!-- bottom-right chamfer data notch -->
+  <path d="M296 190.5 L302 190.5" stroke="#7fe8ff" stroke-width="1" opacity=".8"/>
+  <path d="M292 194.5 L298 194.5" stroke="#22c3e6" stroke-width="1" opacity=".6"/>
+</svg>
