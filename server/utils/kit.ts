@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 // The Gesso Kit: materials CSS, runtime helpers, self-hosted fonts, icon silhouettes and browser builds of
@@ -69,4 +69,12 @@ export async function kitFile(file: string): Promise<{ body: Buffer | string; ty
   if (raw === null || raw === undefined) return null;
   const ext = clean.slice(clean.lastIndexOf('.'));
   return { body: typeof raw === 'string' ? raw : Buffer.from(raw as Uint8Array), type: TYPES[ext] ?? 'application/octet-stream' };
+}
+
+/** Genre templates under /kit/templates, as "genre/part" (e.g. "cozy/button"). */
+export async function kitTemplates(): Promise<string[]> {
+  const files = process.env.GESSO_KIT_DIR
+    ? await readdir(path.join(path.resolve(process.env.GESSO_KIT_DIR), 'templates'), { recursive: true }).catch(() => [])
+    : (await useStorage('assets:kit').getKeys('templates')).map((key) => key.replaceAll(':', '/').replace(/^templates\//, ''));
+  return files.map((file) => file.replaceAll('\\', '/')).filter((file) => file.endsWith('.html')).map((file) => file.slice(0, -5)).sort();
 }

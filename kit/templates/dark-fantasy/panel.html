@@ -1,0 +1,25 @@
+<!doctype html>
+<html data-type="panel" data-width="360" data-height="288" data-style="dark-fantasy" data-nine-slice="60 56 64 56">
+<head>
+<!-- Gesso template dark-fantasy/panel. Iron frame over worn leather.
+     Copy it into your project with save_asset, then swap the ramps in :root for your art bible's. -->
+<link rel="stylesheet" href="/kit/gesso.css">
+<link rel="stylesheet" href="/kit/templates.css">
+<style>
+:root { --outline:#0b0d10; --ow:2.5px; --shadow:rgba(0,0,0,.6); }
+.iron { --c1:#0b0d10; --c2:#1b2026; --c3:#323a44; --c4:#56606b; --c5:#9aa3aa; }
+.blood { --c1:#1f0405; --c2:#4a0b0d; --c3:#7d1414; --c4:#b0221c; --c5:#d94a2b; }
+.bone { --c1:#2b241a; --c2:#4d4231; --c3:#7a6c52; --c4:#aa9b7b; --c5:#d6cbb0; }
+.outlined { filter: drop-shadow(2.5px 0 0 #0b0d10) drop-shadow(-2.5px 0 0 #0b0d10) drop-shadow(0 2.5px 0 #0b0d10) drop-shadow(0 -2.5px 0 #0b0d10) drop-shadow(0 7px 6px rgba(0,0,0,.6)); }
+.rivet { --nail-hi:#e8edf1; --nail:#56606b; --nail-lo:#323a44; --n:11px; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="outlined" style="position:absolute;inset:14px 12px 20px">
+  <div class="g-mat-iron iron g-chamfer" style="position:absolute;inset:0;--cut:22px"></div>
+  <div class="g-mat-leather g-chamfer" style="position:absolute;inset:22px;--cut:12px;--c1:#1c120b;--c2:#2b1b12;--c3:#3d281a;--c4:#533522;--c5:#7a5233"></div>
+</div>
+<div class="t-nail rivet" style="left:30px;top:28px"></div><div class="t-nail rivet" style="left:319px;top:28px"></div><div class="t-nail rivet" style="left:30px;top:245px"></div><div class="t-nail rivet" style="left:319px;top:245px"></div>
+<div class="g-icon" style="--icon:url(/kit/icons/game-icons/dread-skull.svg);inset:auto;left:158px;top:238px;width:44px;height:44px;--c1:#2b241a;--c2:#4d4231;--c3:#7a6c52;--c4:#aa9b7b;--c5:#d6cbb0;transform:rotate(0deg);"><i class="g-icon__base g-mat-stone"></i><i class="g-icon__shade"></i><i class="g-icon__rim"></i></div>
+</div></body>
+</html>

@@ -101,14 +101,19 @@ export function slash({ core = 0xffffff, color = 0x5fb8ff, edge = 0x1b3d9a, radi
   };
 }
 
-/** Radial magic burst: flash, halo, expanding ring, rotating rune, streak sparks. */
-export function burst({ core = 0xffffff, color = 0xa894f0, edge = 0x6a52c4, sparks = 70, runes = true, seed = 42 } = {}) {
+/** Radial magic burst: tapered rays in three lengths, a short tinted flash, expanding ring, rotating rune, streak sparks. */
+export function burst({ core = 0xffffff, color = 0xa894f0, edge = 0x6a52c4, sparks = 40, rays = 12, runes = true, seed = 42 } = {}) {
   return {
     async setup() {
       const s = await stage();
       const rng = random(seed);
       const halo = sprite(s.PIXI, s.glow, s.world, { tint: edge });
-      const flash = sprite(s.PIXI, s.glow, s.world, { tint: core });
+      const flash = sprite(s.PIXI, s.glow, s.world, { tint: mix(core, color, 0.35) });
+      const spikes = new s.PIXI.Graphics();
+      spikes.blendMode = 'add';
+      spikes.position.set(s.centre.x, s.centre.y);
+      s.world.addChild(spikes);
+      const beams = Array.from({ length: rays }, (_, index) => ({ angle: (index / rays) * TAU + (rng() - 0.5) * 0.25, length: [1, 0.62, 0.38][index % 3] * (0.9 + rng() * 0.2), width: [0.05, 0.035, 0.025][index % 3] }));
       const ring = new s.PIXI.Graphics();
       const rune = new s.PIXI.Graphics();
       for (const item of [ring, rune]) {
@@ -121,16 +126,30 @@ export function burst({ core = 0xffffff, color = 0xa894f0, edge = 0x6a52c4, spar
         angle: rng() * TAU, speed: 0.2 + rng() * 0.28, start: rng() * 0.12, life: 0.45 + rng() * 0.4, curl: (rng() - 0.5) * 1.6, scale: 0.18 + rng() * 0.3
       }));
       for (const item of [halo, flash]) item.position.set(s.centre.x, s.centre.y);
-      return { ...s, halo, flash, ring, rune, bits };
+      return { ...s, halo, flash, spikes, beams, ring, rune, bits };
     },
-    render(time, { app, halo, flash, ring, rune, bits, centre }) {
+    render(time, { app, halo, flash, spikes, beams, ring, rune, bits, centre }) {
       const t = time / duration;
       const unit = Math.min(size.width, size.height);
       const pop = ease.outBack(ease.window(t, 0.05, 0.22));
-      flash.scale.set((0.3 + pop * 1.1) * unit / 384);
-      flash.alpha = t > 0.05 ? 1 - ease.window(t, 0.25, 0.7) : 0;
-      halo.scale.set((0.5 + pop * 1.7) * unit / 384);
-      halo.alpha = t > 0.04 ? 0.9 * (1 - ease.window(t, 0.15, 0.9)) : 0;
+      flash.scale.set((0.25 + pop * 0.55) * unit / 384);
+      flash.alpha = t > 0.05 ? 0.85 * (1 - ease.window(t, 0.12, 0.4)) : 0;
+      halo.scale.set((0.5 + pop * 1.4) * unit / 384);
+      halo.alpha = t > 0.04 ? 0.55 * (1 - ease.window(t, 0.15, 0.9)) : 0;
+      // rays shoot out fast, then thin and fade: long, medium and short ones alternate
+      spikes.clear();
+      const reach = ease.outCubic(ease.window(t, 0.04, 0.3));
+      const rayFade = 1 - ease.window(t, 0.22, 0.6);
+      if (rayFade > 0 && reach > 0) {
+        for (const beam of beams) {
+          const length = unit * 0.46 * beam.length * reach;
+          const half = unit * beam.width * rayFade;
+          const [cos, sin] = [Math.cos(beam.angle), Math.sin(beam.angle)];
+          for (const [scale, tint, alpha] of [[1, color, 0.5], [0.3, core, 0.85]]) {
+            spikes.poly([-sin * half * scale, cos * half * scale, cos * length, sin * length, sin * half * scale, -cos * half * scale, -cos * half * 2 * scale, -sin * half * 2 * scale]).fill({ color: tint, alpha: alpha * rayFade });
+          }
+        }
+      }
       const radius = unit * (0.08 + ease.outCubic(ease.window(t, 0.12, 0.8)) * 0.31);
       const ringAlpha = t > 0.12 ? 1 - ease.window(t, 0.2, 0.85) : 0;
       ring.clear().circle(0, 0, radius).stroke({ width: unit * (0.026 * (1 - t) + 0.005), color, alpha: ringAlpha }).circle(0, 0, radius * 0.92).stroke({ width: 2, color: core, alpha: ringAlpha * 0.8 });
@@ -159,34 +178,71 @@ export function burst({ core = 0xffffff, color = 0xa894f0, edge = 0x6a52c4, spar
   };
 }
 
-/** Seamless looping flame: particles rise and cool from white-hot to smoke. */
-export function flame({ stops = [[0, 0xfff4c8], [0.18, 0xffc23a], [0.45, 0xff6a1a], [0.72, 0xb3201a], [1, 0x2a1410]], count = 70, width = 0.2, height = 0.66, seed = 3 } = {}) {
+/** Seamless looping stylized flame: nested tongue shapes (outer to core) that sway and flicker, detached licks, embers.
+ * stops: gradient from the hottest colour to the coolest; the first four colour the core, inner, middle and outer tongue. */
+export function flame({ stops = [[0, 0xfff4c8], [0.18, 0xffc23a], [0.45, 0xff6a1a], [0.72, 0xb3201a], [1, 0x2a1410]], embers = 12, width = 0.2, height = 0.66, seed = 3 } = {}) {
+  const colours = stops.map(([, colour]) => colour);
+  // [half width, height, colour] from the outside in; each layer sits on the same base
+  const layers = [[1, 1, colours[3]], [0.8, 0.78, colours[2]], [0.58, 0.54, colours[1]], [0.34, 0.3, colours[0]]];
   return {
     async setup() {
       const s = await stage({ bloom: false });
       const rng = random(seed);
-      const base = sprite(s.PIXI, s.glow, s.world, { tint: stops[2][1] });
-      base.position.set(s.centre.x, size.height * 0.8);
-      base.scale.set(size.width / 128 * 0.5, size.width / 128 * 0.22);
-      base.alpha = 0.45;
-      const bits = Array.from({ length: count }, () => ({
-        sprite: sprite(s.PIXI, s.glow, s.world), phase: rng(), x: (rng() - 0.5) * 2, wobble: rng() * TAU, scale: 0.4 + rng() * 0.6
-      }));
-      return { ...s, bits };
+      const warmth = sprite(s.PIXI, s.glow, s.world, { tint: colours[2] });
+      const g = new s.PIXI.Graphics();
+      s.world.addChild(g);
+      const licks = Array.from({ length: 3 }, (_, index) => ({ phase: index / 3 + rng() * 0.1, x: (rng() - 0.5) * 0.6, size: 0.5 + rng() * 0.5 }));
+      const sparks = Array.from({ length: embers }, () => ({ sprite: sprite(s.PIXI, s.glow, s.world, { tint: rng() < 0.5 ? colours[0] : colours[1] }), phase: rng(), x: (rng() - 0.5) * 1.6, drift: (rng() - 0.5) * 0.8, scale: [0.03, 0.05, 0.08][Math.floor(rng() * 3)] }));
+      return { ...s, warmth, g, licks, sparks };
     },
-    render(time, { app, bits, centre }) {
+    render(time, { app, warmth, g, licks, sparks, centre }) {
       const t = time / duration;
-      for (const bit of bits) {
-        const life = (t + bit.phase) % 1; // loops exactly every `duration`
-        const rise = ease.outCubic(life);
-        // tongues narrow toward the tip and sway; particles shrink and cool as they rise
-        const x = centre.x + bit.x * size.width * width * (1 - life) ** 1.4 + Math.sin(bit.wobble + life * TAU) * size.width * 0.035 * life;
-        bit.sprite.position.set(x, size.height * 0.84 - rise * size.height * height);
-        const s = bit.scale * (size.width / 128) * 0.34 * (1 - life * 0.75);
-        bit.sprite.scale.set(s, s * 1.5);
-        bit.sprite.tint = ramp(stops, life);
-        bit.sprite.blendMode = life > 0.75 ? 'normal' : 'add';
-        bit.sprite.alpha = Math.sin(Math.PI * Math.min(1, life * 1.3)) * (life > 0.75 ? 0.35 : 0.5);
+      const base = size.height * 0.86;
+      const W = size.width * width;
+      const H = size.height * height;
+      // integer frequencies of t keep the loop seamless
+      const sway = (u, phase) => (Math.sin(TAU * (t + phase) + u * 3.2) * 0.09 + Math.sin(TAU * 2 * (t + phase * 0.7) + u * 6.1) * 0.05) * W * u ** 1.3;
+      const tongue = (x0, y0, hw, h, tint, phase, alpha = 1) => {
+        const left = [];
+        const right = [];
+        const steps = 28;
+        for (let index = 0; index <= steps; index += 1) {
+          const u = index / steps;
+          // teardrop: round belly low, needle tip; the sides breathe out of step so the outline flickers
+          const half = hw * Math.sin(Math.PI * u ** 0.42) * (1 - u) ** 0.55;
+          const flicker = 1 + Math.sin(TAU * 3 * t + u * 9 + phase * 5) * 0.06;
+          const y = y0 - u * h;
+          left.push(x0 + sway(u, phase) - half * flicker, y);
+          right.push(x0 + sway(u, phase + 0.05) + half / flicker, y);
+        }
+        const points = [...left];
+        for (let index = right.length - 2; index >= 0; index -= 2) points.push(right[index], right[index + 1]);
+        g.poly(points).fill({ color: tint, alpha });
+      };
+      g.clear();
+      layers.forEach(([hw, h, tint], index) => {
+        const breathe = 1 + Math.sin(TAU * (t + index * 0.21)) * 0.04;
+        // outer layers carry two lower side tongues, so the silhouette has a big-medium-small rhythm, not a candle
+        if (index < 2) {
+          tongue(centre.x - W * hw * 0.42, base - H * 0.02, W * hw * 0.62, H * h * 0.62 * (1 + Math.sin(TAU * (t + 0.4)) * 0.08), tint, index * 0.13 + 0.31);
+          tongue(centre.x + W * hw * 0.46, base - H * 0.01, W * hw * 0.55, H * h * 0.48 * (1 + Math.sin(TAU * (t + 0.75)) * 0.1), tint, index * 0.13 + 0.57);
+        }
+        tongue(centre.x, base, W * hw, H * h * breathe, tint, index * 0.13);
+      });
+      // detached licks break off the tip, rise and shrink
+      for (const lick of licks) {
+        const life = (t * 2 + lick.phase) % 1;
+        const k = 1 - life;
+        tongue(centre.x + lick.x * W + sway(1, lick.phase), base - H * (0.7 + life * 0.35), W * 0.22 * lick.size * k, H * 0.2 * lick.size * k, life < 0.5 ? colours[2] : colours[3], lick.phase, Math.min(1, k * 1.6));
+      }
+      warmth.position.set(centre.x, base - H * 0.35);
+      warmth.scale.set((W * 4.2) / 128, (H * 1.4) / 128);
+      warmth.alpha = 0.28 + Math.sin(TAU * 3 * t) * 0.04;
+      for (const spark of sparks) {
+        const life = (t + spark.phase) % 1;
+        spark.sprite.position.set(centre.x + (spark.x + spark.drift * life) * W + Math.sin(TAU * (t + spark.phase) * 2) * W * 0.08, base - H * (0.35 + life * 0.8));
+        spark.sprite.scale.set((spark.scale * size.width) / 128 * (1 - life * 0.6));
+        spark.sprite.alpha = Math.sin(Math.PI * life);
       }
       app.render();
     }

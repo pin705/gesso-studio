@@ -1,0 +1,22 @@
+<!doctype html>
+<html data-type="button" data-width="320" data-height="96" data-style="sci-fi" data-nine-slice="28 36 28 36">
+<head>
+<!-- Gesso template sci-fi/button. Holographic plate. Add "is-pressed" or "is-disabled" to <body> for states.
+     Copy it into your project with save_asset, then swap the ramps in :root for your art bible's. -->
+<link rel="stylesheet" href="/kit/gesso.css">
+<link rel="stylesheet" href="/kit/templates.css">
+<style>
+:root { --outline:#04070c; --ow:0px; }
+.holo { --c1:#04070c; --c2:#0a1019; --c3:#108aa6; --c4:#22c3e6; --c5:#7fe8ff; }
+.bracket { position:absolute; width:18px; height:18px; border:0 solid #7fe8ff; filter: drop-shadow(0 0 4px #22c3e6); }
+.amber { --c3:#d98a00; --c4:#ffb52e; --c5:#ffe0a0; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="g-mat-holo holo g-chamfer" style="position:absolute;inset:16px 14px;--cut:14px"></div>
+<div class="t-fill g-chamfer face" style="inset:22px 20px;--cut:10px;background:linear-gradient(180deg,rgba(34,195,230,.28),rgba(16,138,166,.08));box-shadow:inset 0 0 0 1px rgba(127,232,255,.6)"></div>
+<div style="position:absolute;left:36px;right:36px;top:21px;height:2px;background:#7fe8ff;box-shadow:0 0 8px #22c3e6"></div>
+<i class="bracket" style="left:8px;top:8px;border-top-width:2.5px;border-left-width:2.5px"></i><i class="bracket" style="right:8px;top:8px;border-top-width:2.5px;border-right-width:2.5px"></i><i class="bracket" style="left:8px;bottom:8px;border-bottom-width:2.5px;border-left-width:2.5px"></i><i class="bracket" style="right:8px;bottom:8px;border-bottom-width:2.5px;border-right-width:2.5px"></i>
+<style>.is-pressed .face { background: rgba(34,195,230,.45); }</style>
+</div></body>
+</html>

@@ -10,11 +10,17 @@ All notable changes to this project are documented here. The format follows [Kee
 - `search_icons` MCP tool, `kit` and `asset-types/mockup` guides, mockup asset type.
 - Server-rendered thumbnails for every format, revision and scale.
 - Export manifests carry CC BY 3.0 credits for silhouettes used.
+- **Genre templates**: button (with pressed and disabled states), 9-slice panel, bar frame and fill, and item slot for cozy, dark fantasy, heroic fantasy, sci-fi, casual, xianxia and pixel, served by the new `get_template` MCP tool.
+- **Calibrated critique**: `read_guide(["critique"])` returns anchor sheets of real assets at scores 2, 3 and 4 for UI, icons and VFX, and the rubric gains hard gates that cap scores (no 4 without beating an anchor, no 5 without a shipped-game reference).
+- Kit presets: `/kit/items.mjs` (three.js gem, coin, potion), `/kit/vfx.mjs` (Pixi slash, burst, flame, aura, hit), and `pixelIcon()` for 16×16 pixel sprites from silhouettes.
+- Examples: Ashen Crown rebuilt on the kit, plus Nova Drift (sci-fi), Sugar Rush (casual match-3), Azure Cloud Sect (xianxia) and Ember Knight (pixel), each with an art bible, a UI set, icons, VFX and a mockup.
 
 ### Fixed
 - Content bounds are measured from rendered pixels, so clip paths and glows no longer cause false edge warnings; `data-bleed` marks intentional full-bleed art.
 - A file removed on disk no longer deletes its history: the asset is hidden and revived with all revisions when the file returns.
 - `view_assets` shows animated assets at a representative frame.
+- Pixi and three.js canvases are pinned to the top-left of the asset, so pages that also use `.g-canvas` no longer push them out of frame.
+- Pressed kit buttons move their lip with the face instead of exposing it above.
 
 ## [0.3.0] - 2026-09-25
 

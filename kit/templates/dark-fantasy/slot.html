@@ -1,0 +1,22 @@
+<!doctype html>
+<html data-type="frame" data-width="104" data-height="104" data-style="dark-fantasy" data-nine-slice="22 22 22 22">
+<head>
+<!-- Gesso template dark-fantasy/slot. Item slot; tint the rim with the rarity color.
+     Copy it into your project with save_asset, then swap the ramps in :root for your art bible's. -->
+<link rel="stylesheet" href="/kit/gesso.css">
+<link rel="stylesheet" href="/kit/templates.css">
+<style>
+:root { --outline:#0b0d10; --ow:2.5px; --shadow:rgba(0,0,0,.6); }
+.iron { --c1:#0b0d10; --c2:#1b2026; --c3:#323a44; --c4:#56606b; --c5:#9aa3aa; }
+.blood { --c1:#1f0405; --c2:#4a0b0d; --c3:#7d1414; --c4:#b0221c; --c5:#d94a2b; }
+.bone { --c1:#2b241a; --c2:#4d4231; --c3:#7a6c52; --c4:#aa9b7b; --c5:#d6cbb0; }
+.outlined { filter: drop-shadow(2.5px 0 0 #0b0d10) drop-shadow(-2.5px 0 0 #0b0d10) drop-shadow(0 2.5px 0 #0b0d10) drop-shadow(0 -2.5px 0 #0b0d10) drop-shadow(0 7px 6px rgba(0,0,0,.6)); }
+.rivet { --nail-hi:#e8edf1; --nail:#56606b; --nail-lo:#323a44; --n:11px; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="outlined" style="position:absolute;inset:8px"><div class="g-mat-iron iron g-chamfer" style="position:absolute;inset:0;--cut:10px"></div></div>
+<div class="g-well iron g-chamfer" style="position:absolute;inset:20px;--cut:6px"></div>
+<div class="t-nail rivet" style="left:13px;top:13px;--n:8px"></div><div class="t-nail rivet" style="left:83px;top:13px;--n:8px"></div><div class="t-nail rivet" style="left:13px;top:83px;--n:8px"></div><div class="t-nail rivet" style="left:83px;top:83px;--n:8px"></div>
+</div></body>
+</html>

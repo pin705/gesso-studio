@@ -13,8 +13,15 @@ export const duration = Number(root.dataset.duration) || 1;
 
 export function defineAsset({ setup, render }) {
   let stage;
+  const animated = root.dataset.duration !== undefined;
   const ready = (async () => {
     stage = await setup?.();
+    if (!animated) {
+      // A still needs one frame. Snapshot it and free the WebGL context: a page only gets about 16,
+      // and a mockup may embed dozens of rendered items.
+      await render?.(0, stage);
+      await stage?.freeze?.();
+    }
   })();
   let controlled = Boolean(window.__gessoRenderer); // the Gesso renderer drives time itself
   let origin = performance.now();
@@ -43,18 +50,24 @@ export function defineAsset({ setup, render }) {
   };
   ready.then(() => {
     api.render(0);
-    requestAnimationFrame(tick);
+    if (animated) requestAnimationFrame(tick);
   });
   return api;
 }
 
 /** A transparent Pixi application sized to the asset, rendering only when asked. */
+/** Pin a stage canvas to the top-left of the asset, above any CSS layers in .g-canvas. */
+function mount(canvas) {
+  Object.assign(canvas.style, { position: 'absolute', left: '0', top: '0' });
+  (document.querySelector('.g-canvas') ?? document.body).appendChild(canvas);
+}
+
 export async function pixiStage(options = {}) {
   const PIXI = await import('/kit/lib/pixi.mjs');
   const app = new PIXI.Application();
   await app.init({ width: size.width, height: size.height, backgroundAlpha: 0, antialias: true, preserveDrawingBuffer: true, resolution: devicePixelRatio, autoDensity: true, autoStart: false, ...options });
   app.ticker.stop();
-  document.body.appendChild(app.canvas);
+  mount(app.canvas);
   return { PIXI, app };
 }
 
@@ -84,7 +97,7 @@ export async function threeStage({ fov = 30, distance = 6, environment = 'studio
   renderer.setSize(size.width, size.height);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  document.body.appendChild(renderer.domElement);
+  mount(renderer.domElement);
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   renderer.toneMappingExposure = exposure;
@@ -97,7 +110,64 @@ export async function threeStage({ fov = 30, distance = 6, environment = 'studio
   const rim = new THREE.DirectionalLight(0x9fc7ff, 1.6);
   rim.position.set(4, 1, -4);
   scene.add(key, rim);
-  return { THREE, renderer, scene, camera, render: () => renderer.render(scene, camera) };
+  let frozen = false;
+  /** Replace the canvas with an image of its last frame and release the WebGL context. */
+  async function freeze() {
+    const canvas = renderer.domElement;
+    const snapshot = new Image();
+    snapshot.src = canvas.toDataURL();
+    await snapshot.decode();
+    snapshot.style.cssText = canvas.style.cssText;
+    snapshot.style.filter = getComputedStyle(canvas).filter; // keep outlines styled on the canvas
+    canvas.replaceWith(snapshot);
+    frozen = true;
+    renderer.dispose();
+    renderer.forceContextLoss();
+  }
+  return { THREE, renderer, scene, camera, render: () => frozen || renderer.render(scene, camera), freeze };
+}
+
+/** Pixel-art icon from a silhouette: sampled onto a small grid, outlined, and shaded from the top-left.
+ * ramp: [outline, shadow, base, light, highlight] CSS colors. Static; use it as a setup: defineAsset({ setup: () => pixelIcon({...}) }). */
+export async function pixelIcon({ icon, grid = 16, ramp }) {
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+  image.src = icon;
+  await image.decode();
+  // sample at 4x, then measure how much of each cell the silhouette covers
+  const fine = grid * 4;
+  const sample = document.createElement('canvas');
+  sample.width = sample.height = fine;
+  const context = sample.getContext('2d', { willReadFrequently: true });
+  context.drawImage(image, 4, 4, fine - 8, fine - 8); // one cell of room for the outline
+  const pixels = context.getImageData(0, 0, fine, fine).data;
+  const coverage = new Float32Array(grid * grid);
+  for (let y = 0; y < fine; y += 1) for (let x = 0; x < fine; x += 1) coverage[(y >> 2) * grid + (x >> 2)] += pixels[(y * fine + x) * 4 + 3] / 255 / 16;
+  const solid = (x, y) => x >= 0 && y >= 0 && x < grid && y < grid && coverage[y * grid + x] > 0.45;
+  const canvas = document.createElement('canvas');
+  canvas.width = size.width;
+  canvas.height = size.height;
+  const draw = canvas.getContext('2d');
+  const cell = Math.floor(Math.min(size.width, size.height) / grid);
+  const [left, top] = [Math.floor((size.width - cell * grid) / 2), Math.floor((size.height - cell * grid) / 2)];
+  const [outline, shadow, base, light, highlight] = ramp;
+  for (let y = 0; y < grid; y += 1) {
+    for (let x = 0; x < grid; x += 1) {
+      let colour = null;
+      if (solid(x, y)) {
+        const lit = !solid(x - 1, y) || !solid(x, y - 1);
+        const dark = !solid(x + 1, y) || !solid(x, y + 1);
+        // a partly covered interior cell is an inner line of the silhouette: keep it as a shadow pixel
+        const detail = !lit && !dark && coverage[y * grid + x] < 0.85;
+        colour = !solid(x - 1, y) && !solid(x, y - 1) ? highlight : dark || detail ? shadow : lit ? light : base;
+      } else if (solid(x - 1, y) || solid(x + 1, y) || solid(x, y - 1) || solid(x, y + 1)) colour = outline;
+      if (colour) {
+        draw.fillStyle = colour;
+        draw.fillRect(left + x * cell, top + y * cell, cell, cell);
+      }
+    }
+  }
+  mount(canvas);
 }
 
 /** Seeded PRNG (mulberry32) so particles and scatter are identical in every frame and export. */

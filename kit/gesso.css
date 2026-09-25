@@ -257,8 +257,8 @@ html, body { margin: 0; width: 100%; height: 100%; background: transparent; over
   box-shadow: 0 0 0 var(--ow) var(--outline), 0 var(--lip) 0 var(--ow) var(--outline), 0 calc(var(--lip) + 10px) 14px var(--shadow);
   transform: translateY(0);
 }
-.g-button.is-pressed > .g-button__face { transform: translateY(calc(var(--lip) * .7)); filter: brightness(.92); }
-.g-button.is-pressed::before { box-shadow: 0 0 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3) 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3 + 6px) 8px var(--shadow); }
+.g-button.is-pressed > .g-button__face, .is-pressed .g-button > .g-button__face { transform: translateY(calc(var(--lip) * .7)); filter: brightness(.92); }
+.g-button.is-pressed::before, .is-pressed .g-button::before { transform: translateY(calc(var(--lip) * .7)); box-shadow: 0 0 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3) 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3 + 6px) 8px var(--shadow); }
 .g-button.is-disabled { filter: grayscale(.85) brightness(.95) contrast(.85); }
 
 /* Panel: a frame material around a content well. */

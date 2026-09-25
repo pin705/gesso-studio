@@ -1,6 +1,23 @@
 # Critique rubric
 
-Score every review sheet honestly on each dimension (1 = broken, 3 = passable, 5 = shippable in a commercial game). Write the scores, name the weakest dimension, fix it, save again. Done means every score is 4 or more.
+Score every review sheet honestly on each dimension (1 = broken, 3 = passable, 5 = shippable in a commercial game). Write the scores, name the weakest dimension, fix it, save again. Aim for 4 on every dimension. If a score is still 3 after two passes, stop and tell the user what would lift it (a different technique, a reference, more time) instead of looping or rounding up.
+
+## Anchors
+`read_guide(["critique"])` returns anchor sheets with real assets placed at 2, 3 and 4 for UI chrome, icons and VFX. Score against them, not against your intent:
+- **2, reject:** hand-typed SVG look. Flat fills, one gradient, thin uniform strokes, clip-art motifs, glow everywhere.
+- **3, passable prototype:** readable and has a material, but generic shapes, gradient shading, texture that reads as noise.
+- **4, good:** instant read at 32 px, a material you can name, one light direction, clean construction, states and 9-slice safe.
+- **5, shippable:** it would sit unnoticed next to a shipped commercial game in the same genre. None of the anchors is a 5.
+
+## Hard gates
+Scores are capped by facts, whatever the render looks like to you:
+- **Beat the anchor.** To give a 4 on any dimension, name the anchor it matches or beats and say how. No anchor for the asset type at 4 yet? Then the cap is 3 unless you can name the commercial game it would fit into.
+- **A 5 needs a reference.** Name the shipped game and the asset it would sit beside. Without one, 4 is the cap.
+- **Lint warnings cap Game fitness at 3** until they are fixed or explained in the note (e.g. deliberate full bleed).
+- **Any anti-slop tell caps every dimension at 3** (list below).
+- **Readability is judged at 32 px**, not at full size: if the silhouette blurs into a blob there, Readability is 2.
+- **Figurative art drawn as hand-typed paths** (creatures, characters, detailed items) caps Form and Material at 3. Use a silhouette, the kit or three.js.
+- **Average is not the score.** Report each dimension; the asset is as good as its lowest one.
 
 | Dimension | 5 looks like | Check on the review sheet |
 | --- | --- | --- |

@@ -1,0 +1,39 @@
+<!doctype html>
+<html data-type="mockup" data-width="960" data-height="400" data-style="sci-fi">
+<head>
+<link rel="stylesheet" href="/kit/gesso.css">
+<style>
+:root { --outline:#04070c; }
+  body { background: #04070c; }
+  iframe { position:absolute; border:0; background:transparent; color-scheme:normal; }
+  .space { position:absolute; inset:0; background: radial-gradient(circle at 7% 12%, rgba(220,250,255,0.9) 0 1.2px, transparent 1.7999999999999998px), radial-gradient(circle at 18% 40%, rgba(220,250,255,0.6) 0 0.8px, transparent 1.4px), radial-gradient(circle at 26% 8%, rgba(220,250,255,0.8) 0 1px, transparent 1.6px), radial-gradient(circle at 33% 62%, rgba(220,250,255,0.5) 0 0.8px, transparent 1.4px), radial-gradient(circle at 41% 24%, rgba(220,250,255,0.9) 0 1.4px, transparent 2.0px), radial-gradient(circle at 52% 70%, rgba(220,250,255,0.6) 0 0.8px, transparent 1.4px), radial-gradient(circle at 58% 14%, rgba(220,250,255,0.7) 0 1px, transparent 1.6px), radial-gradient(circle at 64% 46%, rgba(220,250,255,0.5) 0 0.8px, transparent 1.4px), radial-gradient(circle at 71% 28%, rgba(220,250,255,0.9) 0 1.2px, transparent 1.7999999999999998px), radial-gradient(circle at 79% 60%, rgba(220,250,255,0.6) 0 0.8px, transparent 1.4px), radial-gradient(circle at 86% 10%, rgba(220,250,255,0.8) 0 1px, transparent 1.6px), radial-gradient(circle at 93% 38%, rgba(220,250,255,0.6) 0 0.9px, transparent 1.5px), radial-gradient(circle at 12% 80%, rgba(220,250,255,0.5) 0 0.8px, transparent 1.4px), radial-gradient(circle at 47% 88%, rgba(220,250,255,0.7) 0 1px, transparent 1.6px), radial-gradient(circle at 88% 84%, rgba(220,250,255,0.5) 0 0.8px, transparent 1.4px), radial-gradient(60% 80% at 70% 30%, rgba(16,138,166,.35), transparent 70%), radial-gradient(40% 50% at 20% 70%, rgba(217,138,0,.12), transparent 70%), #04070c; }
+  .planet { position:absolute; left:620px; top:40px; width:220px; height:220px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #22c3e6, #108aa6 40%, #0a1019 75%); box-shadow: inset -30px -20px 50px #04070c, 0 0 40px rgba(34,195,230,.25); opacity:.8; }
+  .t { position:absolute; font: 600 15px Rajdhani, sans-serif; color:#7fe8ff; letter-spacing:.08em; text-transform:uppercase; }
+  .big { font: 700 22px Orbitron, sans-serif; color:#dcfaff; letter-spacing:.12em; }
+  .amber { color:#ffb52e; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="space"></div><div class="planet"></div>
+  <iframe src="vfx-plasma-hit.html" style="left:360px;top:60px;width:256px;height:256px;transform:scale(.7);transform-origin:0 0" scrolling="no"></iframe>
+  <!-- shield bar, top-left -->
+  <iframe src="bar-shield.frame.html" style="left:24px;top:22px;width:360px;height:48px" scrolling="no"></iframe>
+  <iframe src="bar-shield.fill.html" style="left:46px;top:39px;width:316px;height:14px;clip-path:inset(0 30% 0 0)" scrolling="no"></iframe>
+  <div class="t" style="left:30px;top:6px">Shield 70%</div>
+  <!-- comms panel, right -->
+  <iframe src="panel-comms.html" style="left:590px;top:130px;width:360px;height:260px" scrolling="no"></iframe>
+  <div class="t" style="left:640px;top:152px">Incoming · Vega Station</div>
+  <div class="t" style="left:620px;top:196px;width:300px;color:#dcfaff;text-transform:none;line-height:1.4;letter-spacing:.02em">Pilot, the jump gate is unstable. Clear the drones before you launch.</div>
+  <div class="t amber" style="left:620px;top:290px">Threat level: high</div>
+  <!-- abilities, bottom-left -->
+  <iframe src="slot-ability.html" style="left:24px;top:282px;width:104px;height:104px" scrolling="no"></iframe>
+  <iframe src="slot-ability.html" style="left:124px;top:282px;width:104px;height:104px" scrolling="no"></iframe>
+  <iframe src="slot-ability.html" style="left:224px;top:282px;width:104px;height:104px" scrolling="no"></iframe>
+  <iframe src="icon-missiles.html" style="left:44px;top:302px;width:64px;height:64px" scrolling="no"></iframe>
+  <iframe src="icon-shield.html" style="left:144px;top:302px;width:64px;height:64px" scrolling="no"></iframe>
+  <iframe src="icon-radar.html" style="left:244px;top:302px;width:64px;height:64px" scrolling="no"></iframe>
+  <!-- launch button -->
+  <iframe src="btn-launch.html" style="left:340px;top:300px;width:320px;height:96px;transform:scale(.8);transform-origin:0 0" scrolling="no"></iframe>
+  <div class="t big" style="left:340px;top:326px;width:256px;text-align:center">Launch</div>
+</div></body>
+</html>

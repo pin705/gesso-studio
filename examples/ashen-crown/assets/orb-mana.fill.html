@@ -1,0 +1,29 @@
+<!doctype html>
+<html data-type="bar" data-width="132" data-height="132" data-style="dark-fantasy">
+<head>
+<link rel="stylesheet" href="/kit/gesso.css">
+<link rel="stylesheet" href="/kit/templates.css">
+<style>
+  :root { --outline:#0b0d10; --ow:2.5px; --shadow:rgba(11,13,16,.6); }
+  .iron { --c1:#0b0d10; --c2:#171b20; --c3:#262c33; --c4:#3c444d; --c5:#5f6973; --c6:#9aa3aa; }
+  .gold { --c1:#3a2410; --c2:#3a2410; --c3:#6b4518; --c4:#a8742a; --c5:#d8a84e; --c6:#f2d692; }
+  .bone { --c1:#2b241a; --c2:#4d4231; --c3:#7a6c52; --c4:#aa9b7b; --c5:#d6cbb0; }
+  .blood { --c1:#1f0405; --c2:#4a0b0d; --c3:#7d1414; --c4:#b0221c; --c5:#d94a2b; }
+  .arcane { --c1:#120c24; --c2:#251a4a; --c3:#3f2d7a; --c4:#6a52c4; --c5:#a894f0; --c6:#dcd2ff; }
+  .ember { --c1:#4a0b0d; --c2:#b0221c; --c3:#e8561e; --c4:#ff9a3c; --c5:#ffd9a0; --c6:#ffd9a0; }
+  .outlined { filter: drop-shadow(2.5px 0 0 #0b0d10) drop-shadow(-2.5px 0 0 #0b0d10) drop-shadow(0 2.5px 0 #0b0d10) drop-shadow(0 -2.5px 0 #0b0d10) drop-shadow(0 6px 5px rgba(11,13,16,.6)); }
+  .rivet { --nail-hi:#c7ccd0; --nail:#5f6973; --nail-lo:#262c33; --n:10px; }
+  .rivet.gilt { --nail-hi:#f2d692; --nail:#a8742a; --nail-lo:#6b4518; }
+
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="arcane" style="position:absolute;inset:0;border-radius:50%;
+  background: url(/kit/textures/noise.svg) 0 0 / 512px,
+    radial-gradient(circle at 40% 36%, var(--c5) 0, var(--c4) 22%, var(--c3) 48%, var(--c2) 74%, var(--c1) 100%);
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0 -16px 24px color-mix(in oklab, var(--c1) 85%, transparent), inset 0 10px 20px rgba(168,148,240,.5)"></div>
+<div style="position:absolute;inset:0;border-radius:50%;background:url(/kit/textures/veins.svg) 0 0 / 200px;opacity:.22;mix-blend-mode:soft-light;transform:rotate(-25deg)"></div>
+<div style="position:absolute;left:30%;top:22%;width:34%;height:26%;border-radius:50%;background:radial-gradient(closest-side,rgba(168,148,240,.5),transparent);mix-blend-mode:screen"></div>
+</div></body>
+</html>

@@ -9,7 +9,7 @@ Know before drawing: genre and mood, platform and reference resolution (e.g. 192
 Every project has one `STYLE.md` (see `art-bible`). If it is missing, read the closest `styles/*` pack, adapt it to the game, show the user the direction in two or three sentences, then `write_art_bible`. All assets obey it: palette ramps, light direction, materials, shape language, line and edge rules, UI kit rules. Consistency across a set matters more than any single pretty asset.
 
 ## 2. Plan the asset
-Build on the Gesso Kit (`kit`) instead of hand-typing paths: materials and components for UI, `search_icons` silhouettes for icons, Pixi for VFX, three.js for rendered items. Read the asset's `asset-types/*` guide. Decide canvas size (1x pixels at the reference resolution), padding, 9-slice insets, states, and the one focal point. Name ids with the asset id as prefix.
+Build on the Gesso Kit (`kit`) instead of hand-typing paths: start UI chrome from the genre's `get_template` and recolor it, `search_icons` silhouettes for icons, the `/kit/vfx.mjs` recipes for VFX, the `/kit/items.mjs` presets for rendered items. Read the asset's `asset-types/*` guide. Decide canvas size (1x pixels at the reference resolution), padding, 9-slice insets, states, and the one focal point. Name ids with the asset id as prefix.
 
 ## 3. Block-in (silhouette and values)
 Flat shapes only, three values (light, mid, dark), no effects. `save_asset` and check the review sheet: the 64px and 32px previews must read instantly, and the grayscale view must separate the main parts. Fix big shapes now; details never rescue a weak silhouette.
@@ -21,7 +21,7 @@ Add the light: lit planes, core shadow, occlusion in crevices and under overhang
 Spend detail where the eye should land (the focal area gets the highest contrast and sharpest edges), keep rest areas calm. Add edge highlights, specular pops, restrained texture, ornament that follows the structure. Effects such as glow and blur are seasoning: a few places, never everywhere.
 
 ## 6. Critique loop
-Score the review sheet with `critique`. Fix the weakest dimension, save again, repeat. Expect three or four passes; stop only when every dimension scores 4 or more. Tell the user what you changed between passes in one line each.
+Score the review sheet with `critique` and compare it with the anchor sheets. Fix the weakest dimension, save again, repeat. Expect three or four passes; aim for 4 on every dimension, and if one stays at 3 after two passes, say what would lift it instead of rounding up. Tell the user what you changed between passes in one line each.
 
 ## 6b. Feedback from the user
 The user reviews in the Gesso studio: approve, request changes, or pin comments on the art. Call `get_feedback` at the start of a session and after each round, fix every open item, then `resolve_feedback` with a one-line reply saying what changed. Treat a pinned point as the exact spot to fix.

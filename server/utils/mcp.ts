@@ -7,9 +7,9 @@ const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
 export const INSTRUCTIONS = `Gesso: you are the art team for this game; the user watches and reviews your work live in the Gesso studio.
 Work like a professional game artist:
 1. Call get_project first (it also lists open feedback). With no art bible (STYLE.md), read_guide(["workflow", "art-bible"]) plus the closest styles/* pack, agree on the direction with the user, then write_art_bible.
-2. Build assets on the Gesso Kit (read_guide(["kit"])): HTML with /kit/gesso.css materials and components, search_icons silhouettes instead of hand-drawn shapes, Pixi for VFX and three.js for rendered items. Read the asset-types/* guide and the fundamentals you need. Follow STYLE.md exactly.
-3. Write a complete SVG and call save_asset with a one-line note of what changed. It returns lint results and a review sheet (render, grayscale value check, 64/32px readability, animation frames).
-4. Critique every review sheet with read_guide(["critique"]); pass your scores in save_asset's critique field. Fix the weakest dimension and save again. Finish only when every score is 4 or more.
+2. Build assets on the Gesso Kit (read_guide(["kit"])): HTML with /kit/gesso.css materials and components, get_template for genre UI starting points, search_icons silhouettes instead of hand-drawn shapes, Pixi for VFX (/kit/vfx.mjs recipes) and three.js for rendered items (/kit/items.mjs). Read the asset-types/* guide and the fundamentals you need. Follow STYLE.md exactly.
+3. Write the complete document and call save_asset with a one-line note of what changed. It returns lint results and a review sheet (render, grayscale value check, 64/32px readability, animation frames).
+4. Critique every review sheet with read_guide(["critique"]) and compare it with the anchor sheets it returns; pass your scores in save_asset's critique field. Fix the weakest dimension and save again. Aim for 4 on every dimension; when a score stays at 3 after two passes, stop and tell the user what would lift it.
 5. The user leaves feedback in the studio. Check get_feedback before and after each round, address it, then resolve_feedback with a one-line reply.
 6. For a set, view_assets to compare consistency. Call export_assets only once the user approves.
 Assets are game-ready: transparent canvas, no presentation background, captions or watermarks; UI chrome is textless (the engine renders labels).`;
@@ -86,7 +86,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'read_guide',
-    description: 'Read the game-art knowledge base: production workflow, critique rubric, art fundamentals, asset-type specs and genre style packs. Call with no topics for the index.',
+    description: 'Read the game-art knowledge base: production workflow, critique rubric (with anchor images of real assets at scores 2, 3 and 4), art fundamentals, asset-type specs and genre style packs. Call with no topics for the index.',
     inputSchema: { type: 'object', properties: { topics: { type: 'array', items: { type: 'string' }, description: 'e.g. ["workflow", "asset-types/button", "styles/xianxia"]' } } },
     async handler({ topics }) {
       const wanted = listArg(topics);
@@ -94,7 +94,9 @@ const TOOLS: Tool[] = [
       if (!wanted.length) return [text(`${await readTopic('README')}\n\nTopics: ${available.join(', ')}`)];
       const unknown = wanted.filter((topic) => !available.includes(topic));
       if (unknown.length) throw new Error(`Unknown topic(s): ${unknown.join(', ')}. Available: ${available.join(', ')}`);
-      return Promise.all(wanted.map(async (topic) => text(await readTopic(topic))));
+      const guides = await Promise.all(wanted.map(async (topic) => text(await readTopic(topic))));
+      // The rubric travels with its anchors, so scores are compared with real work instead of drifting upward.
+      return wanted.includes('critique') ? [...guides, ...(await anchorSheets()).map(jpeg)] : guides;
     }
   },
   {
@@ -159,6 +161,21 @@ const TOOLS: Tool[] = [
     async handler({ query, set }) {
       const names = await searchIcons(String(query ?? ''), set === 'lucide' ? 'lucide' : 'game-icons');
       return [text(names.length ? names.map((name) => `/kit/icons/${set === 'lucide' ? 'lucide' : 'game-icons'}/${name}.svg`).join('\n') : 'No icons match; try fewer or broader words.')];
+    }
+  },
+  {
+    name: 'get_template',
+    description: 'Starting points for UI chrome in each genre (cozy, dark-fantasy, heroic-fantasy, sci-fi, casual, xianxia, pixel): button with pressed/disabled states, 9-slice panel, bar frame, bar fill and item slot, built on the Gesso Kit. Copy one into save_asset and recolor its ramps to the art bible instead of starting from a blank page. Call with no arguments for the list.',
+    inputSchema: { type: 'object', properties: { genre: { type: 'string' }, part: { type: 'string', description: 'button, panel, bar-frame, bar-fill or slot; omit for all parts of the genre' } } },
+    async handler({ genre, part }) {
+      const all = await kitTemplates();
+      if (!genre) {
+        const genres = [...new Set(all.map((name) => name.split('/')[0]))];
+        return [text(genres.map((name) => `- ${name}: ${all.filter((item) => item.startsWith(`${name}/`)).map((item) => item.split('/')[1]).join(', ')}`).join('\n'))];
+      }
+      const wanted = all.filter((name) => part ? name === `${genre}/${part}` : name.startsWith(`${genre}/`));
+      if (!wanted.length) throw new Error(`No template ${genre}${part ? `/${part}` : ''}. Call get_template with no arguments for the list.`);
+      return Promise.all(wanted.map(async (name) => text(`<!-- ${name} -->\n${(await kitFile(`templates/${name}.html`))!.body}`)));
     }
   },
   {

@@ -1,0 +1,38 @@
+<!doctype html>
+<html data-type="mockup" data-width="640" data-height="360" data-style="pixel">
+<head>
+<link rel="stylesheet" href="/kit/gesso.css">
+<style>
+:root { --outline:#1a1c2c; }
+  body { background:#1a1c2c; image-rendering: pixelated; }
+  iframe { position:absolute; border:0; background:transparent; color-scheme:normal; }
+  /* stand-in tile floor: 32px stone tiles with a 4px grout */
+  .floor { position:absolute; inset:0; background:
+    linear-gradient(90deg, #1a1c2c 4px, transparent 4px) 0 0 / 32px 32px,
+    linear-gradient(180deg, #1a1c2c 4px, transparent 4px) 0 0 / 32px 32px,
+    linear-gradient(180deg, #333c57, #29366f); }
+  .wall { position:absolute; left:0; right:0; top:0; height:72px; background:
+    linear-gradient(90deg, #1a1c2c 4px, transparent 4px) 0 0 / 48px 24px,
+    linear-gradient(180deg, #1a1c2c 4px, transparent 4px) 0 0 / 48px 24px, #566c86; box-shadow: 0 4px 0 #1a1c2c, 0 8px 0 #333c57; }
+  .t { position:absolute; font: 400 12px 'Press Start 2P', monospace; color:#f4f4f4; line-height:1.8; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="floor"></div><div class="wall"></div>
+  <iframe src="icon-chest.html" style="left:416px;top:100px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="bar-hp.frame.html" style="left:16px;top:12px;width:192px;height:32px" scrolling="no"></iframe>
+  <iframe src="bar-hp.fill.html" style="left:20px;top:20px;width:184px;height:20px;clip-path:inset(0 40% 0 0)" scrolling="no"></iframe>
+  <iframe src="icon-heart.html" style="left:208px;top:0;width:64px;height:64px;transform:scale(.75);transform-origin:0 0" scrolling="no"></iframe>
+  <iframe src="slot-inventory.html" style="left:16px;top:280px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="slot-inventory.html" style="left:84px;top:280px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="slot-inventory.html" style="left:152px;top:280px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="icon-sword.html" style="left:16px;top:280px;width:72px;height:72px;transform:scale(1);transform-origin:0 0" scrolling="no"></iframe>
+  <iframe src="icon-potion.html" style="left:84px;top:280px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="icon-key.html" style="left:152px;top:280px;width:72px;height:72px" scrolling="no"></iframe>
+  <iframe src="panel-dialog.html" style="left:368px;top:160px;width:256px;height:192px" scrolling="no"></iframe>
+  <div class="t" style="left:392px;top:180px;color:#f4f4f4">OLD MAGE</div>
+  <div class="t" style="left:388px;top:220px;width:216px">The ember sleeps below. Take the key.</div>
+  <iframe src="btn-start.html" style="left:420px;top:292px;width:192px;height:64px;transform:scale(.8);transform-origin:0 0" scrolling="no"></iframe>
+  <div class="t" style="left:420px;top:307px;width:154px;text-align:center;color:#1a1c2c">OK</div>
+</div></body>
+</html>

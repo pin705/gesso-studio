@@ -1,0 +1,22 @@
+<!doctype html>
+<html data-type="button" data-width="192" data-height="64" data-style="pixel" data-nine-slice="16 16 24 16">
+<head>
+<link rel="stylesheet" href="/kit/gesso.css">
+<link rel="stylesheet" href="/kit/templates.css">
+<style>
+:root { --outline:#1a1c2c; --px:4px; }
+.pgreen { --c2:#257179; --c3:#38b764; --c4:#a7f070; --c5:#a7f070; }
+.pblue { --c2:#29366f; --c3:#3b5dc9; --c4:#41a6f6; --c5:#73eff7; }
+.pdark { --c2:#1a1c2c; --c3:#333c57; --c4:#566c86; --c5:#94b0c2; }
+.pred { --c2:#5d275d; --c3:#b13e53; --c4:#ef7d57; --c5:#ffcd75; }
+body { image-rendering: pixelated; }
+</style>
+</head>
+<body><div class="g-canvas">
+<div class="t-pixel-outline" style="position:absolute;inset:8px 8px 12px">
+  <div class="pgreen" style="position:absolute;inset:8px 0 0;background:var(--c2)"></div>
+  <div class="t-pixel pgreen face" style="position:absolute;inset:0 0 8px;background:var(--c3)"></div>
+</div>
+<style>.is-pressed .face { transform: translateY(4px); }</style>
+</div></body>
+</html>

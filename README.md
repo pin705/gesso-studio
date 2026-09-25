@@ -50,6 +50,34 @@ Assets are small HTML documents (or plain SVG) rendered by Chromium. The kit tur
   </tr>
 </table>
 
+### Genre templates
+
+Every genre starts from a ready UI set instead of a blank page: a button with pressed and disabled states, a 9-slice panel, a bar frame and fill, and an item slot, for cozy, dark fantasy, heroic fantasy, sci-fi, casual, xianxia and pixel. The agent fetches one with `get_template`, recolors it to the art bible and builds from there.
+
+<img src="docs/images/templates.jpg" alt="Genre templates: seven genres of buttons, panels, bars and slots" width="100%" />
+
+## Examples
+
+Each example is a real project folder with an art bible, a UI set, icons, VFX and a mockup that puts them in context. Open them from **Projects → Samples** in the studio.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/example-nova-drift.jpg" alt="Nova Drift sci-fi cockpit HUD" /><br/><sub><b>Nova Drift</b> (sci-fi): hologram HUD, ability glyphs, Pixi plasma hit.</sub></td>
+    <td width="50%"><img src="docs/images/example-azure-sect.jpg" alt="Azure Cloud Sect xianxia cultivation screen" /><br/><sub><b>Azure Cloud Sect</b> (xianxia): jade, old gold and lacquer, qi aura, Ma Shan Zheng titles.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/example-ember-knight.jpg" alt="Ember Knight pixel dungeon HUD" /><br/><sub><b>Ember Knight</b> (pixel): Sweetie 16 UI on a 4 px grid, 16×16 icons from silhouettes.</sub></td>
+    <td width="50%"><img src="docs/images/example-sugar-rush.jpg" alt="Sugar Rush match-3 level complete popup" width="60%" /><br/><sub><b>Sugar Rush</b> (casual): candy UI and three.js gems for a match-3 board.</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/images/ashen-before-after.jpg" alt="Ashen Crown HUD before and after the kit" /><br/><sub><b>Ashen Crown</b> (dark fantasy), before and after the kit. Also included: <b>Meadow Farm</b> (cozy) and the <b>Kit gallery</b>.</sub></td>
+  </tr>
+</table>
+
+### Honest scoring
+
+The agent scores its own work, so the rubric ships with anchor sheets: real assets from these examples placed at 2 (reject), 3 (passable prototype) and 4 (good) for UI, icons and VFX, plus hard gates that cap scores. A 4 has to beat an anchor; a 5 has to name the shipped game it would sit beside. By that bar the kit's best work today is a 4, and most of it is a solid 3 to 4: fast, clean prototype art rather than a painted commercial finish. See [`knowledge/critique.md`](knowledge/critique.md) and [`knowledge/anchors/`](knowledge/anchors/).
+
 ## Quick start
 
 Requirements: **Node.js 22.19+** (or 24.11+) and **Google Chrome, Microsoft Edge or Chromium**. No Chromium browser? Run `npx playwright install chromium`, or set `CHROME_PATH`.
@@ -105,7 +133,7 @@ Then ask your agent something like:
 ```
 
 1. **Art bible first.** With no `STYLE.md`, the agent reads the workflow guide and the closest style pack, agrees on a direction with you, and writes the art bible. Its hex codes become the palette that lint enforces.
-2. **Draw, look, critique, repeat.** For each asset the agent reads the asset-type guide, builds it on the Gesso Kit (HTML/CSS, silhouettes, Pixi or three.js) or as SVG, and calls `save_asset`. It critiques the review sheet it gets back, submits rubric scores, and revises until every score passes.
+2. **Draw, look, critique, repeat.** For each asset the agent reads the asset-type guide, builds it on the Gesso Kit (HTML/CSS, silhouettes, Pixi or three.js) or as SVG, and calls `save_asset`. It critiques the review sheet it gets back against anchor examples of real assets at each score, submits rubric scores, and revises.
 3. **Review in the studio.** New revisions appear live. You approve them or leave feedback, which the agent reads and resolves.
 4. **Export** engine-ready files when the set is approved.
 
@@ -118,7 +146,7 @@ Your art stays as plain SVG files in your project folder, so it can live in the 
 | Process | `workflow`, `kit`, `critique` (rubric + anti-slop list), `art-bible` (template) |
 | Fundamentals | `light-value`, `color`, `shape`, `materials`, `svg-craft` |
 | Asset types | `button`, `panel`, `icon`, `bar`, `vfx`, `mockup` |
-| Style packs | `xianxia`, `dark-fantasy`, `heroic-fantasy`, `sci-fi`, `casual`, `pixel` |
+| Style packs | `cozy`, `xianxia`, `dark-fantasy`, `heroic-fantasy`, `sci-fi`, `casual`, `pixel` (each with UI templates) |
 
 Guides live in [`knowledge/`](knowledge/) and can be browsed in the studio. They are the highest-leverage place to contribute: a better material recipe improves every future asset. See [Writing knowledge](docs/knowledge-authoring.md).
 
@@ -155,8 +183,8 @@ The stack is Nuxt 4 (Vue 3, Nitro), Tailwind CSS 4, shadcn-vue, SQLite through `
 
 ## Roadmap
 
-- A brilliant-cut gem generator, coin and bottle presets for three.js items, and more Pixi VFX recipes in the kit.
-- Calibrated critique: anchor examples for each score so self-review cannot drift upward.
+- More templates per genre (tabs, toggles, tooltips, currency pills) and more VFX recipes (projectiles, portals, weather).
+- Anchor sheets for more asset types (characters, tiles, cards) as examples reach them.
 - More style packs and asset types: characters, tilesets, cards, map markers.
 - Engine exporters for Godot, Unity and Defold import settings.
 - An npm release, so `npx gesso-studio` works without cloning.

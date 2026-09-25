@@ -13,6 +13,15 @@ export async function readTopic(topic: string): Promise<string> {
   return String(await knowledge().getItem(`${topic.replaceAll('/', ':')}.md`));
 }
 
+/** Critique anchor sheets (knowledge/anchors/*.jpg): real assets placed at scores 2, 3 and 4. */
+export async function anchorSheets(): Promise<Buffer[]> {
+  const keys = (await knowledge().getKeys('anchors')).filter((key) => key.endsWith('.jpg')).sort();
+  return Promise.all(keys.map(async (key) => {
+    const raw = await knowledge().getItemRaw(key);
+    return typeof raw === 'string' ? Buffer.from(raw) : Buffer.from(raw as Uint8Array);
+  }));
+}
+
 /** Bundled example projects: folder name and the title line of their art bible. */
 export async function listSamples(): Promise<{ name: string; title: string }[]> {
   const samples = useStorage('assets:samples');
