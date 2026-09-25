@@ -80,6 +80,7 @@ export async function addProject(folder: string, name?: string): Promise<Project
   const project: Project = { id: randomUUID().slice(0, 8), name: name?.trim() || path.basename(target), path: target, created_at: now(), opened_at: now() };
   useDb().prepare('INSERT INTO projects (id, name, path, created_at, opened_at) VALUES (?, ?, ?, ?, ?)').run(project.id, project.name, project.path, project.created_at, project.opened_at);
   await syncProject(project);
+  lintInBackground(project, unlintedKeys(project));
   watchProject(project);
   logActivity(project, 'user', 'project', `Project "${project.name}" added`);
   emit({ type: 'project', project: project.id });
@@ -230,6 +231,12 @@ export async function syncProject(project: Project): Promise<string[]> {
 }
 
 export const masterKey = (key: string) => key.split('.')[0]!;
+
+/** Assets whose latest revision was never linted (copied in or edited while Gesso was off). */
+export function unlintedKeys(project: Project): string[] {
+  return (useDb().prepare(`SELECT a.key FROM assets a JOIN revisions r ON r.asset_id = a.id
+      WHERE a.project_id = ? AND r.number = (SELECT MAX(number) FROM revisions WHERE asset_id = a.id) AND r.lint IS NULL`).all(project.id) as { key: string }[]).map((row) => row.key);
+}
 
 export function listAssets(project: Project) {
   return useDb().prepare(`

@@ -3,17 +3,17 @@ import { useTimeAgo } from '@vueuse/core';
 import { Bot, CircleCheck, CircleDashed } from '@lucide/vue';
 
 useHead({ title: 'Connect AI · Gesso' });
-const { data } = await useFetch<{ mcpUrl: string; lastAgentActivity: number | null; dataDir: string }>('/api/connection');
+const { data } = await useFetch<{ mcpUrl: string; bridge: string | null; lastAgentActivity: number | null; dataDir: string }>('/api/connection');
 const { current } = useProjects();
 const lastSeen = useTimeAgo(computed(() => data.value?.lastAgentActivity ?? 0));
 
 const project = computed(() => current.value?.path ?? '/path/to/my-game/art');
-const url = computed(() => `${data.value?.mcpUrl ?? 'http://127.0.0.1:4477/mcp'}?project=${encodeURIComponent(project.value)}`);
+const url = computed(() => `${data.value?.mcpUrl ?? 'http://127.0.0.1:4477/mcp'}?project=${encodeURIComponent(project.value).replaceAll('%2F', '/')}`);
 const clients = computed(() => [
   { id: 'claude', name: 'Claude Code', note: 'HTTP transport', code: `claude mcp add --transport http gesso "${url.value}"` },
   { id: 'codex', name: 'Codex', note: '~/.codex/config.toml', code: `[mcp_servers.gesso]\nurl = "${url.value}"` },
   { id: 'cursor', name: 'Cursor · VS Code · Windsurf', note: 'mcp.json', code: JSON.stringify({ mcpServers: { gesso: { url: url.value } } }, null, 2) },
-  { id: 'stdio', name: 'Claude Desktop & stdio-only clients', note: 'claude_desktop_config.json: the bridge starts Gesso when needed', code: JSON.stringify({ mcpServers: { gesso: { command: 'npx', args: ['-y', 'gesso-studio', 'mcp', '--project', project.value] } } }, null, 2) }
+  { id: 'stdio', name: 'Claude Desktop & stdio-only clients', note: 'claude_desktop_config.json: the bridge starts Gesso when needed', code: JSON.stringify({ mcpServers: { gesso: { command: 'node', args: [data.value?.bridge ?? '/path/to/gesso/bin/gesso.mjs', 'mcp', '--project', project.value] } } }, null, 2) }
 ]);
 const prompts = [
   'Read the Gesso project, propose an art bible for my cozy farming game, and wait for my OK.',

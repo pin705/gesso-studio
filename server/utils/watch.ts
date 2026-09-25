@@ -11,10 +11,12 @@ export function watchProject(project: Project): void {
     timer = setTimeout(async () => {
       const current = findProject(project.id);
       if (!current) return;
-      for (const key of await syncProject(current)) {
+      const changed = await syncProject(current);
+      for (const key of changed) {
         logActivity(current, 'system', 'disk', `${key} changed on disk`, key);
         emit({ type: 'asset', project: current.id, asset: key });
       }
+      lintInBackground(current, changed);
     }, 250);
   };
   const list: FSWatcher[] = [];

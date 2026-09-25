@@ -23,6 +23,9 @@ Spend detail where the eye should land (the focal area gets the highest contrast
 ## 6. Critique loop
 Score the review sheet with `critique`. Fix the weakest dimension, save again, repeat. Expect three or four passes; stop only when every dimension scores 4 or more. Tell the user what you changed between passes in one line each.
 
+## 6b. Feedback from the user
+The user reviews in the Gesso studio: approve, request changes, or pin comments on the art. Call `get_feedback` at the start of a session and after each round, fix every open item, then `resolve_feedback` with a one-line reply saying what changed. Treat a pinned point as the exact spot to fix.
+
 ## 7. Set consistency
 When an asset belongs to a set (a button family, an icon row, a UI kit), `view_assets` the whole set: same light direction, outline weight, bevel size, corner radius family, palette and level of detail.
 

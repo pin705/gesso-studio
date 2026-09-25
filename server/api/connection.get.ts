@@ -3,7 +3,7 @@ export default defineEventHandler((event) => {
   const last = useDb().prepare("SELECT created_at FROM activity WHERE actor = 'ai' ORDER BY id DESC LIMIT 1").get() as { created_at: number } | undefined;
   return {
     mcpUrl: `${getRequestURL(event).origin}/mcp`,
-    bridge: 'npx gesso-studio mcp',
+    bridge: process.env.GESSO_BIN ?? null,
     lastAgentActivity: last?.created_at ?? null,
     dataDir: dataDir()
   };

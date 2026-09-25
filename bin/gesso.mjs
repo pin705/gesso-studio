@@ -40,6 +40,7 @@ async function start() {
     log(`Gesso is already running at ${baseUrl}`);
     return;
   }
+  process.env.GESSO_BIN = fileURLToPath(import.meta.url);
   process.env.NITRO_HOST ??= process.env.GESSO_HOST ?? '127.0.0.1';
   process.env.NITRO_PORT ??= String(port);
   await import(pathToFileURL(serverEntry).href);

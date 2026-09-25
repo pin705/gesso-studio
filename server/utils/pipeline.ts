@@ -49,6 +49,13 @@ export async function saveReviewed(project: Project, key: string, svg: string, i
   }
 }
 
+let backlog: Promise<unknown> = Promise.resolve();
+
+/** Lint files that arrived without a review (copied in, or edited on disk by an agent), one at a time. */
+export function lintInBackground(project: Project, keys: string[]): void {
+  for (const key of keys) backlog = backlog.then(() => (getAssetRow(project, key) ? rereview(project, key) : null)).catch(() => undefined);
+}
+
 /** Re-run lint on the current file (e.g. after a hand edit) and attach it to the latest revision. */
 export async function rereview(project: Project, key: string) {
   const file = path.join(dirs(project).assets, `${key}.svg`);

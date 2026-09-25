@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onKeyStroke, useElementSize, useLocalStorage } from '@vueuse/core';
+import { onKeyStroke, useElementSize, useLocalStorage, useRafFn } from '@vueuse/core';
 import { ChevronLeft, ChevronRight, Contrast, Grid3x3, Maximize, MessageSquarePlus, Minus, MoveDiagonal, Pause, Play, Plus } from '@lucide/vue';
 import type { Feedback } from '~/utils/types';
 
@@ -30,17 +30,19 @@ const zoom = ref(0); // 0 = fit
 const pan = reactive({ x: 0, y: 0 });
 const swipe = ref([50]);
 
-const fit = computed(() => Math.max(0.05, Math.min(8, (stageWidth.value - 64) / props.width, (stageHeight.value - 64) / props.height)));
+const stretchX = computed(() => (stretch.value ? stretchSize.value[0]! : 1));
+const stretchY = computed(() => (stretch.value ? stretchSize.value[1]! : 1));
+const fit = computed(() => Math.max(0.05, Math.min(8, (stageWidth.value - 64) / (props.width * stretchX.value), (stageHeight.value - 64) / (props.height * stretchY.value))));
 const scale = computed(() => zoom.value || fit.value);
-const boxWidth = computed(() => props.width * scale.value * (stretch.value ? stretchSize.value[0]! : 1));
-const boxHeight = computed(() => props.height * scale.value * (stretch.value ? stretchSize.value[1]! : 1));
+const boxWidth = computed(() => props.width * scale.value * stretchX.value);
+const boxHeight = computed(() => props.height * scale.value * stretchY.value);
 const slice = computed(() => props.nineSlice ?? [0, 0, 0, 0]);
 
 watch(() => props.src, () => {
   playing.value = true;
   time.value = 0;
 });
-watch(() => [props.width, props.height], () => {
+watch(() => [props.width, props.height, stretch.value], () => {
   zoom.value = 0;
   pan.x = pan.y = 0;
 });
@@ -119,6 +121,13 @@ function togglePlay() {
   }
 }
 const step = (frames: number) => seek(time.value + frames / fps.value);
+// keep the readout moving while the animation plays
+useRafFn(() => {
+  if (!playing.value || !props.duration) return;
+  const { svg, css } = content();
+  const seconds = svg?.getCurrentTime?.() || (Number(css[0]?.currentTime ?? 0) / 1000);
+  time.value = seconds % props.duration;
+});
 
 const typing = () => ['INPUT', 'TEXTAREA', 'SELECT'].includes((document.activeElement?.tagName ?? '').toUpperCase());
 onKeyStroke(['g', 'G'], () => !typing() && (grayscale.value = !grayscale.value));

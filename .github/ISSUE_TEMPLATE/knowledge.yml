@@ -1,0 +1,18 @@
+name: Knowledge or style pack
+description: Propose a new style pack, asset type or a better rule for the knowledge base.
+labels: [knowledge]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Guide
+      placeholder: styles/cozy-farm, asset-types/card, fundamentals/materials…
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: What should the agent do differently?
+      description: Concrete, checkable rules. Before/after review sheets help a lot.
+    validations:
+      required: true
