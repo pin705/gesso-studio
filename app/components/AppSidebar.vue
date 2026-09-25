@@ -33,7 +33,7 @@ const isActive = (to: string, exact?: boolean) => (exact ? route.path === to || 
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <SidebarMenuButton size="lg" class="data-[state=open]:bg-sidebar-accent">
-                <GessoMark class="size-8" />
+                <span class="grid size-8 shrink-0 place-items-center"><GessoMark class="!size-8" /></span>
                 <div class="grid flex-1 text-left leading-tight">
                   <span class="truncate text-sm font-semibold">{{ current?.name ?? 'Gesso' }}</span>
                   <span class="truncate text-xs text-muted-foreground">{{ current ? `${current.assets} assets` : 'No project open' }}</span>

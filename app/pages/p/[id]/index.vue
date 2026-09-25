@@ -15,7 +15,7 @@ const search = ref('');
 const status = ref<'all' | AssetStatus>('all');
 const type = ref('all');
 const sort = useLocalStorage<'updated' | 'name' | 'type'>('gesso-library-sort', 'updated');
-const size = useLocalStorage('gesso-library-size', [180]);
+const size = useLocalStorage('gesso-library-size', [200]);
 
 // Variants ("btn-play.pressed") are grouped under their master so the grid shows one card per design.
 const groups = computed(() => {
@@ -78,7 +78,7 @@ const filters: { value: 'all' | AssetStatus; label: string }[] = [
       </SelectContent>
     </Select>
     <Select v-model="sort">
-      <SelectTrigger size="sm" class="w-36"><SelectValue /></SelectTrigger>
+      <SelectTrigger size="sm" class="w-44"><SelectValue /></SelectTrigger>
       <SelectContent>
         <SelectItem value="updated">Recently updated</SelectItem>
         <SelectItem value="name">Name</SelectItem>
@@ -110,7 +110,7 @@ const filters: { value: 'all' | AssetStatus; label: string }[] = [
             <span class="truncate font-mono text-xs font-medium">{{ group.master.key }}</span>
             <span class="shrink-0 text-[11px] text-muted-foreground">r{{ group.master.revision }}</span>
           </div>
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
             <span class="truncate text-[11px] text-muted-foreground capitalize">{{ group.master.type }} · {{ group.master.width }}×{{ group.master.height }}</span>
             <StatusBadge :status="group.master.status" />
           </div>
