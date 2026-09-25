@@ -72,6 +72,7 @@ function studioEnvironment(THREE) {
   softbox(2.5, 7, [5, 0.5, -1.5], 2.2, 0xcfe0ff); // rim: right, cool
   softbox(9, 1.6, [0, -5, 2.5], 0.7, 0xffe6cc); // floor bounce
   softbox(1.2, 1.2, [1.5, 3, 5], 8, 0xffffff); // small glint
+  softbox(12, 8, [0, 0.5, 9], 1.3, 0xfff4e8); // broad frontal fill so flat metal faces are not black
   return scene;
 }
 

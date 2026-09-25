@@ -1,0 +1,12 @@
+/* Shared pieces used by the genre templates in /kit/templates. Link after gesso.css. */
+.t-nail { position: absolute; width: var(--n, 14px); height: var(--n, 14px); border-radius: 50%; background: radial-gradient(circle at 38% 35%, var(--nail-hi, #f3d9a4) 0 14%, var(--nail, #b98347) 24%, var(--nail-lo, #8a5a2e) 42%, var(--outline) 56%); box-shadow: 0 2px 2px rgba(0,0,0,.35); }
+.t-gem { position: absolute; width: var(--g, 18px); height: var(--g, 18px); transform: rotate(45deg); border-radius: 3px; box-shadow: 0 0 0 2px var(--outline), 0 3px 4px rgba(0,0,0,.4);
+  background: conic-gradient(from 45deg, var(--gem-hi, #9cc2ff) 0 25%, var(--gem, #2553b8) 0 50%, var(--gem-lo, #0c1a45) 0 75%, var(--gem, #2553b8) 0); }
+.t-gem::after { content: ''; position: absolute; left: 22%; top: 22%; width: 28%; height: 28%; border-radius: 50%; background: rgba(255,255,255,.85); }
+.t-fill { position: absolute; inset: 0; border-radius: inherit; }
+.t-segments { background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--seg, 24px) - 3px), rgba(0,0,0,.55) calc(var(--seg, 24px) - 3px) var(--seg, 24px)); }
+.t-shine { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.05) 45%, transparent 55%); }
+/* pixel art: hard edges, stepped outlines built from box-shadows */
+.t-pixel { image-rendering: pixelated; border-radius: 0 !important;
+  box-shadow: 0 0 0 var(--px, 4px) var(--outline), inset 0 var(--px, 4px) 0 var(--c5), inset 0 calc(var(--px, 4px) * -1) 0 var(--c2), inset var(--px, 4px) 0 0 var(--c4), inset calc(var(--px, 4px) * -1) 0 0 var(--c2); }
+.t-pixel-corners { clip-path: polygon(var(--px,4px) 0, calc(100% - var(--px,4px)) 0, calc(100% - var(--px,4px)) var(--px,4px), 100% var(--px,4px), 100% calc(100% - var(--px,4px)), calc(100% - var(--px,4px)) calc(100% - var(--px,4px)), calc(100% - var(--px,4px)) 100%, var(--px,4px) 100%, var(--px,4px) calc(100% - var(--px,4px)), 0 calc(100% - var(--px,4px)), 0 var(--px,4px), var(--px,4px) var(--px,4px)); }

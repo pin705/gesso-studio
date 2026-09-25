@@ -1,0 +1,22 @@
+<!doctype html>
+<html data-type="other" data-width="768" data-height="256">
+<head><link rel="stylesheet" href="/kit/gesso.css"></head>
+<body>
+<script type="module">
+  import { defineAsset, threeStage } from '/kit/gesso.mjs';
+  import { gem, coin, potion } from '/kit/items.mjs';
+  defineAsset({
+    async setup() {
+      const stage = await threeStage({ fov: 22, distance: 8.6 });
+      const { THREE, scene } = stage;
+      const a = gem(THREE, { color: 0xb00020 }); a.position.x = -3.1;
+      const b = await coin(THREE, { emblem: '/kit/icons/game-icons/crown.svg' });
+      const c = potion(THREE); c.position.x = 3.1; c.scale.setScalar(0.95);
+      scene.add(a, b, c);
+      return { ...stage, a, b };
+    },
+    render(t, { a, b, render }) { a.rotation.y = 0.25 + t; b.rotation.y = -0.55 + t * 0.5; render(); }
+  });
+</script>
+</body>
+</html>

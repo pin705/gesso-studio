@@ -12,9 +12,11 @@ export default defineEventHandler(async (event) => {
   const rev = query.rev ? Number(query.rev) : 0;
   const scale = query.scale ? Math.min(4, Math.max(0.25, Number(query.scale) || 1)) : 0;
   const content = rev ? revisionSvg(project, row.key, rev) : null;
-  const digest = createHash('sha1').update(`${content ? createHash('sha1').update(content).digest('hex') : row.hash}|${scale}`).digest('hex');
+  // the kit renders the asset too, so its version is part of the key; a live kit (GESSO_KIT_DIR) is never cached
+  const live = Boolean(process.env.GESSO_KIT_DIR);
+  const digest = createHash('sha1').update(`${content ? createHash('sha1').update(content).digest('hex') : row.hash}|${scale}|${useRuntimeConfig().public.version}`).digest('hex');
   const cache = path.join(dataDir(), 'thumbs', `${digest}.png`);
-  let png: Buffer | null = await readFile(cache).catch(() => null);
+  let png: Buffer | null = live ? null : await readFile(cache).catch(() => null);
   if (!png) {
     let file = assetPath(project, row.key);
     if (content) {
@@ -29,10 +31,12 @@ export default defineEventHandler(async (event) => {
     } finally {
       if (content) await rm(file, { force: true });
     }
-    await mkdir(path.dirname(cache), { recursive: true });
-    await writeFile(cache, png!);
+    if (!live) {
+      await mkdir(path.dirname(cache), { recursive: true });
+      await writeFile(cache, png!);
+    }
   }
-  setResponseHeaders(event, { 'content-type': 'image/png', 'cache-control': 'private, max-age=31536000, immutable' });
+  setResponseHeaders(event, { 'content-type': 'image/png', 'cache-control': live ? 'no-store' : 'private, max-age=31536000, immutable' });
   if (query.download !== undefined) setResponseHeader(event, 'content-disposition', `attachment; filename="${row.key}${scale && scale !== 1 ? `@${scale}x` : ''}.png"`);
   return png;
 });
