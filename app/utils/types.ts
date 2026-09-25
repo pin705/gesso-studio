@@ -73,11 +73,11 @@ export interface Activity {
 
 export const ASSET_TYPES = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'other'] as const;
 
-export const STATUS_META: Record<AssetStatus, { label: string; tone: string }> = {
-  draft: { label: 'Draft', tone: 'bg-muted text-muted-foreground' },
-  review: { label: 'Needs review', tone: 'bg-brand/15 text-brand' },
-  changes: { label: 'Changes requested', tone: 'bg-warning/15 text-warning' },
-  approved: { label: 'Approved', tone: 'bg-success/15 text-success' }
+export const STATUS_META: Record<AssetStatus, { label: string; tone: string; dot: string }> = {
+  draft: { label: 'Draft', tone: 'bg-muted text-muted-foreground', dot: 'bg-muted-foreground' },
+  review: { label: 'Needs review', tone: 'bg-brand/15 text-brand', dot: 'bg-brand' },
+  changes: { label: 'Changes requested', tone: 'bg-warning/15 text-warning', dot: 'bg-warning' },
+  approved: { label: 'Approved', tone: 'bg-success/15 text-success', dot: 'bg-success' }
 };
 
 export const assetUrl = (project: string, key: string, version?: number) => `/files/${project}/assets/${encodeURIComponent(key)}.svg${version ? `?v=${version}` : ''}`;

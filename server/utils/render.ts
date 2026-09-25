@@ -180,7 +180,7 @@ function resizeInPage(scale) {
  * `scale` is explicit; otherwise `fit` is the target size of the longer side (capped at 2x).
  * `times` are seconds; one transparent PNG is returned per time.
  */
-export function captureAsset(file, { id, scale, fit = 0, times = [0] }) {
+export function captureAsset(file: string, { id, scale, fit = 0, times = [0] }: { id: string; scale?: number; fit?: number; times?: number[] }): Promise<{ report: any; frames: Buffer[]; scale: number }> {
   return withPage(async (page) => {
     await page.goto(pathToFileURL(file).href);
     const report = await page.evaluate(lintInPage, { id, types: ASSET_TYPES });
@@ -227,7 +227,7 @@ function shoot(body) {
 }
 
 /** One asset: render + grayscale value check + small-size readability + animation strip. */
-export function reviewSheet({ id, meta, main, scale, frames = [], times = [] }) {
+export function reviewSheet({ id, meta, main, scale, frames = [], times = [] }: { id: string; meta: any; main: Buffer; scale: number; frames?: Buffer[]; times?: number[] }): Promise<Buffer> {
   const width = meta.width * scale;
   const height = meta.height * scale;
   const figure = (className, content, caption) => `<figure><div class="box ${className}" style="width:${width}px;height:${height}px">${content}</div><figcaption>${caption}</figcaption></figure>`;
@@ -247,14 +247,14 @@ export function reviewSheet({ id, meta, main, scale, frames = [], times = [] }) 
 }
 
 /** Several assets side by side, for checking a set's consistency. */
-export function contactSheet(items) {
+export function contactSheet(items: { id: string; meta: any; frame: Buffer }[]): Promise<Buffer> {
   return shoot(`<div class="row">${items
     .map(({ id, meta, frame }) => `<figure><div class="box checker" style="width:220px;height:220px">${fitImage(frame, meta.width, meta.height, 204)}</div><figcaption><b>${id}</b><br>${meta.type} · ${meta.width}×${meta.height}</figcaption></figure>`)
     .join('')}</div>`);
 }
 
 /** Pack equally sized frames into a transparent PNG grid. */
-export function spriteSheet(frames, frameWidth, frameHeight) {
+export function spriteSheet(frames: Buffer[], frameWidth: number, frameHeight: number): Promise<{ image: Buffer; columns: number; rows: number }> {
   const columns = Math.ceil(Math.sqrt(frames.length));
   const rows = Math.ceil(frames.length / columns);
   const viewport = { width: columns * frameWidth, height: rows * frameHeight };
@@ -282,7 +282,7 @@ function distance(a, b) {
 }
 
 /** Colors in the SVG that are not close to any hex code listed in the art bible. */
-export function offPalette(svg, artBible) {
+export function offPalette(svg: string, artBible: string): string[] {
   const palette = [...new Set(hexes(artBible))];
   if (palette.length < 3) return [];
   return [...new Set(hexes(svg))]

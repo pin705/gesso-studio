@@ -164,7 +164,7 @@ const TOOLS: Tool[] = [
       for (const key of keys.slice(0, 24)) {
         const shot = await captureAsset(path.join(dirs(project).assets, `${key}.svg`), { id: key, fit: 204, times: [Number(time) || 0] });
         if (shot.report.fatal) throw new Error(`${key}: ${shot.report.fatal}`);
-        items.push({ id: key, meta: shot.report.meta, frame: shot.frames[0] });
+        items.push({ id: key, meta: shot.report.meta, frame: shot.frames[0]! });
       }
       return [jpeg(await contactSheet(items))];
     }

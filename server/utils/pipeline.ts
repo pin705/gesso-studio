@@ -18,7 +18,7 @@ export async function reviewFile(file: string, key: string, artBible: string) {
   const times = meta.animated && meta.duration ? evenTimes(meta.duration, 8) : [];
   const shot = await captureAsset(file, { id: key, fit: 440, times: [meta.duration * 0.25, ...times] });
   const [main, ...frames] = shot.frames;
-  const sheet: Buffer = await reviewSheet({ id: key, meta, main, scale: shot.scale, frames, times });
+  const sheet: Buffer = await reviewSheet({ id: key, meta, main: main!, scale: shot.scale, frames, times });
   const off: string[] = offPalette(await readFile(file, 'utf8'), artBible);
   if (off.length) report.warnings.push(`Colors not in the STYLE.md palette: ${off.slice(0, 8).join(', ')}${off.length > 8 ? ` (+${off.length - 8} more)` : ''}. Use the art bible ramps.`);
   return { report, sheet };
@@ -78,7 +78,7 @@ export async function exportAssets(project: Project, keys: string[], scales: num
       const name = `${key}${scale === 1 ? '' : `@${scale}x`}`;
       const shot = await captureAsset(file, { id: key, scale, times: frameCount ? evenTimes(meta.duration, frameCount) : [0] });
       if (!frameCount) {
-        await writeFile(path.join(exports, `${name}.png`), shot.frames[0]);
+        await writeFile(path.join(exports, `${name}.png`), shot.frames[0]!);
         entry.files[scale] = `${name}.png`;
       } else {
         const [w, h] = [Math.ceil(meta.width * scale), Math.ceil(meta.height * scale)];
