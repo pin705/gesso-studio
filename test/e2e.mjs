@@ -1,0 +1,126 @@
+// End-to-end test against the production build: `npm run build && npm test` (needs Chrome, Edge or Chromium).
+import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
+import { request } from 'node:http';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const bin = fileURLToPath(new URL('../bin/gesso.mjs', import.meta.url));
+const home = await mkdtemp(path.join(tmpdir(), 'gesso-test-'));
+const projectDir = path.join(home, 'my-game', 'art');
+const port = await new Promise((resolve) => {
+  const probe = createServer().listen(0, '127.0.0.1', () => {
+    const { port: free } = probe.address();
+    probe.close(() => resolve(free));
+  });
+});
+const env = { ...process.env, GESSO_HOME: home, GESSO_PORT: String(port), GESSO_ALLOW_ANY_PATH: '1', NODE_NO_WARNINGS: '1' };
+const base = `http://127.0.0.1:${port}`;
+const server = spawn(process.execPath, [bin], { env, stdio: ['ignore', 'ignore', 'inherit'] });
+
+let nextId = 0;
+async function rpc(method, params = {}, query = '') {
+  const response = await fetch(`${base}/mcp${query}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: ++nextId, method, params }) });
+  return response.json();
+}
+const call = async (name, args = {}) => (await rpc('tools/call', { name, arguments: args }, `?project=${encodeURIComponent(projectDir)}`)).result;
+const textOf = (result) => result.content.filter((part) => part.type === 'text').map((part) => part.text).join('\n');
+const api = async (url, init) => {
+  const response = await fetch(`${base}${url}`, { ...init, headers: { 'content-type': 'application/json', ...init?.headers } });
+  assert.ok(response.ok, `${url} -> ${response.status}`);
+  return response.json();
+};
+const svg = (body, attributes = '') => `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" data-type="icon" ${attributes}>${body}</svg>`;
+
+try {
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    if (await fetch(`${base}/api/health`).then((r) => r.ok, () => false)) break;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
+  // security: foreign Host (DNS rebinding) and foreign Origin (CSRF) are rejected
+  const rebinding = await new Promise((resolve) => request({ host: '127.0.0.1', port, path: '/api/projects', headers: { host: 'evil.example' } }, (res) => resolve(res.statusCode)).end());
+  assert.equal(rebinding, 403);
+  assert.equal((await fetch(`${base}/api/projects`, { headers: { origin: 'https://evil.example' } })).status, 403);
+
+  // MCP handshake
+  const init = await rpc('initialize', { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'e2e', version: '0' } });
+  assert.equal(init.result.protocolVersion, '2025-06-18');
+  assert.equal(init.result.serverInfo.name, 'gesso');
+  assert.equal((await fetch(`${base}/mcp`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) })).status, 202);
+  assert.equal((await rpc('nope')).error.code, -32601);
+  const { tools } = (await rpc('tools/list')).result;
+  assert.ok(['get_project', 'save_asset', 'get_feedback', 'resolve_feedback', 'export_assets'].every((name) => tools.some((tool) => tool.name === name)));
+
+  // project is created from the ?project= path
+  assert.match(textOf(await call('get_project')), /None yet/);
+  const [project] = await api('/api/projects');
+  assert.equal(project.path, projectDir);
+
+  assert.ok(textOf(await call('read_guide', { topics: 'workflow' })).includes('Production workflow'));
+  await call('write_art_bible', { markdown: 'Palette: #2e1a0d #764a27 #a26c3c #6cbf45' });
+
+  // save + review sheet + palette lint + critique stored
+  const good = await call('save_asset', { id: 'orb', svg: svg('<circle id="orb-c" cx="32" cy="32" r="26" fill="#764a27" stroke="#ff00ff"/>'), note: 'first pass', critique: { scores: { readability: 4 }, notes: 'ok' } });
+  assert.ok(!good.isError, textOf(good));
+  assert.ok(good.content.some((part) => part.type === 'image' && part.mimeType === 'image/jpeg'));
+  assert.match(textOf(good), /#ff00ff \(nearest/);
+
+  // broken SMIL timing is an error; malformed XML and path traversal are rejected
+  const blink = await call('save_asset', { id: 'blink', svg: svg('<circle id="blink-c" cx="32" cy="32" r="20" fill="#6cbf45"><animate attributeName="r" values="10;20" keyTimes="0;.5" dur="1s" repeatCount="indefinite"/></circle>', 'data-duration="1"') });
+  assert.match(textOf(blink), /keyTimes must end at 1/);
+  assert.ok((await call('save_asset', { id: 'bad', svg: '<svg xmlns="http://www.w3.org/2000/svg"><rect></svg>' })).isError);
+  assert.ok((await call('save_asset', { id: '../escape', svg: svg('') })).isError);
+
+  // a direct file edit (agents with file tools) becomes revision 2
+  await writeFile(path.join(projectDir, 'assets', 'orb.svg'), svg('<circle id="orb-c" cx="32" cy="32" r="28" fill="#a26c3c"/>'));
+  let detail;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    detail = await api(`/api/projects/${project.id}/assets/orb`);
+    if (detail.revisions.length === 2) break;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  assert.equal(detail.revisions.length, 2);
+  assert.equal(detail.revisions[1].critique.notes, 'ok');
+
+  // feedback round trip: studio -> agent -> studio
+  await api(`/api/projects/${project.id}/assets/orb/feedback`, { method: 'POST', body: JSON.stringify({ body: 'Make the rim brighter', x: 0.5, y: 0.1 }) });
+  const feedback = textOf(await call('get_feedback'));
+  assert.match(feedback, /#\d+ on orb .*at \(32, 6\) px: Make the rim brighter/);
+  const id = Number(feedback.match(/#(\d+)/)[1]);
+  await call('resolve_feedback', { feedback_id: id, reply: 'Brightened the rim' });
+  detail = await api(`/api/projects/${project.id}/assets/orb`);
+  assert.equal(detail.feedback[0].status, 'resolved');
+  assert.equal(detail.status, 'changes');
+
+  // restore makes a new revision with the old content
+  await api(`/api/projects/${project.id}/assets/orb/restore`, { method: 'POST', body: JSON.stringify({ revision: 1 }) });
+  const restored = await fetch(`${base}/files/${project.id}/assets/orb.svg`).then((r) => r.text());
+  assert.match(restored, /stroke="#ff00ff"/);
+
+  // animated export: sprite sheet atlas
+  await call('save_asset', { id: 'pulse', svg: svg('<circle id="pulse-c" cx="32" cy="32" r="20" fill="#6cbf45"><animate attributeName="r" values="10;24;10" keyTimes="0;.5;1" dur="1s" repeatCount="indefinite"/></circle>', 'data-duration="1" data-frames="4"') });
+  assert.ok(!(await call('export_assets', { ids: ['orb', 'pulse'], scales: [1, 2] })).isError);
+  const atlas = JSON.parse(await readFile(path.join(projectDir, 'exports', 'pulse@2x.json'), 'utf8'));
+  assert.deepEqual(atlas.meta.size, { w: 256, h: 256 });
+  assert.deepEqual(atlas.frames.pulse_3.frame, { x: 128, y: 128, w: 128, h: 128 });
+
+  // stdio bridge speaks the same protocol
+  const bridge = spawn(process.execPath, [bin, 'mcp'], { env, stdio: ['pipe', 'pipe', 'inherit'] });
+  const lines = [];
+  bridge.stdout.on('data', (chunk) => lines.push(...chunk.toString().split('\n').filter(Boolean)));
+  bridge.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18' } })}\n`);
+  bridge.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`);
+  bridge.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/list' })}\n`);
+  bridge.stdin.end();
+  await new Promise((resolve) => bridge.on('exit', resolve));
+  assert.deepEqual(lines.map((line) => JSON.parse(line).id), [1, 2]);
+
+  console.log('e2e ok');
+} finally {
+  server.kill();
+  await rm(home, { recursive: true, force: true });
+}

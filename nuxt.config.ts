@@ -1,7 +1,9 @@
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import tailwindcss from '@tailwindcss/vite';
 
 const dir = (path: string) => fileURLToPath(new URL(path, import.meta.url));
+const { version } = JSON.parse(readFileSync(dir('./package.json'), 'utf8'));
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-09-01',
@@ -26,5 +28,6 @@ export default defineNuxtConfig({
       { baseName: 'samples', dir: dir('./examples') }
     ]
   },
+  runtimeConfig: { public: { version } },
   typescript: { strict: true }
 });

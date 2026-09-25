@@ -36,6 +36,7 @@
     "prepare": "nuxt prepare"
   },
   "devDependencies": {
+    "@lucide/vue": "^1.48.0",
     "@nuxtjs/color-mode": "^4.0.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/markdown-it": "^14.2.0",
@@ -43,7 +44,6 @@
     "@vueuse/core": "^15.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-vue-next": "^1.0.0",
     "markdown-it": "^15.0.2",
     "nuxt": "^4.5.2",
     "playwright-core": "^1.63.0",
@@ -57,8 +57,5 @@
     "vue-router": "^5.3.1",
     "vue-sonner": "^2.0.9",
     "vue-tsc": "^3.3.11"
-  },
-  "dependencies": {
-    "@lucide/vue": "^1.48.0"
   }
 }
