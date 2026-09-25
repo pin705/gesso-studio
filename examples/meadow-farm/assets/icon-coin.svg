@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="cozy-farm">
+  <defs>
+    <filter id="icon-coin-wobble" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <linearGradient id="icon-coin-edge" x1="0" y1="20" x2="0" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b5791f"/><stop offset="1" stop-color="#6e4310"/>
+    </linearGradient>
+    <radialGradient id="icon-coin-face" cx="48" cy="40" r="70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff6d0"/><stop offset=".35" stop-color="#fbe08a"/><stop offset=".75" stop-color="#e8b341"/><stop offset="1" stop-color="#b5791f"/>
+    </radialGradient>
+  </defs>
+  <g filter="url(#icon-coin-wobble)" stroke="#3a2414" stroke-width="2.5" stroke-linejoin="round">
+    <ellipse cx="64" cy="72" rx="50" ry="46" fill="url(#icon-coin-edge)"/>
+    <ellipse cx="64" cy="62" rx="50" ry="46" fill="url(#icon-coin-face)"/>
+    <ellipse cx="64" cy="62" rx="38" ry="34" fill="none" stroke="#b5791f" stroke-width="2.5"/>
+    <!-- stamped sprout: dark cut below, light lip above -->
+    <g transform="translate(64 64)">
+      <path d="M0 18 C0 6 0 0 0 -6 M0 -2 C-4 -14 -16 -18 -22 -12 C-16 -4 -6 -2 0 -2 Z M0 -6 C4 -18 16 -22 22 -16 C16 -8 6 -6 0 -6 Z" fill="#b5791f" stroke="#6e4310" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M-18 -13 C-12 -15 -6 -12 -2 -6 M18 -17 C12 -19 6 -16 2 -10" fill="none" stroke="#fff6d0" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+  </g>
+  <path d="M26 44 C32 30 46 20 62 18" fill="none" stroke="#fff6d0" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M100 26 L103 34 L111 37 L103 40 L100 48 L97 40 L89 37 L97 34 Z" fill="#fff6d0" stroke="#b5791f" stroke-width="1"/>
+</svg>

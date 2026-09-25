@@ -122,7 +122,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'save_asset',
-    description: 'Create or update an asset from a complete SVG document; returns lint results and a review sheet image to critique. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|other), optional data-style, data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed".',
+    description: 'Create or update an asset from a complete SVG document; returns lint results and a review sheet image to critique. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|mockup|other), optional data-style, data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed". A mockup composes other assets with <image href="other-id.svg"> to judge the set in context.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -156,13 +156,15 @@ const TOOLS: Tool[] = [
     name: 'view_assets',
     description: 'Render existing assets side by side in one image, to check a set for consistency or to look at assets the user edited. Omit ids to view everything (max 24).',
     inputSchema: { type: 'object', properties: { ids: { type: 'array', items: { type: 'string' } }, time: { type: 'number', description: 'seconds, for animated assets' } } },
-    async handler({ ids, time = 0 }, context) {
+    async handler({ ids, time }, context) {
       const project = await resolveProject(context);
       const keys = listArg(ids).length ? listArg(ids).map(assertKey) : listAssets(project).map((asset) => asset.key);
       if (!keys.length) throw new Error('No assets yet.');
       const items = [];
       for (const key of keys.slice(0, 24)) {
-        const shot = await captureAsset(path.join(dirs(project).assets, `${key}.svg`), { id: key, fit: 204, times: [Number(time) || 0] });
+        // Animated assets default to a representative frame instead of the (often empty) first one.
+        const at = time === undefined ? (getAssetRow(project, key)?.duration ?? 0) * 0.25 : Number(time) || 0;
+        const shot = await captureAsset(path.join(dirs(project).assets, `${key}.svg`), { id: key, fit: 204, times: [at] });
         if (shot.report.fatal) throw new Error(`${key}: ${shot.report.fatal}`);
         items.push({ id: key, meta: shot.report.meta, frame: shot.frames[0]! });
       }

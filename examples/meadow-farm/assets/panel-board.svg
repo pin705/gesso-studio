@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="288" viewBox="0 0 360 288" data-type="panel" data-style="cozy-farm" data-nine-slice="56 52 56 52">
+  <defs>
+    <filter id="panel-board-wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".025" numOctaves="2" seed="9"/>
+      <feDisplacementMap in="SourceGraphic" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="panel-board-soft" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="panel-board-inset" x="-5%" y="-5%" width="110%" height="110%">
+      <feFlood flood-color="#6b5a45" flood-opacity=".55"/>
+      <feComposite in2="SourceAlpha" operator="out"/>
+      <feOffset dy="6"/>
+      <feGaussianBlur stdDeviation="5"/>
+      <feComposite in2="SourceAlpha" operator="in"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+    </filter>
+    <filter id="panel-board-fibre" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="3"/>
+      <feColorMatrix values="0 0 0 0 .42  0 0 0 0 .35  0 0 0 0 .27  .6 0 0 0 -.25"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+    </filter>
+    <linearGradient id="panel-board-wood" x1="0" y1="12" x2="0" y2="270" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#dcae6e"/>
+      <stop offset=".08" stop-color="#b98347"/>
+      <stop offset=".92" stop-color="#8a5a2e"/>
+      <stop offset="1" stop-color="#5c3a1e"/>
+    </linearGradient>
+    <linearGradient id="panel-board-paper" x1="0" y1="40" x2="0" y2="244" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fbf4e3"/>
+      <stop offset="1" stop-color="#efe1c2"/>
+    </linearGradient>
+    <g id="panel-board-nail">
+      <circle r="7" fill="#3a2414"/>
+      <circle r="5" fill="#8a5a2e"/>
+      <circle r="3.4" fill="#b98347"/>
+      <circle cx="-1.4" cy="-1.4" r="1.5" fill="#f3d9a4"/>
+    </g>
+  </defs>
+
+  <rect x="16" y="22" width="328" height="256" rx="26" fill="#3a2414" opacity=".3" filter="url(#panel-board-soft)"/>
+
+  <g filter="url(#panel-board-wobble)">
+    <rect x="10" y="10" width="340" height="262" rx="28" fill="#3a2414"/>
+    <rect x="13" y="13" width="334" height="256" rx="25" fill="url(#panel-board-wood)"/>
+    <!-- grain follows each board so the edges stretch cleanly -->
+    <g fill="none" stroke="#5c3a1e" stroke-width="1.5" stroke-linecap="round" opacity=".55">
+      <path d="M44 22 L316 22"/><path d="M52 30 L308 30"/>
+      <path d="M44 252 L316 252"/><path d="M56 260 L304 260"/>
+      <path d="M22 60 L22 222"/><path d="M30 70 L30 212"/>
+      <path d="M338 60 L338 222"/><path d="M330 72 L330 210"/>
+    </g>
+    <path d="M40 16.5 L320 16.5" stroke="#f3d9a4" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+    <!-- the paper sits inside a dark rim -->
+    <rect x="34" y="38" width="292" height="208" rx="12" fill="#3a2414"/>
+    <rect x="37" y="41" width="286" height="202" rx="10" fill="url(#panel-board-paper)" filter="url(#panel-board-inset)"/>
+  </g>
+  <rect x="37" y="41" width="286" height="202" rx="10" fill="#efe1c2" opacity=".35" filter="url(#panel-board-fibre)"/>
+
+  <use href="#panel-board-nail" x="26" y="26"/>
+  <use href="#panel-board-nail" x="334" y="26"/>
+  <use href="#panel-board-nail" x="26" y="256"/>
+  <use href="#panel-board-nail" x="334" y="256"/>
+
+  <!-- leaf sprig tucked behind the top-right nail -->
+  <g stroke="#3a2414" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M320 20 C330 2 346 2 350 14 C344 26 332 28 320 20 Z" fill="#a8d77a"/>
+    <path d="M320 20 C306 10 290 12 286 24 C296 34 310 32 320 20 Z" fill="#74b44f"/>
+  </g>
+  <g fill="none" stroke="#4a8a36" stroke-width="1.4" stroke-linecap="round">
+    <path d="M320 20 C330 14 338 12 346 12"/>
+    <path d="M320 20 C308 20 298 22 290 24"/>
+  </g>
+  <use href="#panel-board-nail" x="334" y="26"/>
+</svg>

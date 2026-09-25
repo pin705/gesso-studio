@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="cozy-farm">
+  <defs>
+    <filter id="icon-watering-can-wobble" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="1.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <linearGradient id="icon-watering-can-tin" x1="26" y1="0" x2="86" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#58a0c4"/><stop offset=".55" stop-color="#58a0c4"/><stop offset="1" stop-color="#2f6a8f"/>
+    </linearGradient>
+    <clipPath id="icon-watering-can-body-clip"><path d="M26 58 C26 50 86 50 86 58 L90 104 C90 114 22 114 22 104 Z"/></clipPath>
+  </defs>
+  <g transform="translate(-19 -10) scale(1.08)">
+  <g filter="url(#icon-watering-can-wobble)" stroke="#3a2414" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <!-- handle -->
+    <path d="M36 56 C36 26 78 26 78 56" fill="none" stroke-width="12"/>
+    <path d="M36 56 C36 26 78 26 78 56" fill="none" stroke="#2f6a8f" stroke-width="6"/>
+    <!-- spout and rose -->
+    <path d="M84 84 L112 50 L118 56 L90 94 Z" fill="#2f6a8f"/>
+    <ellipse cx="114" cy="51" rx="7" ry="10" transform="rotate(40 114 51)" fill="#58a0c4"/>
+    <!-- body -->
+    <path d="M26 58 C26 50 86 50 86 58 L90 104 C90 114 22 114 22 104 Z" fill="url(#icon-watering-can-tin)"/>
+  </g>
+  <g clip-path="url(#icon-watering-can-body-clip)">
+    <rect x="18" y="72" width="80" height="8" fill="#d0543f"/>
+    <rect x="18" y="80" width="80" height="2" fill="#5c1620" opacity=".5"/>
+    <path d="M36 64 C34 76 34 88 35 98" stroke="#9fd3e8" stroke-width="6" stroke-linecap="round" opacity=".6"/>
+    <path d="M76 60 C82 80 84 96 82 110 L96 110 L96 56 Z" fill="#2f6a8f" opacity=".7"/>
+  </g>
+  <ellipse cx="56" cy="57" rx="30" ry="5" fill="#1d3b57" stroke="#3a2414" stroke-width="2.5"/>
+  <g fill="#9fd3e8" stroke="#1d3b57" stroke-width="1.5">
+    <path d="M118 70 C121 75 122 78 118 80 C114 78 115 75 118 70 Z"/>
+    <path d="M108 78 C111 83 112 86 108 88 C104 86 105 83 108 78 Z"/>
+  </g>
+  </g>
+</svg>

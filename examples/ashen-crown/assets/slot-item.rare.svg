@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" data-type="frame" data-style="dark-fantasy" data-nine-slice="16 16 16 16">
+  <defs>
+    <linearGradient id="slot-item.rare-rim" x1="0" y1="4" x2="0" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a894f0"/><stop offset=".25" stop-color="#3f2d7a"/><stop offset="1" stop-color="#171b20"/>
+    </linearGradient>
+    <radialGradient id="slot-item.rare-well" cx="48" cy="40" r="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#262c33"/><stop offset="1" stop-color="#0b0d10"/>
+    </radialGradient>
+    <filter id="slot-item.rare-inset" x="-10%" y="-10%" width="120%" height="120%">
+      <feFlood flood-color="#0b0d10" flood-opacity=".9"/><feComposite in2="SourceAlpha" operator="out"/><feOffset dy="4"/><feGaussianBlur stdDeviation="3"/><feComposite in2="SourceAlpha" operator="in"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+    </filter>
+    <filter id="slot-item.rare-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <path d="M12 4 L84 4 L92 12 L92 84 L84 92 L12 92 L4 84 L4 12 Z" fill="#0b0d10"/>
+  <path d="M13 6 L83 6 L90 13 L90 83 L83 90 L13 90 L6 83 L6 13 Z" fill="url(#slot-item.rare-rim)"/>
+  <path d="M14 8.5 L82 8.5" stroke="#a894f0" stroke-width="1.5" stroke-linecap="round" opacity=".8"/>
+  <path d="M20 14 L76 14 L82 20 L82 76 L76 82 L20 82 L14 76 L14 20 Z" fill="#0b0d10"/>
+  <path d="M21 16 L75 16 L80 21 L80 75 L75 80 L21 80 L16 75 L16 21 Z" fill="url(#slot-item.rare-well)" filter="url(#slot-item.rare-inset)"/>
+  <path d="M21 15 L75 15 L81 21 L81 75 L75 81 L21 81 L15 75 L15 21 Z" fill="none" stroke="#6a52c4" stroke-width="6" opacity=".55" filter="url(#slot-item.rare-blur)"/>
+    <path d="M21 15 L75 15 L81 21 L81 75 L75 81 L21 81 L15 75 L15 21 Z" fill="none" stroke="#a894f0" stroke-width="1.5"/>
+  <g><g transform="translate(11 11)"><circle r="3.2" fill="#0b0d10"/><circle r="2.2" fill="#3f2d7a"/><circle cx="-.7" cy="-.7" r=".8" fill="#a894f0"/></g><g transform="translate(85 11)"><circle r="3.2" fill="#0b0d10"/><circle r="2.2" fill="#3f2d7a"/><circle cx="-.7" cy="-.7" r=".8" fill="#a894f0"/></g><g transform="translate(11 85)"><circle r="3.2" fill="#0b0d10"/><circle r="2.2" fill="#3f2d7a"/><circle cx="-.7" cy="-.7" r=".8" fill="#a894f0"/></g><g transform="translate(85 85)"><circle r="3.2" fill="#0b0d10"/><circle r="2.2" fill="#3f2d7a"/><circle cx="-.7" cy="-.7" r=".8" fill="#a894f0"/></g></g>
+</svg>

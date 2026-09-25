@@ -17,6 +17,7 @@ The rules an AI artist follows to make game-ready assets that look hand-crafted.
 | `asset-types/icon` | Item, skill, currency and status icons. |
 | `asset-types/bar` | Health, mana, XP and progress bars. |
 | `asset-types/vfx` | Animated effects and flipbooks. |
+| `asset-types/mockup` | Screen mockups that compose the kit in context for review. |
 | `styles/*` | Genre starting points for an art bible: `xianxia`, `dark-fantasy`, `heroic-fantasy`, `sci-fi`, `casual`, `pixel`. |
 
 No style pack fits the game? Build a custom art bible from the user's description and references (see `art-bible`). Style packs are starting points, never limits.

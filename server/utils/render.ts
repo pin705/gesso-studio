@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { pathToFileURL } from 'node:url';
 
-export const ASSET_TYPES: string[] = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'other'];
+export const ASSET_TYPES: string[] = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'mockup', 'other'];
 
 let launching;
 
@@ -114,29 +114,7 @@ function lintInPage({ id, types }) {
     }
   }
 
-  let bounds = null;
-  try {
-    const content = svg.getBBox();
-    const sx = hasViewBox ? width / box.width : 1;
-    const sy = hasViewBox ? height / box.height : 1;
-    const ox = hasViewBox ? box.x : 0;
-    const oy = hasViewBox ? box.y : 0;
-    const left = (content.x - ox) * sx;
-    const top = (content.y - oy) * sy;
-    bounds = {
-      left: Math.round(left),
-      top: Math.round(top),
-      right: Math.round(width - left - content.width * sx),
-      bottom: Math.round(height - top - content.height * sy),
-      fill: Math.round(((content.width * sx * content.height * sy) / (width * height)) * 100) / 100
-    };
-  } catch {
-    // empty document
-  }
-  if (bounds && (type === 'icon' || type === 'vfx')) {
-    if (Math.min(bounds.left, bounds.top, bounds.right, bounds.bottom) < 2) warnings.push('Content touches the canvas edge: outlines, glows and shadows will clip. Leave at least 4px of padding.');
-    if (type === 'icon' && bounds.fill < 0.4) warnings.push(`Content covers only ${Math.round(bounds.fill * 100)}% of the canvas; an icon should fill about 80-90% of its box.`);
-  }
+  // Content bounds come from rendered pixels (see alphaBounds): getBBox ignores clip paths and filters.
   if (['button', 'panel', 'frame', 'bar'].includes(type) && document.querySelector('text')) {
     warnings.push('UI chrome contains <text>: labels are rendered and localized by the engine. Keep the art textless unless it is a logo.');
   }
@@ -150,7 +128,7 @@ function lintInPage({ id, types }) {
       duration: duration > 0 ? duration : 0,
       frames: Number.parseInt(svg.getAttribute('data-frames') ?? '', 10) || 0,
       nineSlice,
-      bounds,
+      bounds: null,
       elements: all.length
     },
     errors,
@@ -251,6 +229,36 @@ export function contactSheet(items: { id: string; meta: any; frame: Buffer }[]):
   return shoot(`<div class="row">${items
     .map(({ id, meta, frame }) => `<figure><div class="box checker" style="width:220px;height:220px">${fitImage(frame, meta.width, meta.height, 204)}</div><figcaption><b>${id}</b><br>${meta.type} · ${meta.width}×${meta.height}</figcaption></figure>`)
     .join('')}</div>`);
+}
+
+/** Tight bounds of visible pixels (alpha > 8) in a transparent PNG, in PNG pixels. Includes glows and respects clipping. */
+export function alphaBounds(image: Buffer): Promise<{ left: number; top: number; right: number; bottom: number; width: number; height: number } | null> {
+  return withPage((page) =>
+    page.evaluate(async (src) => {
+      const img = new Image();
+      img.src = src;
+      await img.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.drawImage(img, 0, 0);
+      const { data } = context.getImageData(0, 0, img.width, img.height);
+      let left = img.width, top = img.height, right = -1, bottom = -1;
+      for (let y = 0; y < img.height; y += 1) {
+        for (let x = 0; x < img.width; x += 1) {
+          if (data[(y * img.width + x) * 4 + 3] > 8) {
+            if (x < left) left = x;
+            if (x > right) right = x;
+            if (y < top) top = y;
+            if (y > bottom) bottom = y;
+          }
+        }
+      }
+      if (right < 0) return null;
+      return { left, top, right: img.width - 1 - right, bottom: img.height - 1 - bottom, width: img.width, height: img.height };
+    }, png(image))
+  );
 }
 
 /** Pack equally sized frames into a transparent PNG grid. */

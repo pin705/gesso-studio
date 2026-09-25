@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="104" viewBox="0 0 320 104" data-type="button" data-style="dark-fantasy" data-nine-slice="28 40 34 40">
+  <defs>
+    <linearGradient id="btn-iron.pressed-iron" x1="0" y1="6" x2="0" y2="94" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9aa3aa"/><stop offset=".2" stop-color="#5f6973"/><stop offset="1" stop-color="#171b20"/></linearGradient>
+    <linearGradient id="btn-iron.pressed-enamel" x1="0" y1="24" x2="0" y2="82" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#b0221c"/><stop offset=".45" stop-color="#7d1414"/><stop offset="1" stop-color="#4a0b0d"/></linearGradient>
+    <filter id="btn-iron.pressed-shadow" x="-10%" y="-20%" width="120%" height="160%"><feDropShadow dx="0" dy="4.0" stdDeviation="5" flood-color="#0b0d10" flood-opacity=".6"/></filter>
+    <filter id="btn-iron.pressed-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .04  0 0 0 0 .02  0 0 0 0 .02  .8 0 0 0 -.3"/><feComposite in2="SourceGraphic" operator="in"/><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge></filter>
+  </defs>
+  <g filter="url(#btn-iron.pressed-shadow)">
+    <path d="M18 10 L302 10 L314 22 L314 80 L302 92 L18 92 L6 80 L6 22 Z" fill="#0b0d10"/>
+    <path d="M19 13 L301 13 L311 23 L311 79 L301 89 L19 89 L9 79 L9 23 Z" fill="url(#btn-iron.pressed-iron)" filter="url(#btn-iron.pressed-grain)"/>
+  </g>
+  <path d="M22 16.5 L298 16.5" stroke="#c7ccd0" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+  <path d="M29 24 L291 24 L298 31 L298 71 L291 78 L29 78 L22 71 L22 31 Z" fill="#0b0d10"/>
+  <path d="M30 26 L290 26 L296 32 L296 70 L290 76 L30 76 L24 70 L24 32 Z" fill="url(#btn-iron.pressed-enamel)" filter="url(#btn-iron.pressed-grain)"/>
+  <path d="M34 31 L286 31" stroke="#ff9a3c" stroke-width="1.5" stroke-linecap="round" opacity=".55"/>
+  <g><g transform="translate(15 50.0)"><circle r="4.5" fill="#0b0d10"/><circle r="3.2" fill="#3c444d"/><circle cx="-1" cy="-1" r="1.2" fill="#c7ccd0"/></g><g transform="translate(305 50.0)"><circle r="4.5" fill="#0b0d10"/><circle r="3.2" fill="#3c444d"/><circle cx="-1" cy="-1" r="1.2" fill="#c7ccd0"/></g></g>
+  <!-- iron spikes on the top corners -->
+  <path d="M30 13 L40 4 L46 13 Z M274 13 L280 4 L290 13 Z" fill="#3c444d" stroke="#0b0d10" stroke-width="2" stroke-linejoin="round"/>
+</svg>

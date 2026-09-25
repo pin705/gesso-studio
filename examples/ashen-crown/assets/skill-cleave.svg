@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="dark-fantasy">
+  <defs>
+    <radialGradient id="skill-cleave-bg" cx="64" cy="60" r="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4a0b0d"/><stop offset="1" stop-color="#0b0d10"/>
+    </radialGradient>
+    <filter id="skill-cleave-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="skill-cleave-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter>
+    <clipPath id="skill-cleave-tile"><rect width="128" height="128" rx="6"/></clipPath>
+  </defs>
+  <g clip-path="url(#skill-cleave-tile)">
+    <rect width="128" height="128" fill="url(#skill-cleave-bg)"/>
+    <!-- white-hot arc behind the axe -->
+    <path d="M18 98 A62 62 0 0 1 104 22 A54 54 0 0 0 26 96 Z" fill="#ff9a3c" opacity=".55" filter="url(#skill-cleave-blur)"/>
+    <path d="M18 98 A62 62 0 0 1 104 22 A58 58 0 0 0 22 97 Z" fill="#ffd9a0"/>
+    <!-- axe: haft, head, chipped bright edge -->
+    <path d="M34 112 L86 36" stroke="#0b0d10" stroke-width="12" stroke-linecap="round"/>
+    <path d="M34 112 L86 36" stroke="#4d4231" stroke-width="7" stroke-linecap="round"/>
+    <path d="M36 108 L82 42" stroke="#7a6c52" stroke-width="2" stroke-linecap="round"/>
+    <path d="M70 30 C86 14 110 16 118 30 C108 44 96 58 92 74 C84 62 76 48 70 30 Z" fill="#3c444d" stroke="#0b0d10" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M72 32 C84 22 100 20 110 26 C100 30 88 34 78 44 Z" fill="#9aa3aa"/>
+    <path d="M118 30 C108 44 96 58 92 74" fill="none" stroke="#ffd9a0" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M82 40 L90 48 M86 34 L96 42" stroke="#171b20" stroke-width="2" stroke-linecap="round"/>
+    <g fill="#ff9a3c"><circle cx="28" cy="60" r="2"/><circle cx="40" cy="30" r="1.6"/><circle cx="102" cy="92" r="2.2"/><circle cx="16" cy="82" r="1.4"/></g>
+    <rect x="1.5" y="1.5" width="125" height="125" rx="5" fill="none" stroke="#0b0d10" stroke-width="3"/>
+  </g>
+</svg>

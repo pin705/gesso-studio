@@ -19,6 +19,22 @@ export async function reviewFile(file: string, key: string, artBible: string) {
   const shot = await captureAsset(file, { id: key, fit: 440, times: [meta.duration * 0.25, ...times] });
   const [main, ...frames] = shot.frames;
   const sheet: Buffer = await reviewSheet({ id: key, meta, main: main!, scale: shot.scale, frames, times });
+  // Measure what is actually visible, at 1x, across every sampled frame.
+  const union = { left: Infinity, top: Infinity, right: Infinity, bottom: Infinity };
+  for (const frame of [main!, ...frames]) {
+    const box = await alphaBounds(frame);
+    if (!box) continue;
+    for (const side of ['left', 'top', 'right', 'bottom'] as const) union[side] = Math.min(union[side], box[side] / shot.scale);
+  }
+  if (Number.isFinite(union.left)) {
+    const width = meta.width - union.left - union.right;
+    const height = meta.height - union.top - union.bottom;
+    meta.bounds = { ...Object.fromEntries(Object.entries(union).map(([side, value]) => [side, Math.round(value)])), fill: Math.round(((width * height) / (meta.width * meta.height)) * 100) / 100 };
+    if (meta.type === 'icon' || meta.type === 'vfx') {
+      if (Math.min(union.left, union.top, union.right, union.bottom) < 2) report.warnings.push('Visible pixels touch the canvas edge: outlines, glows or shadows are clipped. Leave at least 4px of padding.');
+      if (meta.type === 'icon' && meta.bounds.fill < 0.4) report.warnings.push(`Content covers only ${Math.round(meta.bounds.fill * 100)}% of the canvas; an icon should fill about 80-90% of its box.`);
+    }
+  }
   const off: string[] = offPalette(await readFile(file, 'utf8'), artBible);
   if (off.length) report.warnings.push(`Colors not in the STYLE.md palette: ${off.slice(0, 8).join(', ')}${off.length > 8 ? ` (+${off.length - 8} more)` : ''}. Use the art bible ramps.`);
   return { report, sheet };
@@ -68,7 +84,8 @@ export async function rereview(project: Project, key: string) {
 export async function exportAssets(project: Project, keys: string[], scales: number[]) {
   if (!scales.length || scales.some((scale) => !(scale >= 0.25 && scale <= 4))) throw createError({ statusCode: 400, message: 'scales must be numbers between 0.25 and 4.' });
   const { assets, exports } = dirs(project);
-  const list = keys.length ? keys.map(assertKey) : listAssets(project).map((asset) => asset.key);
+  // Mockups show the kit in context; they are not shipped to the engine.
+  const list = keys.length ? keys.map(assertKey) : listAssets(project).filter((asset) => asset.type !== 'mockup').map((asset) => asset.key);
   await mkdir(exports, { recursive: true });
   const manifestFile = path.join(exports, 'manifest.json');
   const manifest = JSON.parse(await readFile(manifestFile, 'utf8').catch(() => '{"assets":{}}'));

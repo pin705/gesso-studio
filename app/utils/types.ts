@@ -71,7 +71,7 @@ export interface Activity {
   created_at: number;
 }
 
-export const ASSET_TYPES = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'other'] as const;
+export const ASSET_TYPES = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'mockup', 'other'] as const;
 
 export const STATUS_META: Record<AssetStatus, { label: string; tone: string; dot: string }> = {
   draft: { label: 'Draft', tone: 'bg-muted text-muted-foreground', dot: 'bg-muted-foreground' },

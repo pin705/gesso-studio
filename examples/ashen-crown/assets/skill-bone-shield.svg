@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="dark-fantasy">
+  <defs>
+    <radialGradient id="skill-bone-shield-bg" cx="64" cy="60" r="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#251a4a"/><stop offset="1" stop-color="#0b0d10"/>
+    </radialGradient>
+    <filter id="skill-bone-shield-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="skill-bone-shield-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter>
+    <clipPath id="skill-bone-shield-tile"><rect width="128" height="128" rx="6"/></clipPath>
+  </defs>
+  <g clip-path="url(#skill-bone-shield-tile)">
+    <rect width="128" height="128" fill="url(#skill-bone-shield-bg)"/>
+    <circle cx="64" cy="66" r="48" fill="#6a52c4" opacity=".55" filter="url(#skill-bone-shield-blur)"/>
+    <circle cx="64" cy="66" r="38" fill="none" stroke="#a894f0" stroke-width="2" opacity=".7"/>
+    <!-- curved ribs wrap around the caster -->
+    <g fill="none" stroke="#0b0d10" stroke-width="9" stroke-linecap="round"><path d="M37.7 55.7 Q25.2 44.4 24.6 35.2" /><path d="M46.0 43.0 Q40.7 27.0 45.3 19.6" /><path d="M59.1 36.5 Q62.5 20.0 71.0 16.5" /><path d="M73.6 37.8 Q84.7 25.4 94.8 26.6" /><path d="M85.4 46.7 Q101.3 41.6 110.4 47.3" /><path d="M91.6 60.8 Q108.0 64.4 113.5 73.0" /></g>
+    <g fill="none" stroke="#d6cbb0" stroke-width="5" stroke-linecap="round"><path d="M37.7 55.7 Q25.2 44.4 24.6 35.2" /><path d="M46.0 43.0 Q40.7 27.0 45.3 19.6" /><path d="M59.1 36.5 Q62.5 20.0 71.0 16.5" /><path d="M73.6 37.8 Q84.7 25.4 94.8 26.6" /><path d="M85.4 46.7 Q101.3 41.6 110.4 47.3" /><path d="M91.6 60.8 Q108.0 64.4 113.5 73.0" /></g>
+    <g fill="none" stroke="#7a6c52" stroke-width="1.6" stroke-linecap="round" opacity=".8"><path d="M37.7 55.7 Q25.2 44.4 24.6 35.2" /><path d="M46.0 43.0 Q40.7 27.0 45.3 19.6" /><path d="M59.1 36.5 Q62.5 20.0 71.0 16.5" /><path d="M73.6 37.8 Q84.7 25.4 94.8 26.6" /><path d="M85.4 46.7 Q101.3 41.6 110.4 47.3" /><path d="M91.6 60.8 Q108.0 64.4 113.5 73.0" /></g>
+    <!-- skull plate at the centre -->
+    <path d="M46 62 C46 44 82 44 82 62 C82 72 76 76 74 84 L54 84 C52 76 46 72 46 62 Z" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M50 58 C52 50 60 46 68 47" fill="none" stroke="#f2d692" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <g fill="#120c24"><ellipse cx="57" cy="64" rx="5" ry="6"/><ellipse cx="71" cy="64" rx="5" ry="6"/></g>
+    <g fill="#dcd2ff"><circle cx="57" cy="64" r="1.8"/><circle cx="71" cy="64" r="1.8"/></g>
+    <path d="M58 78 L58 84 M64 78 L64 84 M70 78 L70 84" stroke="#4d4231" stroke-width="2"/>
+    <rect x="1.5" y="1.5" width="125" height="125" rx="5" fill="none" stroke="#0b0d10" stroke-width="3"/>
+  </g>
+</svg>
