@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="dark-fantasy">
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" data-type="icon" data-style="dark-fantasy" data-bleed="true">
   <defs>
     <radialGradient id="skill-cleave-bg" cx="64" cy="60" r="90" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#4a0b0d"/><stop offset="1" stop-color="#0b0d10"/>

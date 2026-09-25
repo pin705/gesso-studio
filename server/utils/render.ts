@@ -124,6 +124,7 @@ function lintInPage({ id, types }) {
       height,
       type,
       style: svg.getAttribute('data-style') ?? '',
+      bleed: svg.hasAttribute('data-bleed'),
       animated,
       duration: duration > 0 ? duration : 0,
       frames: Number.parseInt(svg.getAttribute('data-frames') ?? '', 10) || 0,

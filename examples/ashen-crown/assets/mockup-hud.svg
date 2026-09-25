@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" data-type="mockup" data-style="dark-fantasy">
+  <defs>
+    <linearGradient id="mockup-hud-ground" x1="0" y1="0" x2="0" y2="320" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2b241a"/><stop offset=".6" stop-color="#171b20"/><stop offset="1" stop-color="#0b0d10"/></linearGradient>
+    <filter id="mockup-hud-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14"/></filter>
+    <linearGradient id="mockup-hud-shelf" x1="0" y1="170" x2="0" y2="320" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0b0d10" stop-opacity="0"/><stop offset=".3" stop-color="#0b0d10" stop-opacity=".85"/></linearGradient>
+  </defs>
+  <!-- stand-in for gameplay: dim dungeon floor with a torch pool -->
+  <rect width="960" height="320" fill="url(#mockup-hud-ground)"/>
+  <g filter="url(#mockup-hud-blur)" opacity=".7">
+    <ellipse cx="520" cy="90" rx="160" ry="60" fill="#6b4518"/>
+    <ellipse cx="520" cy="90" rx="60" ry="24" fill="#e8561e" opacity=".5"/>
+    <rect x="80" y="40" width="120" height="60" fill="#3c444d"/><rect x="760" y="20" width="140" height="90" fill="#262c33"/>
+  </g>
+  <rect y="170" width="960" height="150" fill="url(#mockup-hud-shelf)"/>
+  <clipPath id="mockup-hud-orb-health.fill-level"><rect x="44" y="154.96" width="132" height="95.03999999999999"/></clipPath>
+  <image href="orb-health.fill.svg" x="44" y="118" width="132" height="132" clip-path="url(#mockup-hud-orb-health.fill-level)"/>
+  <image href="orb-health.frame.svg" x="10" y="84" width="200" height="216"/>
+  <clipPath id="mockup-hud-orb-mana.fill-level"><rect x="784" y="190.60000000000002" width="132" height="59.4"/></clipPath>
+  <image href="orb-mana.fill.svg" x="784" y="118" width="132" height="132" clip-path="url(#mockup-hud-orb-mana.fill-level)"/>
+  <image href="orb-mana.frame.svg" x="750" y="84" width="200" height="216"/>
+  <image href="slot-item.svg" x="300" y="186" width="88" height="88"/>
+  <image href="skill-cleave.svg" x="315" y="201" width="58" height="58"/>
+  <text x="312" y="204" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" paint-order="stroke">1</text>
+  <image href="slot-item.rare.svg" x="392" y="186" width="88" height="88"/>
+  <image href="skill-fireball.svg" x="407" y="201" width="58" height="58"/>
+  <text x="404" y="204" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" paint-order="stroke">2</text>
+  <image href="slot-item.svg" x="484" y="186" width="88" height="88"/>
+  <image href="skill-bone-shield.svg" x="499" y="201" width="58" height="58"/>
+  <text x="496" y="204" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" paint-order="stroke">3</text>
+  <image href="slot-item.legendary.svg" x="576" y="186" width="88" height="88"/>
+  <image href="icon-rusty-sword.svg" x="591" y="201" width="58" height="58"/>
+  <text x="588" y="204" font-family="Georgia, serif" font-size="12" font-weight="700" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" paint-order="stroke">4</text>
+  <image href="btn-iron.svg" x="684" y="10" width="240" height="78"/>
+  <text x="804" y="56" text-anchor="middle" font-family="Georgia, serif" font-size="17" font-weight="700" letter-spacing="3" fill="#d6cbb0" stroke="#0b0d10" stroke-width="3" paint-order="stroke">INVENTORY</text>
+</svg>

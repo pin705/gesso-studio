@@ -2,7 +2,7 @@
 
 ## Kinds
 - **Item icons** (weapons, potions, loot, currency): the object alone on a transparent canvas; rarity frames and slot backgrounds are separate UI assets.
-- **Skill or ability icons**: a full-bleed square illustration (background included) that the UI frames; strong central motif, high contrast.
+- **Skill or ability icons**: a full-bleed square illustration (background included) that the UI frames; strong central motif, high contrast. Mark them `data-bleed` on the root `<svg>` so the padding check knows the edge contact is intended.
 - **Status and system icons** (buffs, settings, map markers): simple glyphs, one or two colors, flat or lightly shaded, readable at 24-32px.
 
 ## Canvas

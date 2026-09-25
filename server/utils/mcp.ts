@@ -122,7 +122,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'save_asset',
-    description: 'Create or update an asset from a complete SVG document; returns lint results and a review sheet image to critique. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|mockup|other), optional data-style, data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed". A mockup composes other assets with <image href="other-id.svg"> to judge the set in context.',
+    description: 'Create or update an asset from a complete SVG document; returns lint results and a review sheet image to critique. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|mockup|other), optional data-style, data-bleed (deliberate full-bleed art such as skill icons), data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed". A mockup composes other assets with <image href="other-id.svg"> to judge the set in context.',
     inputSchema: {
       type: 'object',
       properties: {

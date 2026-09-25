@@ -16,7 +16,8 @@ export async function reviewFile(file: string, key: string, artBible: string) {
   const report = probe.report as Lint;
   const { meta } = report;
   const times = meta.animated && meta.duration ? evenTimes(meta.duration, 8) : [];
-  const shot = await captureAsset(file, { id: key, fit: 440, times: [meta.duration * 0.25, ...times] });
+  // Mockups are wide screens: review them bigger so set-level problems are visible.
+  const shot = await captureAsset(file, { id: key, fit: meta.type === 'mockup' ? 900 : 440, times: [meta.duration * 0.25, ...times] });
   const [main, ...frames] = shot.frames;
   const sheet: Buffer = await reviewSheet({ id: key, meta, main: main!, scale: shot.scale, frames, times });
   // Measure what is actually visible, at 1x, across every sampled frame.
@@ -30,7 +31,8 @@ export async function reviewFile(file: string, key: string, artBible: string) {
     const width = meta.width - union.left - union.right;
     const height = meta.height - union.top - union.bottom;
     meta.bounds = { ...Object.fromEntries(Object.entries(union).map(([side, value]) => [side, Math.round(value)])), fill: Math.round(((width * height) / (meta.width * meta.height)) * 100) / 100 };
-    if (meta.type === 'icon' || meta.type === 'vfx') {
+    // data-bleed marks deliberate full-bleed art (skill icons, backgrounds)
+    if ((meta.type === 'icon' || meta.type === 'vfx') && !meta.bleed) {
       if (Math.min(union.left, union.top, union.right, union.bottom) < 2) report.warnings.push('Visible pixels touch the canvas edge: outlines, glows or shadows are clipped. Leave at least 4px of padding.');
       if (meta.type === 'icon' && meta.bounds.fill < 0.4) report.warnings.push(`Content covers only ${Math.round(meta.bounds.fill * 100)}% of the canvas; an icon should fill about 80-90% of its box.`);
     }
