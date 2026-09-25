@@ -12,8 +12,8 @@ Thanks for helping make AI-made game art look hand-crafted. Every kind of contri
 ## Development setup
 
 ```bash
-git clone https://github.com/gesso-studio/gesso.git
-cd gesso
+git clone https://github.com/pin705/gesso-studio.git
+cd gesso-studio
 npm install
 npm run dev          # http://localhost:3000, hot reload for app and server
 ```

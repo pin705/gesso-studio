@@ -1,17 +1,17 @@
 {
   "name": "gesso-studio",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Open-source, local-first game art studio where your AI agent is the artist. MCP tools, a game-art knowledge base and a live studio for reviewing, versioning and exporting assets.",
   "license": "Apache-2.0",
   "type": "module",
   "author": "The Gesso contributors",
-  "homepage": "https://github.com/gesso-studio/gesso#readme",
+  "homepage": "https://github.com/pin705/gesso-studio#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gesso-studio/gesso.git"
+    "url": "git+https://github.com/pin705/gesso-studio.git"
   },
   "bugs": {
-    "url": "https://github.com/gesso-studio/gesso/issues"
+    "url": "https://github.com/pin705/gesso-studio/issues"
   },
   "keywords": [
     "game-art",

@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-25
+
 ### Added
 - **Gesso Kit** at `/kit`: CSS materials and components (`gesso.css`), procedural textures, 13 self-hosted game fonts, game-icons and lucide silhouettes, and browser builds of PixiJS, pixi-filters, three.js and Rough.js.
 - HTML assets alongside SVG, rendered on an isolated origin; `defineAsset()` runtime for deterministic Pixi and three.js frames.
@@ -49,3 +51,6 @@ All notable changes to this project are documented here. The format follows [Kee
 ### Added
 - Local MCP server with a game-art knowledge base, a rendered review sheet and lint.
 - Genre style packs; the art bible (`STYLE.md`) per project replaces hard-coded xianxia generators.
+
+[Unreleased]: https://github.com/pin705/gesso-studio/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/pin705/gesso-studio/releases/tag/v0.4.0

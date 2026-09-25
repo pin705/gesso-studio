@@ -83,8 +83,8 @@ The agent scores its own work, so the rubric ships with anchor sheets: real asse
 Requirements: **Node.js 22.19+** (or 24.11+) and **Google Chrome, Microsoft Edge or Chromium**. No Chromium browser? Run `npx playwright install chromium`, or set `CHROME_PATH`.
 
 ```bash
-git clone https://github.com/gesso-studio/gesso.git
-cd gesso
+git clone https://github.com/pin705/gesso-studio.git
+cd gesso-studio
 npm install
 npm run build
 npm start            # studio at http://127.0.0.1:4477
