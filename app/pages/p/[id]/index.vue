@@ -99,7 +99,7 @@ const filters: { value: 'all' | AssetStatus; label: string }[] = [
     <div class="grid gap-3" :style="{ gridTemplateColumns: `repeat(auto-fill, minmax(${size[0]}px, 1fr))` }">
       <NuxtLink v-for="group in visible" :key="group.master.key" :to="`/p/${id}/a/${group.master.key}`" class="group overflow-hidden rounded-xl border bg-card transition hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-lg">
         <div class="relative aspect-square">
-          <AssetThumb :src="assetUrl(id, group.master.key, group.master.updated_at)" :live="group.master.type === 'mockup'" class="size-full" />
+          <AssetThumb :src="thumbUrl(id, group.master.key, group.master.updated_at)" class="size-full" />
           <div class="absolute top-2 left-2 flex gap-1">
             <Badge v-if="group.variants.length" variant="secondary" class="gap-1 bg-background/80 backdrop-blur"><Layers class="size-3" />{{ group.variants.length + 1 }}</Badge>
             <Badge v-if="group.feedback" class="gap-1 bg-warning text-black"><MessageSquare class="size-3" />{{ group.feedback }}</Badge>

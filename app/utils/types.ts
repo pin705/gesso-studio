@@ -27,6 +27,7 @@ export interface AssetSummary {
   updated_at: number;
   revision: number;
   open_feedback: number;
+  format: 'svg' | 'html';
 }
 
 export interface Lint {
@@ -80,7 +81,10 @@ export const STATUS_META: Record<AssetStatus, { label: string; tone: string; dot
   approved: { label: 'Approved', tone: 'bg-success/15 text-success', dot: 'bg-success' }
 };
 
-export const assetUrl = (project: string, key: string, version?: number) => `/files/${project}/assets/${encodeURIComponent(key)}.svg${version ? `?v=${version}` : ''}`;
+export const assetUrl = (project: string, key: string, version?: number, format: 'svg' | 'html' = 'svg') => `/files/${project}/assets/${encodeURIComponent(key)}.${format}${version ? `?v=${version}` : ''}`;
+/** Server-rendered PNG: works for every format and shows animations mid-way. */
+export const thumbUrl = (project: string, key: string, version?: number | string, options: { rev?: number; scale?: number } = {}) =>
+  `/api/projects/${project}/assets/${encodeURIComponent(key)}/thumb?v=${version ?? ''}${options.rev ? `&rev=${options.rev}` : ''}${options.scale ? `&scale=${options.scale}` : ''}`;
 export const revisionUrl = (project: string, key: string, number: number) => `/api/projects/${project}/assets/${encodeURIComponent(key)}/revisions/${number}`;
 export const masterKey = (key: string) => key.split('.')[0]!;
 

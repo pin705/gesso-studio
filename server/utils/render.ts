@@ -237,7 +237,10 @@ export async function captureAsset(file: string, { id, scale, fit = 0, times = [
   const page = await browserInstance.newPage({ viewport: html && size.width > 0 ? { width: Math.ceil(size.width), height: Math.ceil(size.height) } : { width: 1600, height: 1600 }, deviceScaleFactor: dpr });
   try {
     await sandbox(page, path.dirname(file));
-    if (html) await page.addInitScript(() => window.addEventListener('error', (event) => (window.__gessoError ??= event.message)));
+    if (html) await page.addInitScript(() => {
+      window.__gessoRenderer = true;
+      window.addEventListener('error', (event) => (window.__gessoError ??= event.message));
+    });
     await page.goto(`${ORIGIN}/asset/${encodeURIComponent(path.basename(file))}`, { waitUntil: 'load' });
     if (html) {
       // mockups embed other HTML assets in iframes: wait for every frame's scripts and fonts

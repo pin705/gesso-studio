@@ -30,6 +30,7 @@ export interface AssetRow {
   hash: string;
   updated_at: number;
   format: AssetFormat;
+  deleted_at: number | null;
 }
 
 export type AssetFormat = 'svg' | 'html';
@@ -159,7 +160,7 @@ export function getAssetRow(project: Project, key: string): AssetRow | undefined
 
 export function requireAsset(project: Project, key: string): AssetRow {
   const row = getAssetRow(project, assertKey(key));
-  if (!row) throw createError({ statusCode: 404, message: `Unknown asset: ${key}` });
+  if (!row || row.deleted_at) throw createError({ statusCode: 404, message: `Unknown asset: ${key}` });
   return row;
 }
 
@@ -182,8 +183,8 @@ function recordRevision(project: Project, key: string, svg: string, input: Revis
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
       .run(project.id, key, meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now(), meta.format);
     row = getAssetRow(project, key)!;
-  } else if (row.hash !== digest) {
-    db.prepare(`UPDATE assets SET type = ?, style = ?, width = ?, height = ?, duration = ?, frames = ?, nine_slice = ?, status = ?, hash = ?, updated_at = ?, format = ? WHERE id = ?`)
+  } else if (row.hash !== digest || row.deleted_at) {
+    db.prepare(`UPDATE assets SET type = ?, style = ?, width = ?, height = ?, duration = ?, frames = ?, nine_slice = ?, status = ?, hash = ?, updated_at = ?, format = ?, deleted_at = NULL WHERE id = ?`)
       .run(meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now(), meta.format, row.id);
   }
   const last = db.prepare('SELECT number, hash FROM revisions WHERE asset_id = ? ORDER BY number DESC LIMIT 1').get(row.id) as { number: number; hash: string } | undefined;
@@ -234,14 +235,15 @@ export async function syncProject(project: Project): Promise<string[]> {
   for (const key of keys) {
     const svg = await readFile(files.includes(`${key}.html`) ? path.join(assets, `${key}.html`) : path.join(assets, `${key}.svg`), 'utf8').catch(() => null);
     if (svg === null) continue;
-    if (getAssetRow(project, key)?.hash === hash(svg)) continue;
+    const existing = getAssetRow(project, key);
+    if (existing?.hash === hash(svg) && !existing.deleted_at) continue;
     recordRevision(project, key, svg, { source: 'disk' });
     changed.push(key);
   }
-  const known = useDb().prepare('SELECT key FROM assets WHERE project_id = ?').all(project.id) as { key: string }[];
+  const known = useDb().prepare('SELECT key FROM assets WHERE project_id = ? AND deleted_at IS NULL').all(project.id) as { key: string }[];
   for (const { key } of known) {
     if (!keys.includes(key)) {
-      useDb().prepare('DELETE FROM assets WHERE project_id = ? AND key = ?').run(project.id, key);
+      useDb().prepare('UPDATE assets SET deleted_at = ? WHERE project_id = ? AND key = ?').run(now(), project.id, key);
       changed.push(key);
     }
   }
@@ -253,7 +255,7 @@ export const masterKey = (key: string) => key.split('.')[0]!;
 /** Assets whose latest revision was never linted (copied in or edited while Gesso was off). */
 export function unlintedKeys(project: Project): string[] {
   return (useDb().prepare(`SELECT a.key FROM assets a JOIN revisions r ON r.asset_id = a.id
-      WHERE a.project_id = ? AND r.number = (SELECT MAX(number) FROM revisions WHERE asset_id = a.id) AND r.lint IS NULL`).all(project.id) as { key: string }[]).map((row) => row.key);
+      WHERE a.project_id = ? AND a.deleted_at IS NULL AND r.number = (SELECT MAX(number) FROM revisions WHERE asset_id = a.id) AND r.lint IS NULL`).all(project.id) as { key: string }[]).map((row) => row.key);
 }
 
 export function listAssets(project: Project) {
@@ -261,7 +263,7 @@ export function listAssets(project: Project) {
     SELECT a.*,
       (SELECT MAX(number) FROM revisions r WHERE r.asset_id = a.id) AS revision,
       (SELECT COUNT(*) FROM feedback f WHERE f.asset_id = a.id AND f.status = 'open') AS open_feedback
-    FROM assets a WHERE a.project_id = ? ORDER BY a.key`).all(project.id) as unknown as (AssetRow & { revision: number; open_feedback: number })[];
+    FROM assets a WHERE a.project_id = ? AND a.deleted_at IS NULL ORDER BY a.key`).all(project.id) as unknown as (AssetRow & { revision: number; open_feedback: number })[];
 }
 
 export function assetDetail(project: Project, key: string) {
@@ -270,7 +272,7 @@ export function assetDetail(project: Project, key: string) {
   const revisions = (db.prepare('SELECT number, source, note, lint, critique, created_at FROM revisions WHERE asset_id = ? ORDER BY number DESC').all(row.id) as Record<string, any>[])
     .map((revision) => ({ ...revision, lint: revision.lint ? JSON.parse(revision.lint) : null, critique: revision.critique ? JSON.parse(revision.critique) : null }));
   const feedback = db.prepare('SELECT * FROM feedback WHERE asset_id = ? ORDER BY created_at DESC').all(row.id);
-  const variants = (db.prepare('SELECT key, status FROM assets WHERE project_id = ? AND (key = ? OR key LIKE ?) ORDER BY key').all(project.id, masterKey(key), `${masterKey(key)}.%`)) as { key: string; status: string }[];
+  const variants = (db.prepare('SELECT key, status FROM assets WHERE project_id = ? AND deleted_at IS NULL AND (key = ? OR key LIKE ?) ORDER BY key').all(project.id, masterKey(key), `${masterKey(key)}.%`)) as { key: string; status: string }[];
   return { ...row, nineSlice: row.nine_slice ? JSON.parse(row.nine_slice) : null, revisions, feedback, variants };
 }
 

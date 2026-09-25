@@ -1,0 +1,67 @@
+<!doctype html>
+<html data-type="vfx" data-width="384" data-height="384" data-style="heroic-fantasy" data-duration="0.9" data-frames="16">
+<head><link rel="stylesheet" href="/kit/gesso.css"></head>
+<body>
+<script type="module">
+  import { defineAsset, pixiStage, random, ease, duration, glowTexture, streakTexture } from '/kit/gesso.mjs';
+  defineAsset({
+    async setup() {
+      const { PIXI, app } = await pixiStage();
+      const rng = random(42);
+      const centre = { x: 192, y: 192 };
+      // soft round sprite for sparks and glow, drawn once
+      const blurred = glowTexture(PIXI);
+      const streak = streakTexture(PIXI);
+      const world = new PIXI.Container();
+      world.filters = [new PIXI.AdvancedBloomFilter({ threshold: 0.55, bloomScale: 0.9, brightness: 1, blur: 5, quality: 6 })];
+      app.stage.addChild(world);
+      const flash = new PIXI.Sprite(blurred); flash.anchor.set(0.5); flash.position.set(centre.x, centre.y); flash.tint = 0xffffff; flash.blendMode = 'add';
+      const halo = new PIXI.Sprite(blurred); halo.anchor.set(0.5); halo.position.set(centre.x, centre.y); halo.tint = 0x6a52c4; halo.blendMode = 'add';
+      const ring = new PIXI.Graphics(); ring.position.set(centre.x, centre.y); ring.blendMode = 'add';
+      const runes = new PIXI.Graphics(); runes.position.set(centre.x, centre.y); runes.blendMode = 'add';
+      world.addChild(halo, ring, runes, flash);
+      const sparks = Array.from({ length: 70 }, () => {
+        const sprite = new PIXI.Sprite(streak);
+        sprite.anchor.set(1, 0.5); sprite.blendMode = 'add';
+        sprite.tint = rng() < 0.3 ? 0xffffff : rng() < 0.6 ? 0xa894f0 : 0x6a52c4;
+        world.addChild(sprite);
+        return { sprite, angle: rng() * Math.PI * 2, speed: 70 + rng() * 100, size: 0.18 + rng() * 0.3, start: rng() * 0.12, life: 0.45 + rng() * 0.4, curl: (rng() - 0.5) * 1.6 };
+      });
+      return { app, centre, flash, halo, ring, runes, sparks };
+    },
+    render(time, { app, centre, flash, halo, ring, runes, sparks }) {
+      const t = time / duration;
+      // anticipation → impact → dissipation
+      const pop = ease.outBack(ease.window(t, 0.05, 0.22));
+      const fade = 1 - ease.window(t, 0.25, 0.7);
+      flash.scale.set(0.3 + pop * 1.1); flash.alpha = Math.max(0, fade) * (t > 0.05 ? 1 : 0);
+      halo.scale.set(0.6 + pop * 2.4); halo.alpha = Math.max(0, 1 - ease.window(t, 0.15, 0.9)) * (t > 0.04 ? 0.9 : 0);
+      ring.clear();
+      const radius = 30 + ease.outCubic(ease.window(t, 0.12, 0.8)) * 120;
+      const ringAlpha = (1 - ease.window(t, 0.2, 0.85)) * (t > 0.12 ? 1 : 0);
+      ring.circle(0, 0, radius).stroke({ width: 10 * (1 - t) + 2, color: 0xa894f0, alpha: ringAlpha });
+      ring.circle(0, 0, radius * 0.92).stroke({ width: 2, color: 0xffffff, alpha: ringAlpha * 0.8 });
+      runes.clear();
+      runes.rotation = t * 1.2;
+      const runeAlpha = ease.window(t, 0, 0.12) * (1 - ease.window(t, 0.35, 0.75));
+      for (let i = 0; i < 6; i += 1) {
+        const a = (i / 6) * Math.PI * 2, r = 70;
+        runes.moveTo(Math.cos(a) * r, Math.sin(a) * r).lineTo(Math.cos(a + 2.1) * r, Math.sin(a + 2.1) * r);
+      }
+      runes.stroke({ width: 3, color: 0xdcd2ff, alpha: runeAlpha });
+      runes.circle(0, 0, 70).stroke({ width: 2, color: 0x6a52c4, alpha: runeAlpha });
+      for (const p of sparks) {
+        const local = ease.window(t, p.start + 0.12, p.start + 0.12 + p.life);
+        const travel = ease.outCubic(local);
+        const angle = p.angle + p.curl * travel;
+        p.sprite.position.set(centre.x + Math.cos(angle) * p.speed * travel, centre.y + Math.sin(angle) * p.speed * travel);
+        p.sprite.rotation = angle + p.curl * 0.5;
+        p.sprite.scale.set(p.size * (1.2 - local), p.size * 0.9);
+        p.sprite.alpha = local > 0 && local < 1 ? 1 - local : 0;
+      }
+      app.render();
+    }
+  });
+</script>
+</body>
+</html>

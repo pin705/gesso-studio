@@ -1,0 +1,39 @@
+<!doctype html>
+<html data-type="mockup" data-width="540" data-height="960" data-style="cozy-farm">
+<head>
+<link rel="stylesheet" href="/kit/gesso.css">
+<style>
+  :root { --outline: #3a2414; --ow: 2.5px; }
+  body { background: linear-gradient(180deg, #9fd3e8, #d6eff7 55%, #fbf4e3 70%); }
+  .scene { position: absolute; inset: 0; filter: blur(2px); }
+  .hill { position: absolute; border-radius: 50%; }
+  .row { position: absolute; left: 40px; right: 40px; height: 30px; border-radius: 14px; background: #8a5a2e; }
+  iframe, img { position: absolute; border: 0; background: transparent; color-scheme: normal; }
+  .caption { position: absolute; left: 0; right: 0; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="scene">
+    <div class="hill" style="left:-220px;top:520px;width:880px;height:320px;background:#74b44f"></div>
+    <div class="hill" style="left:160px;top:560px;width:760px;height:300px;background:#4a8a36"></div>
+    <div style="position:absolute;left:0;right:0;top:680px;bottom:0;background:#4a8a36"></div>
+    <div class="row" style="top:720px"></div><div class="row" style="top:790px"></div><div class="row" style="top:860px"></div>
+    <div style="position:absolute;left:390px;top:70px;width:92px;height:92px;border-radius:50%;background:#fff6d0;box-shadow:0 0 60px #fff6d0"></div>
+  </div>
+  <iframe src="bar-energy.frame.html" style="left:40px;top:96px;width:360px;height:72px" scrolling="no"></iframe>
+  <iframe src="bar-energy.fill.html" style="left:100px;top:117px;width:276px;height:27px;clip-path:inset(0 38% 0 0)" scrolling="no"></iframe>
+  <iframe src="panel-board.html" style="left:90px;top:210px;width:360px;height:288px;transform:scale(1.2);transform-origin:0 0" scrolling="no"></iframe>
+  <div class="caption g-title" style="top:268px;--font:'Fredoka';--weight:700;font-size:40px;--c1:#3a2414;--c3:#5c3a1e;--c5:#8a5a2e;--c6:#b98347;--ow:0px">Meadow Farm</div>
+  <div class="caption" style="top:318px;font:600 16px Fredoka;color:#8a5a2e">Day 12 · Spring</div>
+  <iframe src="icon-wheat.html" style="left:112px;top:350px;width:128px;height:128px;transform:scale(.55);transform-origin:0 0" scrolling="no"></iframe>
+  <iframe src="icon-carrot.html" style="left:190px;top:350px;width:128px;height:128px;transform:scale(.55);transform-origin:0 0" scrolling="no"></iframe>
+  <iframe src="icon-coin.html" style="left:268px;top:350px;width:128px;height:128px;transform:scale(.55);transform-origin:0 0" scrolling="no"></iframe>
+  <iframe src="icon-watering-can.html" style="left:346px;top:350px;width:128px;height:128px;transform:scale(.55);transform-origin:0 0" scrolling="no"></iframe>
+  <div class="caption" style="top:444px;font:500 16px Fredoka;color:#6b5a45">Harvest ready: 24 wheat, 9 carrots</div>
+  <iframe src="btn-primary.html" style="left:70px;top:590px;width:400px;height:156px" scrolling="no"></iframe>
+  <div class="caption g-label" style="top:642px;--font:'Fredoka';font-weight:700;font-size:34px;--label:#fbf4e3;padding-left:40px">Play</div>
+  <iframe src="btn-primary.disabled.html" style="left:120px;top:752px;width:400px;height:156px;transform:scale(.75);transform-origin:0 0" scrolling="no"></iframe>
+  <div class="caption g-label" style="top:790px;--font:'Fredoka';font-weight:600;font-size:24px;--label:#fbf4e3;--outline:#6b5a45;padding-left:40px">Market (Day 14)</div>
+  <img src="vfx-harvest-sparkle.svg" style="left:330px;top:300px;width:160px;height:160px">
+</body>
+</html>

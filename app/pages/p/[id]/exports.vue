@@ -58,7 +58,7 @@ const fileUrl = (name: string, download = false) => `/files/${id.value}/exports/
           <ScrollArea class="h-64 rounded-md border">
             <div class="grid gap-0.5 p-1">
               <button v-for="asset in pickable" :key="asset.key" class="flex items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-accent" :class="selected.includes(asset.key) && 'bg-accent'" @click="toggle(asset.key)">
-                <AssetThumb :src="assetUrl(id, asset.key, asset.updated_at)" class="size-7 shrink-0 rounded" :padded="false" />
+                <AssetThumb :src="thumbUrl(id, asset.key, asset.updated_at)" class="size-7 shrink-0 rounded" :padded="false" />
                 <span class="flex-1 truncate font-mono">{{ asset.key }}</span>
                 <StatusBadge :status="asset.status" />
               </button>

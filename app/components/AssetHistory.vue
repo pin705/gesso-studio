@@ -14,7 +14,7 @@ const issues = (revision: Revision) => (revision.lint ? revision.lint.errors.len
 <template>
   <div class="grid gap-2">
     <div v-for="revision in asset.revisions" :key="revision.number" class="flex gap-3 rounded-lg border p-2" :class="comparing === revision.number && 'border-brand'">
-      <AssetThumb :src="revisionUrl(project, asset.key, revision.number)" class="size-16 shrink-0 rounded-md" :padded="false" />
+      <AssetThumb :src="thumbUrl(project, asset.key, revision.number, { rev: revision.number })" class="size-16 shrink-0 rounded-md" :padded="false" />
       <div class="min-w-0 flex-1">
         <div class="flex items-center gap-1.5 text-xs">
           <span class="font-medium">r{{ revision.number }}</span>

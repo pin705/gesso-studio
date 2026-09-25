@@ -5,6 +5,7 @@ The rules an AI artist follows to make game-ready assets that look hand-crafted.
 | Topic | Read it when |
 | --- | --- |
 | `workflow` | Every task. The production process from brief to export. |
+| `kit` | Every asset. Build on the Gesso Kit: materials, fonts, silhouettes, Pixi and three.js. |
 | `critique` | Before calling any asset done. Scoring rubric and anti-slop list. |
 | `art-bible` | Creating or changing a project's STYLE.md. |
 | `fundamentals/light-value` | Shading any form: light direction, value structure, form anatomy. |

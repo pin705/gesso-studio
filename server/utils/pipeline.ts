@@ -128,6 +128,9 @@ export async function exportAssets(project: Project, keys: string[], scales: num
       }
       written.push(name);
     }
+    // CC BY 3.0 silhouettes need attribution in the game's credits
+    const icons = [...new Set([...(await readFile(file, 'utf8')).matchAll(/\/kit\/icons\/game-icons\/([a-z0-9-]+)\.svg/g)].map((match) => match[1]))];
+    if (icons.length) entry.credits = icons.map((name) => `${name} by game-icons.net contributors, CC BY 3.0 (https://game-icons.net)`);
     manifest.assets[key] = entry;
   }
   await writeFile(manifestFile, JSON.stringify(manifest, null, 2));

@@ -5,6 +5,9 @@ import type { Feedback } from '~/utils/types';
 
 const props = defineProps<{
   src: string;
+  /** A raster (or SVG) of the current revision for the comparison and 9-slice views. */
+  imageSrc?: string;
+  format?: 'svg' | 'html';
   width: number;
   height: number;
   duration?: number;
@@ -19,6 +22,9 @@ const annotate = defineModel<boolean>('annotate', { default: false });
 
 const stage = ref<HTMLElement>();
 const viewer = ref<HTMLObjectElement>();
+const frame = ref<HTMLIFrameElement>();
+const html = computed(() => props.format === 'html');
+const still = computed(() => props.imageSrc ?? props.src);
 const { width: stageWidth, height: stageHeight } = useElementSize(stage);
 const backdrop = useLocalStorage<'checker' | 'dark' | 'light' | 'custom'>('gesso-backdrop', 'checker');
 const customColor = useLocalStorage('gesso-backdrop-color', '#3a5a40');
@@ -98,10 +104,16 @@ function prepare() {
   svg?.setAttribute('height', '100%');
   if (!playing.value) seek(time.value);
 }
+let clock = 0; // HTML previews run in a sandboxed frame; track their time locally
+const onFrameLoad = () => (clock = performance.now());
 function seek(seconds: number) {
   const duration = props.duration || 1;
   time.value = ((seconds % duration) + duration) % duration;
   playing.value = false;
+  if (html.value) {
+    frame.value?.contentWindow?.postMessage({ gesso: 'seek', t: time.value }, '*');
+    return;
+  }
   const { svg, css } = content();
   svg?.pauseAnimations?.();
   svg?.setCurrentTime?.(time.value);
@@ -111,6 +123,15 @@ function seek(seconds: number) {
   }
 }
 function togglePlay() {
+  if (html.value) {
+    if (playing.value) seek(time.value);
+    else {
+      playing.value = true;
+      clock = performance.now() - time.value * 1000;
+      frame.value?.contentWindow?.postMessage({ gesso: 'play', t: time.value }, '*');
+    }
+    return;
+  }
   const { svg, css } = content();
   if (playing.value) {
     seek((svg?.getCurrentTime?.() ?? time.value) % (props.duration || 1));
@@ -124,6 +145,10 @@ const step = (frames: number) => seek(time.value + frames / fps.value);
 // keep the readout moving while the animation plays
 useRafFn(() => {
   if (!playing.value || !props.duration) return;
+  if (html.value) {
+    time.value = (((performance.now() - clock) / 1000) % props.duration);
+    return;
+  }
   const { svg, css } = content();
   const seconds = svg?.getCurrentTime?.() || (Number(css[0]?.currentTime ?? 0) / 1000);
   time.value = seconds % props.duration;
@@ -201,16 +226,17 @@ const backdropClass = computed(() => ({ checker: 'checker', dark: 'bg-[#08090a]'
             :style="{
               borderStyle: 'solid',
               borderWidth: slice.map((value) => `${value * scale}px`).join(' '),
-              borderImageSource: `url('${src}')`,
+              borderImageSource: `url('${still}')`,
               borderImageSlice: `${slice.join(' ')} fill`,
               borderImageRepeat: 'stretch'
             }"
           />
           <template v-else-if="compareSrc">
             <img :src="compareSrc" alt="" class="absolute inset-0 size-full" :class="grayscale && 'grayscale'" draggable="false" />
-            <img :src="src" alt="" class="absolute inset-0 size-full" :class="grayscale && 'grayscale'" :style="{ clipPath: `inset(0 0 0 ${swipe[0]}%)` }" draggable="false" />
+            <img :src="still" alt="" class="absolute inset-0 size-full" :class="grayscale && 'grayscale'" :style="{ clipPath: `inset(0 0 0 ${swipe[0]}%)` }" draggable="false" />
             <div class="pointer-events-none absolute inset-y-0 w-px bg-brand shadow-[0_0_0_1px_rgba(0,0,0,.3)]" :style="{ left: `${swipe[0]}%` }" />
           </template>
+          <iframe v-else-if="html" :key="`f-${src}`" ref="frame" :src="src" sandbox="allow-scripts" scrolling="no" class="pointer-events-none absolute inset-0 size-full border-0 [color-scheme:normal]" :class="grayscale && 'grayscale'" :style="{ width: `${width}px`, height: `${height}px`, transform: `scale(${scale})`, transformOrigin: '0 0' }" @load="onFrameLoad" />
           <object v-else :key="src" ref="viewer" :data="src" type="image/svg+xml" class="pointer-events-none absolute inset-0 size-full [color-scheme:normal]" :class="grayscale && 'grayscale'" @load="prepare" />
 
           <template v-if="guides && nineSlice && !compareSrc">

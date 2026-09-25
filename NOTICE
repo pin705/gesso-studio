@@ -3,3 +3,22 @@ Copyright 2026 The Gesso contributors
 
 This product includes software developed by the Gesso contributors
 (https://github.com/gesso-studio/gesso), licensed under the Apache License, Version 2.0.
+
+-------------------------------------------------------------------------------
+Third-party components redistributed in the Gesso Kit (kit/, served at /kit)
+-------------------------------------------------------------------------------
+
+Fonts (kit/fonts, from Fontsource), SIL Open Font License 1.1:
+  Cinzel, Cinzel Decorative, Grenze Gotisch, Macondo, Lilita One, Fredoka, Baloo 2,
+  Orbitron, Rajdhani, Press Start 2P, Pixelify Sans, Ma Shan Zheng.
+Font, Apache License 2.0: Luckiest Guy.
+
+Icons (kit/icons/game-icons.json): game-icons.net, by Lorc, Delapouite and
+contributors, Creative Commons Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/).
+Games that ship these silhouettes must credit game-icons.net; export_assets writes the
+required credits into exports/manifest.json.
+
+Icons (kit/icons/lucide.json): Lucide, ISC License.
+
+Libraries (kit/lib, browser bundles): PixiJS and pixi-filters (MIT), three.js (MIT),
+Rough.js (MIT).

@@ -108,6 +108,44 @@ try {
   assert.deepEqual(atlas.meta.size, { w: 256, h: 256 });
   assert.deepEqual(atlas.frames.pulse_3.frame, { x: 128, y: 128, w: 128, h: 128 });
 
+  // HTML assets on the Gesso Kit: CSS materials, silhouettes, and a scripted (defineAsset) frame
+  const icons = textOf(await call('search_icons', { query: 'potion' }));
+  assert.match(icons, /\/kit\/icons\/game-icons\/[a-z-]*potion[a-z-]*\.svg/);
+  const kitCss = await fetch(`${base}/kit/gesso.css`);
+  assert.equal(kitCss.status, 200);
+  assert.equal(kitCss.headers.get('access-control-allow-origin'), '*');
+  const htmlIcon = `<!doctype html><html data-type="icon" data-width="128" data-height="128"><head><link rel="stylesheet" href="/kit/gesso.css"></head><body>
+    <div class="g-icon" style="--icon:url(/kit/icons/game-icons/health-potion.svg)"><i class="g-icon__base g-mat-lacquer"></i><i class="g-icon__shade"></i><i class="g-icon__rim"></i></div>
+    <script type="module">import { defineAsset } from '/kit/gesso.mjs'; defineAsset({ render(t) { document.body.dataset.t = t; } });</script></body></html>`;
+  const saved = await call('save_asset', { id: 'potion', svg: htmlIcon });
+  assert.ok(!saved.isError, textOf(saved));
+  assert.match(textOf(saved), /potion: icon 128x128/);
+  assert.match(textOf(saved), /Lint clean/);
+  assert.ok((await readFile(path.join(projectDir, 'assets', 'potion.html'), 'utf8')).includes('g-icon'));
+  const thumb = await fetch(`${base}/api/projects/${project.id}/assets/potion/thumb`);
+  assert.equal(thumb.headers.get('content-type'), 'image/png');
+  const png = Buffer.from(await thumb.arrayBuffer());
+  assert.ok(png.length > 1000, 'rendered thumbnail');
+  const served = await fetch(`${base}/files/${project.id}/assets/potion.html`);
+  assert.match(served.headers.get('content-security-policy'), /frame-ancestors 'self'/);
+  assert.match(await served.text(), /\/kit\/player\.js/);
+
+  // a file removed on disk keeps its history and comes back with it
+  const before = (await api(`/api/projects/${project.id}/assets/orb`)).revisions.length;
+  const orbFile = path.join(projectDir, 'assets', 'orb.svg');
+  const orbSource = await readFile(orbFile, 'utf8');
+  await rm(orbFile);
+  for (let attempt = 0; attempt < 20 && (await fetch(`${base}/api/projects/${project.id}/assets/orb`)).ok; attempt += 1) await new Promise((resolve) => setTimeout(resolve, 150));
+  assert.equal((await fetch(`${base}/api/projects/${project.id}/assets/orb`)).status, 404);
+  await writeFile(orbFile, orbSource);
+  let revived;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    revived = await fetch(`${base}/api/projects/${project.id}/assets/orb`);
+    if (revived.ok) break;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  assert.equal((await revived.json()).revisions.length, before);
+
   // stdio bridge speaks the same protocol
   const bridge = spawn(process.execPath, [bin, 'mcp'], { env, stdio: ['pipe', 'pipe', 'inherit'] });
   const lines = [];

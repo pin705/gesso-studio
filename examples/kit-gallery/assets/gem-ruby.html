@@ -9,12 +9,13 @@
       const stage = await threeStage({ fov: 28, distance: 5.9 });
       const { THREE, scene } = stage;
       // brilliant-cut gem: a flat-shaded lathe (table, crown, girdle, pavilion)
-      const profile = [[0, 1.05], [0.62, 1.05], [1.12, 0.62], [1.2, 0.5], [1.2, 0.44], [0, -1.15]].map(([x, y]) => new THREE.Vector2(x, y));
-      const geometry = new THREE.LatheGeometry(profile, 10).toNonIndexed();
+      const profile = [[0, 0.95], [0.58, 0.95], [0.98, 0.72], [1.2, 0.46], [1.2, 0.38], [0.72, -0.35], [0, -1.15]].map(([x, y]) => new THREE.Vector2(x, y));
+      const geometry = new THREE.LatheGeometry(profile, 12).toNonIndexed();
       geometry.computeVertexNormals();
       const material = new THREE.MeshPhysicalMaterial({ color: 0xb00020, metalness: 0.15, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.02, ior: 1.77, specularIntensity: 1, specularColor: 0xffd6c8, flatShading: true, emissive: 0x4a0010, envMapIntensity: 2.2, sheen: 0.4, sheenColor: 0xff5040 });
       const gem = new THREE.Mesh(geometry, material);
-      gem.rotation.set(0.42, 0.3, -0.12);
+      gem.rotation.set(0.38, 0.3, -0.12);
+      gem.scale.setScalar(0.92);
       scene.add(gem);
       // a warm glint light and a bounce so facets alternate light and dark
       // light passing through the stone: a warm glow on the far side

@@ -67,7 +67,9 @@ const MIGRATIONS = [
    CREATE INDEX activity_project ON activity (project_id, id DESC);
    CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`,
   // 2: assets can be authored as HTML/CSS (Gesso Kit, Pixi, three) as well as SVG
-  `ALTER TABLE assets ADD COLUMN format TEXT NOT NULL DEFAULT 'svg';`
+  `ALTER TABLE assets ADD COLUMN format TEXT NOT NULL DEFAULT 'svg';`,
+  // 3: a file that disappears (rm, git checkout) keeps its history until it comes back or the user deletes it
+  `ALTER TABLE assets ADD COLUMN deleted_at INTEGER;`
 ];
 
 let db: DatabaseSync | undefined;

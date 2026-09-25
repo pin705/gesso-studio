@@ -62,7 +62,7 @@ async function rename() {
     <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <Card v-for="project in projects" :key="project.id" class="group gap-0 overflow-hidden py-0 transition hover:border-foreground/20">
         <NuxtLink :to="`/p/${project.id}`" class="grid aspect-[16/9] grid-cols-2 grid-rows-2 gap-px bg-border">
-          <AssetThumb v-for="key in project.cover" :key="key" :src="assetUrl(project.id, key)" class="h-full" />
+          <AssetThumb v-for="key in project.cover" :key="key" :src="thumbUrl(project.id, key, project.opened_at)" class="h-full" />
           <div v-for="index in Math.max(0, 4 - project.cover.length)" :key="`empty-${index}`" class="checker opacity-60" />
         </NuxtLink>
         <CardContent class="flex items-start gap-3 p-4">

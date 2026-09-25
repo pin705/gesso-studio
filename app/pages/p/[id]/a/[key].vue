@@ -31,7 +31,8 @@ watch(key, () => {
 });
 
 const version = computed(() => asset.value?.updated_at ?? 0);
-const src = computed(() => assetUrl(id.value, key.value, version.value));
+const src = computed(() => assetUrl(id.value, key.value, version.value, asset.value?.format));
+const still = computed(() => (asset.value?.format === 'html' ? thumbUrl(id.value, key.value, version.value, { scale: 1 }) : src.value));
 const masters = computed(() => all.value.filter((item) => !item.key.includes('.')));
 const position = computed(() => masters.value.findIndex((item) => item.key === masterKey(key.value)));
 const neighbour = (offset: number) => masters.value[(position.value + offset + masters.value.length) % masters.value.length];
@@ -86,6 +87,10 @@ async function remove() {
 }
 async function downloadPng(factor: number) {
   if (!asset.value) return;
+  if (asset.value.format === 'html') {
+    window.location.href = `${thumbUrl(id.value, key.value, version.value, { scale: factor })}&download`;
+    return;
+  }
   const image = new Image();
   image.src = src.value;
   await image.decode();
@@ -113,7 +118,7 @@ async function downloadPng(factor: number) {
       <DropdownMenu>
         <DropdownMenuTrigger as-child><Button variant="ghost" size="icon" class="size-8" aria-label="More"><MoreHorizontal class="size-4" /></Button></DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="w-48">
-          <DropdownMenuItem as-child><a :href="`${src}`" :download="`${key}.svg`"><FileCode class="size-4" /> Download SVG</a></DropdownMenuItem>
+          <DropdownMenuItem as-child><a :href="`${src}`" :download="`${key}.${asset.format}`"><FileCode class="size-4" /> Download source (.{{ asset.format }})</a></DropdownMenuItem>
           <DropdownMenuItem @select="downloadPng(1)"><Download class="size-4" /> Download PNG</DropdownMenuItem>
           <DropdownMenuItem @select="downloadPng(2)"><Download class="size-4" /> Download PNG @2x</DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -151,13 +156,15 @@ async function downloadPng(factor: number) {
       <AssetViewer
         v-model:annotate="annotate"
         :src="src"
+        :image-src="still"
+        :format="asset.format"
         :width="asset.width"
         :height="asset.height"
         :duration="asset.duration"
         :frames="asset.frames"
         :nine-slice="asset.nineSlice"
         :pins="asset.feedback"
-        :compare-src="comparing ? revisionUrl(id, key, comparing) : null"
+        :compare-src="comparing ? (asset.format === 'html' ? thumbUrl(id, key, comparing, { rev: comparing, scale: 1 }) : revisionUrl(id, key, comparing)) : null"
         :compare-label="`r${comparing}`"
         @pin="onPin"
         @close-compare="comparing = null"

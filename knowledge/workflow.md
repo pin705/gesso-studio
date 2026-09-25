@@ -9,7 +9,7 @@ Know before drawing: genre and mood, platform and reference resolution (e.g. 192
 Every project has one `STYLE.md` (see `art-bible`). If it is missing, read the closest `styles/*` pack, adapt it to the game, show the user the direction in two or three sentences, then `write_art_bible`. All assets obey it: palette ramps, light direction, materials, shape language, line and edge rules, UI kit rules. Consistency across a set matters more than any single pretty asset.
 
 ## 2. Plan the asset
-Read its `asset-types/*` guide. Decide canvas size (1x pixels at the reference resolution), padding, 9-slice insets, states, and the one focal point. Name ids with the asset id as prefix.
+Build on the Gesso Kit (`kit`) instead of hand-typing paths: materials and components for UI, `search_icons` silhouettes for icons, Pixi for VFX, three.js for rendered items. Read the asset's `asset-types/*` guide. Decide canvas size (1x pixels at the reference resolution), padding, 9-slice insets, states, and the one focal point. Name ids with the asset id as prefix.
 
 ## 3. Block-in (silhouette and values)
 Flat shapes only, three values (light, mid, dark), no effects. `save_asset` and check the review sheet: the 64px and 32px previews must read instantly, and the grayscale view must separate the main parts. Fix big shapes now; details never rescue a weak silhouette.

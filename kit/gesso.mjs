@@ -16,7 +16,7 @@ export function defineAsset({ setup, render }) {
   const ready = (async () => {
     stage = await setup?.();
   })();
-  let controlled = navigator.webdriver; // the renderer drives time itself
+  let controlled = Boolean(window.__gessoRenderer); // the Gesso renderer drives time itself
   let origin = performance.now();
   const api = {
     ready,
@@ -41,7 +41,10 @@ export function defineAsset({ setup, render }) {
     if (!controlled) api.render(((now - origin) / 1000) % duration);
     requestAnimationFrame(tick);
   };
-  ready.then(() => requestAnimationFrame(tick));
+  ready.then(() => {
+    api.render(0);
+    requestAnimationFrame(tick);
+  });
   return api;
 }
 
@@ -116,3 +119,32 @@ export const ease = {
   /** 0→1 over [start, end] of a normalized time t. */
   window: (t, start, end) => Math.min(1, Math.max(0, (t - start) / (end - start)))
 };
+
+/** Soft radial glow texture (white core fading to transparent) for particles, flashes and light pools. */
+export function glowTexture(PIXI, size = 128, falloff = [[0, 1], [0.25, 0.85], [0.6, 0.25], [1, 0]]) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const context = canvas.getContext('2d');
+  const gradient = context.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  for (const [stop, alpha] of falloff) gradient.addColorStop(stop, `rgba(255,255,255,${alpha})`);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+  return PIXI.Texture.from(canvas);
+}
+
+/** Elongated spark: bright head, fading tail (point it along the velocity with rotation). */
+export function streakTexture(PIXI, length = 128, width = 16) {
+  const canvas = document.createElement('canvas');
+  canvas.width = length;
+  canvas.height = width;
+  const context = canvas.getContext('2d');
+  const along = context.createLinearGradient(0, 0, length, 0);
+  along.addColorStop(0, 'rgba(255,255,255,0)');
+  along.addColorStop(0.75, 'rgba(255,255,255,.8)');
+  along.addColorStop(1, 'rgba(255,255,255,1)');
+  context.fillStyle = along;
+  context.beginPath();
+  context.ellipse(length / 2, width / 2, length / 2, width / 2, 0, 0, Math.PI * 2);
+  context.fill();
+  return PIXI.Texture.from(canvas);
+}
