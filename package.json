@@ -21,6 +21,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "node mcp/selftest.js",
     "mcp": "node mcp/server.js",
     "prepare": "vite build"
   },
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@types/node": "^22.20.4",
     "svelte": "^5.19.0",
     "svelte-check": "^4.1.4",
     "typescript": "^5.7.3",

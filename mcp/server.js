@@ -33,6 +33,8 @@ Assets are game-ready: transparent canvas, no presentation background, captions 
 
 const text = (value) => ({ type: 'text', text: value });
 const jpeg = (buffer) => ({ type: 'image', data: buffer.toString('base64'), mimeType: 'image/jpeg' });
+// Models sometimes send a single string where the schema says array.
+const listArg = (value) => [value ?? []].flat().filter((item) => item !== '' && item !== null && item !== undefined);
 const readArtBible = () => readFile(ART_BIBLE, 'utf8').catch(() => '');
 
 function assetFile(id) {
@@ -85,7 +87,8 @@ const TOOLS = [
     name: 'read_guide',
     description: 'Read the game-art knowledge base: production workflow, critique rubric, art fundamentals, asset-type specs and genre style packs. Call with no topics for the index.',
     inputSchema: { type: 'object', properties: { topics: { type: 'array', items: { type: 'string' }, description: 'e.g. ["workflow", "asset-types/button", "styles/xianxia"]' } } },
-    async handler({ topics = [] }) {
+    async handler({ topics }) {
+      topics = listArg(topics);
       const available = await knowledgeTopics();
       if (!topics.length) return [text(`${await readFile(path.join(KNOWLEDGE, 'README.md'), 'utf8')}\n\nTopics: ${available.join(', ')}`)];
       const unknown = topics.filter((topic) => !available.includes(topic));
@@ -150,7 +153,7 @@ const TOOLS = [
       properties: { ids: { type: 'array', items: { type: 'string' } }, time: { type: 'number', description: 'seconds, for animated assets' } }
     },
     async handler({ ids, time = 0 }) {
-      const list = ids?.length ? ids : (await readAssets(PROJECT)).map((asset) => asset.id);
+      const list = listArg(ids).length ? listArg(ids) : (await readAssets(PROJECT)).map((asset) => asset.id);
       if (!list.length) throw new Error('No assets yet.');
       const items = [];
       for (const id of list.slice(0, 24)) {
@@ -172,8 +175,9 @@ const TOOLS = [
       }
     },
     async handler({ ids, scales = [1, 2] }) {
+      scales = listArg(scales).map(Number);
       if (!Array.isArray(scales) || !scales.length || scales.some((scale) => !(scale >= 0.25 && scale <= 4))) throw new Error('scales must be numbers between 0.25 and 4.');
-      const list = ids?.length ? ids : (await readAssets(PROJECT)).map((asset) => asset.id);
+      const list = listArg(ids).length ? listArg(ids) : (await readAssets(PROJECT)).map((asset) => asset.id);
       await mkdir(EXPORTS, { recursive: true });
       const manifestFile = path.join(EXPORTS, 'manifest.json');
       const manifest = JSON.parse(await readFile(manifestFile, 'utf8').catch(() => '{"assets":{}}'));

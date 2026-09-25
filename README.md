@@ -1,269 +1,134 @@
 # Game Art Studio
 
-**Procedural game-asset authoring prototype** — a small, local-first editor for building high-quality 2D game art from declarative primitives instead of raster AI images.
+**Your AI agent is the artist. This is its studio.**
 
-The demo is intentionally art-led: it opens on a carved xianxia jade button, with a real inspector, deterministic procedural controls, a looping VFX timeline, JSON/SVG/raster export, and a PixiJS runtime preview.
+Game Art Studio is a local-first studio for game assets, in the spirit of [Open Design](https://github.com/nexu-io/open-design) but built for games. You talk to your coding agent (Claude Code, Codex, Cursor, Claude Desktop or any MCP client); the agent creates UI, icons, panels, bars and VFX through a local MCP server, guided by a knowledge base of real game-art practice; the studio in your browser shows the work live. Nothing is tied to one genre: every project has its own art bible.
 
-## Run it
+- **Knowledge first.** A production workflow, a critique rubric with an anti-slop list, art fundamentals (light and value, color ramps, shape, materials), SVG craft techniques, specs per asset type and genre style packs.
+- **The agent sees what it makes.** Every save renders the asset in headless Chromium and returns a review sheet: the render, a grayscale value check, 64px and 32px readability previews and animation frames, plus lint (palette drift, clipping, 9-slice, broken animation timing, unsafe SVG). The agent critiques and iterates like an artist instead of shipping its first draft.
+- **Game-ready output.** Transparent PNG @1x/@2x, sprite sheets with TexturePacker-style JSON (works with Pixi and Phaser), and a manifest with sizes, 9-slice insets and frame timing.
+- **Local and open.** Your files, your agent, your machine. No account, no API key, no telemetry.
+
+## Quick start
+
+Requirements: Node.js 20.1+ and Google Chrome, Edge or Chromium (or run `npx playwright install chromium`, or set `CHROME_PATH`).
 
 ```bash
-npm install
-npm run dev
+git clone <this repo> game-art-studio
+cd game-art-studio
+npm install          # also builds the studio UI
 ```
 
-Open the Vite URL (normally `http://localhost:5173`).
+Connect your agent. `GAME_ART_PROJECT` is the folder where the art lives (default: `./game-art` in the agent's working directory).
 
+**Claude Code**
 ```bash
-npm run check   # Svelte + TypeScript diagnostics
-npm run build   # production bundle
-npm run preview # serve the production bundle
+claude mcp add game-art -e GAME_ART_PROJECT=/path/to/my-game/art -- node /path/to/game-art-studio/mcp/server.js
 ```
 
-No backend, account, API key, or asset download is required. All visible art is generated from SVG geometry, gradients, filters, particles, and deterministic noise.
-
-## Demo path
-
-1. Open the app and inspect the **Jade button** in the center artboard.
-2. Click a material swatch such as **Gold**, **Iron**, or **Spirit Energy** in the Inspector.
-3. Change **Rarity**, **Edge roughness**, **Inner glow**, **Seed**, or **Display label**.
-4. Click **VFX** in the top bar or choose **Sword slash** from the library.
-5. Press the timeline play button and scrub the playhead. The slash, ink, glow, and particles are evaluated from explicit time values.
-6. Use **Procedural Variation** to open generated sword variants from one recipe.
-7. Click **Export Asset** for SVG, PNG, WebP, JSON, a six-frame sprite sheet, or a Pixi manifest.
-8. Click **Pixi Runtime** to render the same `AssetDefinition` through PixiJS/WebGL.
-
-## What is implemented
-
-- **Declarative scene model** — `AssetDefinition` contains serializable `SceneNode` primitives, materials, effects, parameters, and a seed.
-- **11 editable templates** — jade button, gold button, cultivation panel, skill icon, item icon, legendary badge, sword slash, magic circle, ink smoke, progress bar, and moon sword.
-- **Procedural primitives** — rounded rectangles, circles, ellipses, polygons, stars, paths, lines, arcs, text, groups, and particles.
-- **SVG renderer** — solid/linear/radial paints, opacity, blend modes, strokes, dashes, roughening, paper, mist, glow, shadow, blur, and selection overlays.
-- **Shui-mo / ink engine** — seeded rough brush paths, ink strokes, splashes, clouds, and ornamental borders.
-- **Material system** — Jade, Gold, Iron, Paper, Ink, Fire, Ice, Lightning, and Spirit Energy.
-- **Particle presets** — spark, dust, ink, fire, spirit, magic, leaf, and snow.
-- **Timeline** — play/pause/restart, FPS selector, scrubbing, deterministic loop, keyframe visualization, and path-progress animation.
-- **Variation system** — one sword definition generates blade/guard/ornament/rarity combinations.
-- **Export adapters** — SVG, PNG, WebP, JSON, sprite sheet, and Pixi-compatible manifest.
-- **PixiJS runtime** — `createPixiAsset(asset)` creates a playable `Container` from the same plain scene data.
-- **AI-ready boundary** — the model is JSON-safe and has no callbacks, DOM nodes, or Pixi objects in the asset document.
-
-## Architecture
-
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the renderer/runtime boundary and extension recipe.
-
-```text
-src/
-├── assets/
-│   ├── common.ts                # artboard helpers, material paints, ornaments
-│   ├── buttons.ts               # jade/gold button generators
-│   ├── panel.ts                 # cultivation panel generator
-│   ├── icons.ts                 # icon, badge, magic circle, progress generators
-│   ├── vfx.ts                   # slash, smoke, sword variants
-│   ├── components.ts            # reusable component factory API
-│   └── index.ts                 # template catalog + buildAsset()
-├── primitives/
-│   ├── path.ts                  # seeded random + path/stroke helpers
-│   ├── shapes.ts                # rect/circle/polygon/star/arc factories
-│   ├── materials.ts             # parameterized materials
-│   ├── particles.ts             # deterministic particle presets
-│   └── ink.ts                   # ink border/stroke/splash/cloud helpers
-├── renderer/
-│   ├── svg.ts                   # declarative scene → SVG string
-│   └── pixi.ts                  # declarative scene → Pixi Container
-├── export/exporter.ts           # local download and raster/sprite adapters
-├── effects/index.ts             # stable ink/glow/particle effect API
-├── timeline/index.ts             # keyframes + easing helpers
-├── ai/intent.ts                  # constrained model-facing intent boundary
-├── types/scene.ts               # serializable schema types
-├── components/                  # editor thumbnails, icons, Pixi modal
-├── App.svelte                   # current prototype shell
-└── styles/app.css               # game-editor visual system
+**Codex** (`~/.codex/config.toml`)
+```toml
+[mcp_servers.game-art]
+command = "node"
+args = ["/path/to/game-art-studio/mcp/server.js"]
+env = { GAME_ART_PROJECT = "/path/to/my-game/art" }
 ```
 
-The important boundary is:
-
-```text
-AssetControlState → buildAsset() → AssetDefinition
-                                  ├─ SVG editor / export
-                                  ├─ PixiJS runtime
-                                  └─ JSON manifest / future AI input
-```
-
-`AssetDefinition` contains no Pixi instances, DOM references, callbacks, or mutable runtime state. That keeps the editor scene, export pipeline, and future server/AI tooling independent.
-
-## Scene schema
-
-The current schema is intentionally small and JSON-safe:
-
+**Cursor, Claude Desktop, Windsurf and other MCP clients**
 ```json
 {
-  "type": "game-asset",
-  "id": "jade-button",
-  "name": "Jade breakthrough button",
-  "width": 720,
-  "height": 480,
-  "seed": 4817,
-  "version": 1,
-  "parameters": {
-    "material": "jade",
-    "rarity": "legendary",
-    "label": "突破",
-    "roughness": 0.42,
-    "glow": 0.58
-  },
-  "nodes": [
-    {
-      "id": "jade-button-shell",
-      "type": "group",
-      "x": 119,
-      "y": 145,
-      "children": [
-        {
-          "id": "button-jade-body",
-          "type": "rounded-rect",
-          "width": 468,
-          "height": 160,
-          "radius": 20,
-          "fill": {
-            "kind": "linear",
-            "stops": [
-              { "offset": 0, "color": "#b9f0cf", "opacity": 0.76 },
-              { "offset": 0.54, "color": "#1d776c" },
-              { "offset": 1, "color": "#092c32" }
-            ]
-          },
-          "effects": ["inner-bevel", "rough", "soft-shadow"]
-        }
-      ]
+  "mcpServers": {
+    "game-art": {
+      "command": "node",
+      "args": ["/path/to/game-art-studio/mcp/server.js"],
+      "env": { "GAME_ART_PROJECT": "/path/to/my-game/art" }
     }
-  ]
+  }
 }
 ```
 
-Supported node families are `group`, `rect`, `rounded-rect`, `circle`, `ellipse`, `line`, `polygon`, `star`, `path`, `arc`, `text`, and `particle`. Paints can be a color string, linear gradient, or radial gradient.
+Then ask your agent something like *"Read the game-art project, propose an art bible for my cozy farming game, then make the main menu buttons."* It will give you the studio URL (default `http://127.0.0.1:4477`); keep it open to watch assets appear and update.
 
-## Component API
+To browse the bundled multi-genre showcase without an agent: `npm run dev` and open `http://localhost:5173`.
 
-Reusable factories live in `src/assets/components.ts`:
-
-```ts
-import { GameButton, SkillIcon, Sword, Slash, ParticleField } from './src/assets/components';
-
-const button = GameButton({ material: 'jade', rarity: 'legendary', label: '突破' });
-const icon = SkillIcon({ element: 'spirit', rarity: 'epic' });
-const sword = Sword({ material: 'jade', rarity: 'legendary' });
-const slash = Slash({ element: 'fire', particleCount: 64 });
-const particles = ParticleField('spirit', { count: 32, seed: 12 });
-```
-
-## Determinism
-
-Every procedural generator uses a numeric seed. A seed is threaded through path roughening, particles, ink splashes, texture displacement, and variation generation.
-
-```ts
-import { DEFAULT_CONTROLS, buildAsset } from './src/assets';
-
-const first = buildAsset('sword-slash', { ...DEFAULT_CONTROLS, seed: 4817 }, 0.72);
-const second = buildAsset('sword-slash', { ...DEFAULT_CONTROLS, seed: 4817 }, 0.72);
-
-// The generated geometry and particle positions are reproducible.
-```
-
-Animation is also stateless: the VFX generator receives `time` and calculates positions from that value. Scrubbing backward produces the same frame as playing forward.
-
-## Export API
-
-The browser adapters live in `src/export/exporter.ts`:
-
-```ts
-import {
-  exportSVG,
-  exportPNG,
-  exportWebP,
-  exportJSON,
-  exportSpriteSheet,
-  exportPixiDefinition,
-  exportAsset
-} from './src/export/exporter';
-
-await exportAsset('sword-slash', { format: 'pixijs', controls, time: 0.72 });
-exportSVG(asset, { time: 0.72, transparent: false });
-await exportPNG(asset, { time: 0.72, scale: 2 });
-await exportWebP(asset, { time: 0.72, scale: 2 });
-exportJSON(asset, controls);
-await exportSpriteSheet('sword-slash', controls, { scale: 1 });
-exportPixiDefinition(asset, controls);
-```
-
-Raster exports render the authored SVG into a dedicated canvas, so viewport zoom, selection guides, and the editor UI are not baked into the output. Downloads are generated locally with `Blob` and object URLs.
-
-## PixiJS runtime
-
-The Pixi adapter consumes the same plain `AssetDefinition` as the SVG renderer:
-
-```ts
-import { Application } from 'pixi.js';
-import { buildAsset, DEFAULT_CONTROLS } from './src/assets';
-import { createPixiAsset } from './src/renderer/pixi';
-
-const app = new Application();
-await app.init({ width: 720, height: 480, background: '#0a1015' });
-
-const asset = createPixiAsset(
-  buildAsset('sword-slash', DEFAULT_CONTROLS, 0.72),
-  { duration: 2.8 }
-);
-
-app.stage.addChild(asset);
-asset.position.set(500, 300);
-asset.play();
-
-// Later:
-asset.pause();
-asset.setTime(1.2);
-```
-
-The editor uses SVG because it gives the prototype crisp selection, rich filters, and fast authoring feedback. The Pixi adapter is the runtime boundary for a future game build. Both consume the same geometry/material/effect data; neither renderer owns the document.
-
-## Adding a new primitive
-
-1. Add the node variant to `NodeType` in `src/types/scene.ts`.
-2. Add a pure geometry helper in `src/primitives/path.ts` or a new primitive module.
-3. Add a renderer branch in `src/renderer/svg.ts` and, if needed, `src/renderer/pixi.ts`.
-4. Add a small generator in `src/assets/` and register it in `TEMPLATE_META` / `buildAsset()`.
-5. Add a thumbnail and inspector metadata only if the primitive has editable parameters.
-
-Keep the primitive deterministic and JSON-safe. Accept a `seed` whenever the primitive creates variation, and calculate animated values from an explicit `time` rather than accumulating hidden state.
-
-## AI-ready asset generation
-
-The intended future flow is:
+## How it works
 
 ```text
-prompt
-  → constrained asset intent
-  → validated JSON AssetDefinition
-  → buildAsset / parameter resolver
-  → SVG preview + Pixi runtime + exports
+you ──prompt──▶ your agent ──MCP──▶ game-art server ──writes──▶ project/
+                    ▲                     │                      ├── STYLE.md   (art bible)
+                    │                     │ renders in Chromium  ├── assets/*.svg
+                    └── review sheet ◀────┘                      └── exports/
+                                                                      │
+                                   studio (browser) ◀── live view ────┘
 ```
 
-For example, a model could emit:
+1. `get_project` shows the art bible and assets. With no art bible, the agent reads the workflow and the closest style pack, agrees on a direction with you and writes `STYLE.md`.
+2. For each asset the agent reads its asset-type guide, writes SVG and calls `save_asset`.
+3. The review sheet comes back as an image; the agent scores it against the critique rubric, fixes the weakest part and saves again until every score passes.
+4. `export_assets` produces engine-ready files once you approve.
 
-```json
-{
-  "asset": "skill-icon",
-  "frame": "jade",
-  "rarity": "legendary",
-  "element": "spirit",
-  "effects": ["ink-glow", "particle-spark", "mist"]
-}
+### MCP tools
+
+| Tool | What it does |
+| --- | --- |
+| `get_project` | Project folder, studio URL, art bible and asset list. |
+| `read_guide` | Reads the knowledge base (index, or one or more topics). |
+| `write_art_bible` | Creates or replaces `STYLE.md`; its hex codes become the linted palette. |
+| `read_asset` | Returns an asset's SVG, for revisions, states and variants. |
+| `save_asset` | Validates, lints, saves and returns the review sheet. |
+| `view_assets` | Renders several assets side by side to check a set's consistency. |
+| `export_assets` | Writes PNGs, sprite sheets, atlases and `manifest.json` to `exports/`. |
+
+### Asset format
+
+An asset is a plain SVG file in `assets/`, readable by any tool. Metadata lives on the root element:
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" width="376" height="132" viewBox="0 0 376 132"
+     data-type="button" data-style="xianxia" data-nine-slice="30 84 30 84">
 ```
 
-A future `src/ai/` adapter can map that constrained intent to `AssetControlState`, validate it against an allowlist, and call `buildAsset()`. The model should never emit executable callbacks or renderer internals. The editor can then expose the generated definition as ordinary editable nodes and parameters.
+`data-type` is one of `button`, `panel`, `frame`, `bar`, `icon`, `vfx`, `background`, `other`. Animated assets (SMIL or CSS) add `data-duration` in seconds and optionally `data-frames`. States are sibling files: `btn-play.svg`, `btn-play.pressed.svg`.
 
-## Known prototype boundaries
+## Knowledge base
 
-- The current timeline is a focused 2.8 second deterministic loop with keyframe visualization; it is not a full node graph or skeletal animation system.
-- Pixi rendering approximates gradients/effects with Pixi graphics layers; SVG remains the high-fidelity editor/export renderer.
-- Sprite sheet export is implemented as six deterministic frames; PNG sequence export can be added as a zip/manifest pipeline later.
-- Undo/redo, persistence, multiplayer collaboration, and a backend are intentionally out of scope for this demo-first prototype.
+```text
+knowledge/
+├── README.md            index
+├── workflow.md          brief → art bible → block-in → form → polish → critique → export
+├── critique.md          scoring rubric and anti-slop checklist
+├── art-bible.md         how to write STYLE.md
+├── fundamentals/        light-value, color, shape, materials, svg-craft
+├── asset-types/         button, panel, icon, bar, vfx
+└── styles/              xianxia, dark-fantasy, heroic-fantasy, sci-fi, casual, pixel
+```
+
+Style packs are starting points. A genre that is not listed works the same way: the agent builds a custom art bible from your description and references.
+
+Contributions that raise output quality are the most valuable: a new style pack, a new asset-type guide, a better material recipe, or a lint rule that catches a common mistake. Keep guides short, specific and testable; every rule should change what the agent draws.
+
+## Configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `GAME_ART_PROJECT` | `./game-art` | Project folder the MCP server reads and writes. `npm run dev` defaults to `examples/showcase`. |
+| `GAME_ART_PORT` | `4477` | First port tried for the studio (next free port is used if taken). Bound to 127.0.0.1. |
+| `CHROME_PATH` | auto | Chromium-based browser used for rendering. |
+
+## Development
+
+```bash
+npm run dev     # studio with hot reload, serving GAME_ART_PROJECT or the showcase
+npm run check   # svelte-check / TypeScript
+npm run build   # studio bundle in dist/, served by the MCP server
+npm test        # end-to-end MCP self-test over stdio (needs Chrome)
+npm run mcp     # run the MCP server on stdio
+```
+
+`mcp/server.js` is the MCP server (stdio JSON-RPC), `mcp/render.js` renders, lints and composes review sheets and sprite sheets, `mcp/http.js` serves the studio and project files, `src/` is the studio UI.
+
+## Current limits
+
+- Vector-first: assets are SVG, which suits UI, icons, HUD and stylized VFX. Painterly, raster-heavy art (characters, textured illustrations) is not generated yet; SVG can embed raster images if you bring them.
+- The MCP server implements tools over stdio only.
+- The studio polls the project once a second.

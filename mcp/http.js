@@ -40,12 +40,12 @@ async function assetMeta(file, mtime) {
 export async function readAssets(project) {
   const dir = path.join(project, 'assets');
   const names = await readdir(dir).catch(() => []);
+  const ids = names.filter((name) => name.endsWith('.svg') && !name.startsWith('.')).map((name) => name.slice(0, -4)).sort();
   const assets = [];
-  for (const name of names.sort()) {
-    if (!name.endsWith('.svg') || name.startsWith('.')) continue;
-    const file = path.join(dir, name);
+  for (const id of ids) {
+    const file = path.join(dir, `${id}.svg`);
     const mtime = Math.round((await stat(file)).mtimeMs);
-    assets.push({ id: name.slice(0, -4), file: `assets/${name}`, mtime, ...(await assetMeta(file, mtime)) });
+    assets.push({ id, file: `assets/${id}.svg`, mtime, ...(await assetMeta(file, mtime)) });
   }
   return assets;
 }
@@ -73,7 +73,7 @@ async function sendFile(response, base, relative, headers) {
 }
 
 /** Connect-style handler: `/api/project`, `/files/*` from the project, everything else from `dist` (or `next`). */
-export function studioHandler({ project, dist }) {
+export function studioHandler({ project, dist = null }) {
   return async (request, response, next) => {
     const { pathname } = new URL(request.url ?? '/', 'http://localhost');
     try {
