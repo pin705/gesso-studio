@@ -11,11 +11,13 @@ const HTML_CSP = [
   "font-src 'self' data:",
   "connect-src 'self' data: blob:",
   "worker-src 'self' blob:",
-  "frame-ancestors 'self'"
+  // Always an opaque origin, even when the file is opened directly: asset scripts never reach the studio API.
+  // (frame-ancestors would block mockups that embed other assets, since their parent is opaque too.)
+  'sandbox allow-scripts'
 ].join('; ');
 
 /**
- * HTML assets run in a sandboxed iframe (opaque origin) and may only load local files and the kit.
+ * HTML assets run sandboxed and may only load local files and the kit.
  * The player script lets the studio pause and scrub their animations.
  */
 export function sendHtml(event: H3Event, html: string) {

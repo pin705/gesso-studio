@@ -38,7 +38,7 @@ Gesso is one Nuxt 4 application. The browser runs the studio (a single-page app)
 
 ## Rendering
 
-Assets are HTML documents on the Gesso Kit or SVG. The renderer opens each one on a private origin (`http://gesso.render`) where only the asset's folder and `/kit` resolve; every other request, including the Gesso API and the network, is aborted, so scripted assets (Pixi, three) cannot reach anything. Scripted assets register `window.gesso.render(t)` through `/kit/gesso.mjs`, and Gesso calls it for every review and export frame. In the studio, HTML assets run in a `sandbox="allow-scripts"` iframe with an opaque origin and a CSP limited to local resources.
+Assets are HTML documents on the Gesso Kit or SVG. The renderer opens each one on a private origin (`http://gesso.render`) where only the asset's folder and `/kit` resolve; every other request, including the Gesso API and the network, is aborted, so scripted assets (Pixi, three) cannot reach anything. Scripted assets register `window.gesso.render(t)` through `/kit/gesso.mjs`, and Gesso calls it for every review and export frame. In the studio, HTML assets are served with a CSP `sandbox allow-scripts` directive (an opaque origin even when a file is opened directly, so asset scripts cannot call the studio API) and load only local resources; mockups can embed other assets in nested iframes.
 
 `server/utils/render.ts` launches one shared Chromium (installed Chrome, then Edge, then Playwright's bundled Chromium, or `CHROME_PATH`). Each asset is opened as its own document so ids never collide. Scaling uses the SVG's `width`/`height` with its `viewBox`, so exports stay vector-sharp. Animations are sampled deterministically by pausing SMIL (`setCurrentTime`) and CSS animations (`currentTime`).
 

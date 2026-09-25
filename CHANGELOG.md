@@ -21,6 +21,11 @@ All notable changes to this project are documented here. The format follows [Kee
 - `view_assets` shows animated assets at a representative frame.
 - Pixi and three.js canvases are pinned to the top-left of the asset, so pages that also use `.g-canvas` no longer push them out of frame.
 - Pressed kit buttons move their lip with the face instead of exposing it above.
+- Mockups that embed other HTML assets now show them in the studio viewer (nested frames were blocked by `frame-ancestors`).
+- Static three.js assets release their WebGL context after rendering, so a mockup can embed dozens of rendered items instead of about 16.
+
+### Security
+- HTML assets are served with a CSP `sandbox allow-scripts` directive, so their scripts run on an opaque origin even when a file is opened outside the studio.
 
 ## [0.3.0] - 2026-09-25
 

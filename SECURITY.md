@@ -15,6 +15,7 @@ Gesso runs on your machine, writes files and drives a browser, so it assumes tha
 - **Local only.** The server binds to `127.0.0.1` and rejects requests whose `Host` header is not local (DNS rebinding) or whose `Origin` is another site (cross-site requests to localhost).
 - **Confined writes.** Asset ids are validated (`[a-z0-9._-]`, no `..`), files are written only inside a registered project's `assets/`, `exports/` and `STYLE.md`, and new projects must live under your home directory.
 - **Inert SVG.** Assets are served with `Content-Security-Policy: script-src 'none'` and `nosniff`; lint rejects `<script>`, `<foreignObject>` and event handler attributes.
+- **Sandboxed HTML.** HTML assets are served with `Content-Security-Policy: sandbox allow-scripts`, so their scripts always run on an opaque origin and cannot call the studio API, even when a file is opened directly. The renderer loads them on a private origin where only the asset folder and `/kit` resolve and all other requests are aborted.
 - **Sanitized markdown.** Art bibles and guides are rendered with raw HTML disabled.
 - **No telemetry.** Gesso makes no network requests of its own. Rendering loads only the files you created.
 

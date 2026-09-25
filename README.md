@@ -13,7 +13,7 @@ You review, comment, approve and export in a live local studio.
 
 ![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue) ![Node ≥ 22.19](https://img.shields.io/badge/node-%E2%89%A5%2022.19-339933) ![MCP](https://img.shields.io/badge/MCP-HTTP%20%2B%20stdio-8A63D2) ![Local first](https://img.shields.io/badge/local--first-no%20account%20%C2%B7%20no%20API%20key-orange)
 
-<img src="docs/images/library.png" alt="Gesso library with assets from four genres" width="100%" />
+<img src="docs/images/library.png" alt="Gesso library: the Ashen Crown example, built on the kit" width="100%" />
 
 </div>
 
@@ -76,7 +76,7 @@ Each example is a real project folder with an art bible, a UI set, icons, VFX an
 
 ### Honest scoring
 
-The agent scores its own work, so the rubric ships with anchor sheets: real assets from these examples placed at 2 (reject), 3 (passable prototype) and 4 (good) for UI, icons and VFX, plus hard gates that cap scores. A 4 has to beat an anchor; a 5 has to name the shipped game it would sit beside. By that bar the kit's best work today is a 4, and most of it is a solid 3 to 4: fast, clean prototype art rather than a painted commercial finish. See [`knowledge/critique.md`](knowledge/critique.md) and [`knowledge/anchors/`](knowledge/anchors/).
+The agent scores its own work, so the rubric ships with anchor sheets: real assets from these examples (and the hand-typed SVG they replaced) placed at 2 (reject), 3 (passable prototype) and 4 (good) for UI, icons and VFX, plus hard gates that cap scores. A 4 has to beat an anchor; a 5 has to name the shipped game it would sit beside. By that bar the kit's best work today is a 4, and most of it is a solid 3 to 4: fast, clean prototype art rather than a painted commercial finish. See [`knowledge/critique.md`](knowledge/critique.md) and [`knowledge/anchors/`](knowledge/anchors/).
 
 ## Quick start
 

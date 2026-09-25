@@ -127,7 +127,7 @@ try {
   const png = Buffer.from(await thumb.arrayBuffer());
   assert.ok(png.length > 1000, 'rendered thumbnail');
   const served = await fetch(`${base}/files/${project.id}/assets/potion.html`);
-  assert.match(served.headers.get('content-security-policy'), /frame-ancestors 'self'/);
+  assert.match(served.headers.get('content-security-policy'), /sandbox allow-scripts/);
   assert.match(await served.text(), /\/kit\/player\.js/);
 
   // genre templates render as saved assets; the critique guide carries its anchor sheets
