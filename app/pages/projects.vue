@@ -57,7 +57,7 @@ async function rename() {
     <div v-if="loaded && !projects.length" class="grid place-items-center rounded-xl border border-dashed p-12 text-center">
       <GessoMark class="mb-4 size-12" />
       <h2 class="text-lg font-semibold">Welcome to Gesso</h2>
-      <p class="mt-1 max-w-md text-sm text-muted-foreground">Add your game's art folder, or explore the showcase to see what your AI can make with the knowledge base.</p>
+      <p class="mt-1 max-w-md text-sm text-muted-foreground">Add your game's art folder, or open a sample project to see what your AI can make with the kit and knowledge base.</p>
       <div class="mt-6 flex gap-2">
         <Button @click="addOpen = true"><Plus class="size-4" /> Add project</Button>
         <DropdownMenu>

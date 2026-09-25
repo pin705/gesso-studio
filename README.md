@@ -90,7 +90,7 @@ npm run build
 npm start            # studio at http://127.0.0.1:4477
 ```
 
-Open the studio and click **Open the showcase** to see sample assets, or add your game's art folder.
+Open the studio and pick a project under **Projects → Samples** (eight projects across seven genres), or add your game's art folder.
 
 ### Connect your agent
 

@@ -130,6 +130,17 @@ try {
   assert.match(served.headers.get('content-security-policy'), /frame-ancestors 'self'/);
   assert.match(await served.text(), /\/kit\/player\.js/);
 
+  // genre templates render as saved assets; the critique guide carries its anchor sheets
+  assert.match(textOf(await call('get_template')), /- dark-fantasy: .*button.*panel/);
+  const template = textOf(await call('get_template', { genre: 'sci-fi', part: 'button' }));
+  assert.match(template, /^<!-- sci-fi\/button -->\n<!doctype html>/);
+  assert.ok((await call('get_template', { genre: 'nope' })).isError);
+  const fromTemplate = await call('save_asset', { id: 'btn-launch', svg: template.replace(/^<!--.*-->\n/, '') });
+  assert.ok(!fromTemplate.isError, textOf(fromTemplate));
+  assert.match(textOf(fromTemplate), /btn-launch: button 320x96/);
+  const critique = await call('read_guide', { topics: ['critique'] });
+  assert.equal(critique.content.filter((part) => part.type === 'image').length, 3);
+
   // a file removed on disk keeps its history and comes back with it
   const before = (await api(`/api/projects/${project.id}/assets/orb`)).revisions.length;
   const orbFile = path.join(projectDir, 'assets', 'orb.svg');
