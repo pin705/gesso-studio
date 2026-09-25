@@ -1,0 +1,324 @@
+/*
+ * Gesso Kit — materials, lighting and components for game UI assets.
+ * Link it from an HTML asset: <link rel="stylesheet" href="/kit/gesso.css">
+ *
+ * Every material reads a ramp from CSS variables (set on the element or any ancestor), darkest to lightest:
+ *   --c1 --c2 --c3 --c4 --c5 (--c6 for metals)   and   --outline, --ow (outline width)
+ * Override them with the art bible's ramps; the defaults are only examples.
+ * Light comes from the top-left in every recipe.
+ */
+@import url('/kit/fonts.css');
+
+:root {
+  --outline: #1d1410;
+  --ow: 2.5px;
+  --lip: 8px;
+  --radius: 22px;
+  --shadow: rgba(10, 8, 6, 0.45);
+}
+
+html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+*, *::before, *::after { box-sizing: border-box; }
+
+/* An asset fills its canvas; place parts with the layout helpers below. */
+.g-canvas { position: relative; width: 100vw; height: 100vh; }
+.g-center { position: absolute; inset: 0; display: grid; place-items: center; }
+.g-abs { position: absolute; }
+.g-fill { position: absolute; inset: 0; border-radius: inherit; }
+
+/* ------------------------------------------------------------------ materials */
+
+.g-mat, [class*='g-mat-'] { position: relative; isolation: isolate; border-radius: var(--radius); }
+
+/* Generic painted form: any ramp, soft top-left light. */
+.g-mat-paint {
+  --_c1: var(--c1, #1f3d1c); --_c2: var(--c2, #2f5e27); --_c3: var(--c3, #4a8a36); --_c4: var(--c4, #74b44f); --_c5: var(--c5, #a8d77a);
+  background:
+    radial-gradient(120% 85% at 28% 12%, color-mix(in oklab, var(--_c5) 70%, transparent), transparent 62%),
+    linear-gradient(180deg, var(--_c4), var(--_c3) 52%, var(--_c2));
+  box-shadow:
+    inset 0 2px 0 color-mix(in oklab, var(--_c5) 70%, white 30%),
+    inset 0 -5px 0 color-mix(in oklab, var(--_c1) 55%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--_c1) 55%, transparent);
+}
+
+/* Wood: planked grain multiplied over a warm ramp. */
+.g-mat-wood {
+  --_c1: var(--c1, #3a2414); --_c2: var(--c2, #5c3a1e); --_c3: var(--c3, #8a5a2e); --_c4: var(--c4, #b98347); --_c5: var(--c5, #dcae6e);
+  background:
+    url(/kit/textures/grain.svg) 0 0 / 1024px,
+    url(/kit/textures/noise.svg) 0 0 / 1024px,
+    linear-gradient(180deg, var(--_c4), var(--_c3) 48%, var(--_c2));
+  background-blend-mode: multiply, soft-light, normal;
+  box-shadow:
+    inset 0 2px 0 color-mix(in oklab, var(--_c5) 85%, white 15%),
+    inset 0 -4px 0 color-mix(in oklab, var(--_c1) 80%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--_c1) 60%, transparent),
+    inset 0 0 18px color-mix(in oklab, var(--_c1) 35%, transparent);
+}
+
+/* Painted wood: colored paint with the grain showing through. */
+.g-mat-painted {
+  --_c1: var(--c1, #1f3d1c); --_c2: var(--c2, #2f5e27); --_c3: var(--c3, #4a8a36); --_c4: var(--c4, #74b44f); --_c5: var(--c5, #a8d77a);
+  background:
+    url(/kit/textures/grain.svg) 0 0 / 1024px,
+    url(/kit/textures/noise.svg) 0 0 / 1024px,
+    radial-gradient(110% 80% at 30% 10%, color-mix(in oklab, var(--_c5) 55%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--_c4), var(--_c3) 50%, var(--_c2));
+  background-blend-mode: soft-light, soft-light, normal, normal;
+  box-shadow:
+    inset 0 3px 0 color-mix(in oklab, var(--_c5) 75%, white 25%),
+    inset 0 -6px 0 color-mix(in oklab, var(--_c1) 55%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--_c1) 60%, transparent);
+}
+
+/* Polished gold / brass: reflective banding, warm shadows, bright lip. */
+.g-mat-gold {
+  --_c1: var(--c1, #3d2106); --_c2: var(--c2, #6e3f10); --_c3: var(--c3, #a8691f); --_c4: var(--c4, #d9a441); --_c5: var(--c5, #f5d27a); --_c6: var(--c6, #fff6d6);
+  background:
+    url(/kit/textures/brushed.svg) 0 0 / 1024px,
+    linear-gradient(180deg, var(--_c6) 0%, var(--_c5) 12%, var(--_c3) 38%, var(--_c2) 48%, var(--_c4) 62%, var(--_c5) 72%, var(--_c3) 88%, var(--_c1) 100%);
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 1.5px 0 var(--_c6),
+    inset 0 -2px 0 var(--_c1),
+    inset 1px 0 0 color-mix(in oklab, var(--_c5) 60%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--_c1) 45%, transparent);
+}
+
+/* Silver / steel: cool chrome horizon. */
+.g-mat-steel {
+  --_c1: var(--c1, #10161d); --_c2: var(--c2, #2c3642); --_c3: var(--c3, #58677a); --_c4: var(--c4, #93a2b3); --_c5: var(--c5, #d2dce6); --_c6: var(--c6, #ffffff);
+  background:
+    url(/kit/textures/brushed.svg) 0 0 / 1024px,
+    linear-gradient(180deg, var(--_c5) 0%, var(--_c4) 30%, var(--_c6) 46%, var(--_c2) 52%, var(--_c3) 74%, var(--_c4) 90%, var(--_c2) 100%);
+  background-blend-mode: overlay, normal;
+  box-shadow: inset 0 1.5px 0 var(--_c6), inset 0 -2px 0 var(--_c1), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 50%, transparent);
+}
+
+/* Hammered or blackened iron: lit dents, dark worn body. */
+.g-mat-iron {
+  --_c1: var(--c1, #0b0d10); --_c2: var(--c2, #1b2026); --_c3: var(--c3, #323a44); --_c4: var(--c4, #56606b); --_c5: var(--c5, #9aa3aa);
+  background:
+    url(/kit/textures/hammered.svg) 0 0 / 1024px,
+    linear-gradient(180deg, var(--_c4), var(--_c3) 40%, var(--_c2));
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 1.5px 0 color-mix(in oklab, var(--_c5) 90%, transparent),
+    inset 0 -3px 0 var(--_c1),
+    inset 0 0 0 1px color-mix(in oklab, var(--_c1) 70%, transparent),
+    inset 0 0 14px color-mix(in oklab, var(--_c1) 55%, transparent);
+}
+
+/* Stone: coarse relief, cool neutral. */
+.g-mat-stone {
+  --_c1: var(--c1, #1e2126); --_c2: var(--c2, #373c44); --_c3: var(--c3, #575d67); --_c4: var(--c4, #80868f); --_c5: var(--c5, #b3b8bf);
+  background:
+    url(/kit/textures/stone.svg) 0 0 / 1024px,
+    linear-gradient(180deg, var(--_c4), var(--_c3) 50%, var(--_c2));
+  background-blend-mode: overlay, normal;
+  box-shadow: inset 0 2px 0 color-mix(in oklab, var(--_c5) 70%, transparent), inset 0 -4px 0 color-mix(in oklab, var(--_c1) 70%, transparent), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 60%, transparent);
+}
+
+/* Jade and translucent stone: milky veins, glow opposite the light. */
+.g-mat-jade {
+  --_c1: var(--c1, #0c2e30); --_c2: var(--c2, #154b45); --_c3: var(--c3, #20705f); --_c4: var(--c4, #3a977d); --_c5: var(--c5, #78c7a5); --_c6: var(--c6, #d3f0dc);
+  background:
+    url(/kit/textures/veins.svg) 0 0 / 1024px,
+    radial-gradient(80% 70% at 72% 88%, color-mix(in oklab, var(--_c5) 55%, transparent), transparent 70%),
+    radial-gradient(90% 60% at 26% 8%, color-mix(in oklab, var(--_c6) 55%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--_c4), var(--_c3) 45%, var(--_c2));
+  background-blend-mode: soft-light, screen, normal, normal;
+  box-shadow: inset 0 2px 0 color-mix(in oklab, var(--_c6) 80%, transparent), inset 0 -4px 0 color-mix(in oklab, var(--_c1) 70%, transparent), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 50%, transparent);
+}
+
+/* Paper / parchment: fibres, warm vignette. */
+.g-mat-paper {
+  --_c1: var(--c1, #6b5a45); --_c2: var(--c2, #a8916f); --_c3: var(--c3, #d8c39c); --_c4: var(--c4, #efe1c2); --_c5: var(--c5, #fbf4e3);
+  background:
+    url(/kit/textures/fibers.svg) 0 0 / 1024px,
+    url(/kit/textures/noise.svg) 0 0 / 1024px,
+    radial-gradient(120% 110% at 40% 30%, var(--_c5), var(--_c4) 55%, var(--_c3));
+  background-blend-mode: multiply, soft-light, normal;
+  box-shadow: inset 0 0 22px color-mix(in oklab, var(--_c1) 45%, transparent), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 50%, transparent);
+}
+
+/* Leather: pebbled, soft sheen. Add .g-stitch for seams. */
+.g-mat-leather {
+  --_c1: var(--c1, #1c120b); --_c2: var(--c2, #342116); --_c3: var(--c3, #533522); --_c4: var(--c4, #7a5233); --_c5: var(--c5, #a67a52);
+  background:
+    url(/kit/textures/noise.svg) 0 0 / 1024px,
+    radial-gradient(100% 80% at 30% 15%, color-mix(in oklab, var(--_c5) 45%, transparent), transparent 65%),
+    linear-gradient(180deg, var(--_c4), var(--_c3) 55%, var(--_c2));
+  background-blend-mode: overlay, normal, normal;
+  box-shadow: inset 0 1.5px 0 color-mix(in oklab, var(--_c5) 60%, transparent), inset 0 -3px 0 color-mix(in oklab, var(--_c1) 70%, transparent), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 60%, transparent);
+}
+
+/* Candy gloss: casual games. Pair with .g-gloss. */
+.g-mat-candy {
+  --_c1: var(--c1, #1d5410); --_c2: var(--c2, #2e8519); --_c3: var(--c3, #4fb526); --_c4: var(--c4, #86dd45); --_c5: var(--c5, #c9f98e);
+  background:
+    radial-gradient(90% 60% at 50% 110%, color-mix(in oklab, var(--_c2) 70%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--_c4) 0%, var(--_c3) 55%, var(--_c3) 75%, var(--_c2) 100%);
+  box-shadow:
+    inset 0 3px 0 color-mix(in oklab, var(--_c5) 80%, white 20%),
+    inset 0 -7px 0 color-mix(in oklab, var(--_c2) 85%, transparent),
+    inset 0 -9px 12px color-mix(in oklab, var(--_c1) 30%, transparent);
+}
+
+/* Lacquer: deep glossy enamel. */
+.g-mat-lacquer {
+  --_c1: var(--c1, #3b0d0d); --_c2: var(--c2, #6e1a17); --_c3: var(--c3, #a52b22); --_c4: var(--c4, #d0493a); --_c5: var(--c5, #ee8a6b);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--_c5) 60%, transparent) 0%, transparent 38%),
+    linear-gradient(180deg, var(--_c4), var(--_c3) 45%, var(--_c2) 85%, var(--_c1));
+  box-shadow: inset 0 1.5px 0 color-mix(in oklab, var(--_c5) 90%, white), inset 0 -3px 0 var(--_c1), inset 0 0 0 1px color-mix(in oklab, var(--_c1) 60%, transparent);
+}
+
+/* Glass: mostly edges and reflections. */
+.g-mat-glass {
+  --_c1: var(--c1, #0b1c26); --_c3: var(--c3, #58a0c4); --_c5: var(--c5, #e6f7ff);
+  background:
+    linear-gradient(150deg, color-mix(in oklab, var(--_c5) 45%, transparent) 0% 18%, transparent 19% 58%, color-mix(in oklab, var(--_c5) 18%, transparent) 59% 64%, transparent 65%),
+    color-mix(in oklab, var(--_c3) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--_c5) 55%, transparent), inset 0 -8px 16px color-mix(in oklab, var(--_c1) 35%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+/* Holographic HUD glass: dark, scanlines, emissive edge. */
+.g-mat-holo {
+  --_c1: var(--c1, #04070c); --_c2: var(--c2, #0a1019); --_c3: var(--c3, #108aa6); --_c4: var(--c4, #22c3e6); --_c5: var(--c5, #7fe8ff);
+  background:
+    repeating-linear-gradient(180deg, color-mix(in oklab, var(--_c5) 10%, transparent) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 100% at 50% 0%, color-mix(in oklab, var(--_c3) 30%, transparent), transparent 60%),
+    color-mix(in oklab, var(--_c2) 88%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--_c4), 0 0 12px color-mix(in oklab, var(--_c4) 45%, transparent), inset 0 0 18px color-mix(in oklab, var(--_c4) 18%, transparent);
+}
+
+/* Emissive energy: white core to hue to transparent. */
+.g-mat-energy {
+  --_c3: var(--c3, #6a52c4); --_c4: var(--c4, #a894f0); --_c5: var(--c5, #f3efff);
+  background: radial-gradient(circle at 50% 50%, var(--_c5) 0 12%, var(--_c4) 30%, color-mix(in oklab, var(--_c3) 70%, transparent) 55%, transparent 72%);
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+
+/* ------------------------------------------------------------------ lighting & structure */
+
+/* Dark outline around the silhouette (outside the box). */
+.g-outline { box-shadow: 0 0 0 var(--ow) var(--outline), var(--g-extra, 0 0 transparent); }
+/* Chunky 3D lip under a button or card. */
+.g-lip { box-shadow: 0 0 0 var(--ow) var(--outline), 0 var(--lip) 0 calc(var(--ow) * .2) var(--outline), 0 calc(var(--lip) + 8px) 14px var(--shadow); }
+/* Soft drop shadow for anything floating. */
+.g-drop { filter: drop-shadow(0 6px 6px var(--shadow)); }
+/* Glossy capsule highlight on the upper half. */
+.g-gloss::after {
+  content: ''; position: absolute; z-index: 2; pointer-events: none;
+  left: 6%; right: 6%; top: 7%; height: 42%;
+  border-radius: calc(var(--radius) * .8) calc(var(--radius) * .8) 40% 40% / calc(var(--radius) * .8) calc(var(--radius) * .8) 60% 60%;
+  background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.08));
+}
+/* Tiny specular dot top-left. */
+.g-spark::before {
+  content: ''; position: absolute; z-index: 3; left: 9%; top: 16%; width: 7%; aspect-ratio: 1.6; border-radius: 50%;
+  background: #fff; transform: rotate(-35deg); box-shadow: 12px 10px 0 -2px rgba(255,255,255,.8);
+}
+/* Recessed well (a track, a slot). */
+.g-well {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--c1, #111) 95%, black), color-mix(in oklab, var(--c2, #222) 80%, black));
+  box-shadow: inset 0 4px 6px rgba(0,0,0,.65), inset 0 -1px 0 rgba(255,255,255,.12), 0 1px 0 rgba(255,255,255,.18);
+}
+/* Dashed stitching just inside the edge. */
+.g-stitch::before {
+  content: ''; position: absolute; inset: 7px; border-radius: calc(var(--radius) - 6px); pointer-events: none;
+  border: 2px dashed color-mix(in oklab, var(--c5, #eee) 70%, transparent);
+}
+/* Rivets in the four corners. */
+.g-rivets::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 3;
+  --r: radial-gradient(circle at 40% 35%, #e8edf1 0 1.5px, #7d8791 2.5px, #2a3038 4px, #0b0d10 5px, transparent 5.5px);
+  background: var(--r) 10px 10px / 12px 12px no-repeat, var(--r) calc(100% - 10px) 10px / 12px 12px no-repeat,
+              var(--r) 10px calc(100% - 10px) / 12px 12px no-repeat, var(--r) calc(100% - 10px) calc(100% - 10px) / 12px 12px no-repeat;
+}
+/* 45° chamfered corners (sci-fi, gothic). Set --cut. */
+.g-chamfer { --cut: 14px; clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut)); border-radius: 0; }
+.g-pill { border-radius: 999px; --radius: 999px; }
+.g-round { border-radius: 50%; --radius: 50%; }
+
+/* ------------------------------------------------------------------ components */
+
+/* Button: frame (outline + lip) around a material face.
+   <div class="g-button"><div class="g-button__face g-mat-candy g-gloss"></div></div>        */
+.g-button { position: absolute; left: 14px; right: 14px; top: 10px; bottom: calc(var(--lip) + 18px); border-radius: var(--radius); }
+.g-button > .g-button__face { position: absolute; inset: 0; border-radius: inherit; }
+.g-button::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: -1;
+  background: var(--lip-color, color-mix(in oklab, var(--c1, #222) 70%, black));
+  box-shadow: 0 0 0 var(--ow) var(--outline), 0 var(--lip) 0 var(--ow) var(--outline), 0 calc(var(--lip) + 10px) 14px var(--shadow);
+  transform: translateY(0);
+}
+.g-button.is-pressed > .g-button__face { transform: translateY(calc(var(--lip) * .7)); filter: brightness(.92); }
+.g-button.is-pressed::before { box-shadow: 0 0 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3) 0 var(--ow) var(--outline), 0 calc(var(--lip) * .3 + 6px) 8px var(--shadow); }
+.g-button.is-disabled { filter: grayscale(.85) brightness(.95) contrast(.85); }
+
+/* Panel: a frame material around a content well. */
+.g-panel { position: absolute; inset: 12px 12px 22px; border-radius: var(--radius); box-shadow: 0 0 0 var(--ow) var(--outline), 0 12px 18px var(--shadow); }
+.g-panel > .g-panel__content { position: absolute; inset: var(--frame, 22px); border-radius: calc(var(--radius) * .55); box-shadow: 0 0 0 var(--ow) var(--outline), inset 0 6px 10px rgba(0,0,0,.28); }
+
+/* Bar: housing, track, fill. */
+.g-bar__track { position: absolute; border-radius: 999px; overflow: hidden; }
+.g-bar__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; }
+
+/* ------------------------------------------------------------------ icons from silhouettes
+   <div class="g-icon" style="--icon: url(/kit/icons/game-icons/crossed-swords.svg)">
+     <i class="g-icon__base g-mat-steel"></i><i class="g-icon__shade"></i><i class="g-icon__rim"></i><i class="g-icon__edge"></i>
+   </div>
+   Search silhouettes with the search_icons tool. */
+.g-icon {
+  position: absolute; inset: var(--pad, 10px); --o: var(--ow);
+  filter:
+    drop-shadow(var(--o) 0 0 var(--outline)) drop-shadow(calc(var(--o) * -1) 0 0 var(--outline))
+    drop-shadow(0 var(--o) 0 var(--outline)) drop-shadow(0 calc(var(--o) * -1) 0 var(--outline))
+    drop-shadow(0 4px 3px var(--shadow));
+}
+.g-icon > i { position: absolute; inset: 0; border-radius: 0; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+/* Form shading: darker toward the bottom-right. */
+.g-icon > .g-icon__shade { background: linear-gradient(135deg, transparent 35%, color-mix(in oklab, var(--c1, #000) 75%, transparent) 100%); mix-blend-mode: multiply; }
+/* Rim light: the shape minus itself shifted down-right leaves a lit top-left edge. */
+.g-icon > .g-icon__rim {
+  background: var(--rim, color-mix(in oklab, var(--c5, #fff) 80%, white));
+  -webkit-mask: var(--icon) center / contain no-repeat, var(--icon) calc(50% + var(--rim-w, 2px)) calc(50% + var(--rim-w, 2px)) / contain no-repeat;
+  -webkit-mask-composite: source-out;
+  mask: var(--icon) center / contain no-repeat subtract, var(--icon) calc(50% + var(--rim-w, 2px)) calc(50% + var(--rim-w, 2px)) / contain no-repeat;
+  opacity: .9;
+}
+/* Shadow edge on the bottom-right. */
+.g-icon > .g-icon__edge {
+  background: color-mix(in oklab, var(--c1, #000) 85%, transparent);
+  -webkit-mask: var(--icon) center / contain no-repeat, var(--icon) calc(50% - 2px) calc(50% - 2px) / contain no-repeat;
+  -webkit-mask-composite: source-out;
+  mask: var(--icon) center / contain no-repeat subtract, var(--icon) calc(50% - 2px) calc(50% - 2px) / contain no-repeat;
+}
+/* Optional inner glow for emissive icons. */
+.g-icon > .g-icon__glow { background: radial-gradient(circle at 50% 50%, var(--glow, #fff6d0), transparent 60%); mix-blend-mode: screen; }
+
+/* ------------------------------------------------------------------ type */
+
+/* Game title: gradient face, dark outline, extruded depth. Set --font and the ramp. */
+.g-title {
+  --c1: #3a1e08; --c3: #a86a1f; --c5: #f3d27c; --c6: #fff4d2;
+  font-family: var(--font, 'Cinzel'), serif; font-weight: var(--weight, 900); line-height: 1; letter-spacing: .02em;
+  color: transparent; background: linear-gradient(180deg, var(--c6) 0%, var(--c5) 38%, var(--c3) 62%, var(--c5) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  filter:
+    drop-shadow(0 2px 0 var(--c1)) drop-shadow(0 2px 0 var(--c1))
+    drop-shadow(var(--ow) 0 0 var(--outline)) drop-shadow(calc(var(--ow) * -1) 0 0 var(--outline))
+    drop-shadow(0 var(--ow) 0 var(--outline)) drop-shadow(0 calc(var(--ow) * -1) 0 var(--outline))
+    drop-shadow(0 6px 6px var(--shadow));
+}
+/* Label as the engine would draw it (for mockups). */
+.g-label {
+  font-family: var(--font, 'Lilita One'), sans-serif; color: var(--label, #fff); line-height: 1;
+  -webkit-text-stroke: calc(var(--ow) * 2) var(--outline); paint-order: stroke fill;
+  text-shadow: 0 3px 0 var(--outline);
+}

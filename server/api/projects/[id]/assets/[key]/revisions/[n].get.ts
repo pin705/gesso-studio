@@ -2,5 +2,6 @@
 export default defineEventHandler((event) => {
   const project = projectParam(event);
   const svg = revisionSvg(project, keyParam(event), Number(getRouterParam(event, 'n')));
-  return sendSvg(event, svg.replace(/(\shref=")(?!https?:|data:|#|\/)/g, `$1/files/${project.id}/assets/`));
+  const rebased = svg.replace(/(\s(?:href|src)=")(?!https?:|data:|#|\/)/g, `$1/files/${project.id}/assets/`);
+  return detectFormat(svg) === 'html' ? sendHtml(event, rebased) : sendSvg(event, rebased);
 });

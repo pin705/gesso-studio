@@ -9,3 +9,7 @@ dist
 *.log
 game-art/
 examples/*/exports/
+kit/fonts/
+kit/lib/
+kit/icons/
+kit/fonts.css

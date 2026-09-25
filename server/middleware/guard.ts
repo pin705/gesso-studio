@@ -8,6 +8,8 @@ export default defineEventHandler((event) => {
   const host = getRequestHeader(event, 'host') ?? '';
   if (!LOCAL_HOST.test(host) && !extra.includes(host)) throw createError({ statusCode: 403, message: 'Gesso only accepts local connections.' });
   const origin = getRequestHeader(event, 'origin');
+  // Sandboxed asset previews have an opaque ("null") origin; they may only read the public kit.
+  if (origin === 'null' && event.method === 'GET' && event.path.startsWith('/kit/')) return;
   if (origin && !LOCAL_ORIGIN.test(origin) && !extra.some((allowed) => origin.endsWith(`//${allowed}`))) {
     throw createError({ statusCode: 403, message: 'Cross-origin requests are not allowed.' });
   }

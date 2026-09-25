@@ -52,10 +52,10 @@ export function lintSummary(key: string, { meta, errors, warnings }: Lint): stri
 
 /** Validate, review and store an SVG. Parse errors are rejected; lint problems are recorded, not blocking. */
 export async function saveReviewed(project: Project, key: string, svg: string, input: { source: 'ai' | 'user' | 'restore'; note?: string; critique?: unknown }) {
-  if (typeof svg !== 'string' || !svg.includes('<svg')) throw createError({ statusCode: 400, message: 'svg must be a complete SVG document.' });
+  if (typeof svg !== 'string' || !/<svg\b|<html\b/i.test(svg)) throw createError({ statusCode: 400, message: 'Send a complete SVG document or a complete HTML document (<html data-type data-width data-height>).' });
   const { assets } = dirs(project);
   await mkdir(assets, { recursive: true });
-  const draft = path.join(assets, `.${key}.draft.svg`);
+  const draft = path.join(assets, `.${key}.draft.${detectFormat(svg)}`);
   await writeFile(draft, svg);
   try {
     const result = await reviewFile(draft, key, await readBible(project));
@@ -76,7 +76,7 @@ export function lintInBackground(project: Project, keys: string[]): void {
 
 /** Re-run lint on the current file (e.g. after a hand edit) and attach it to the latest revision. */
 export async function rereview(project: Project, key: string) {
-  const file = path.join(dirs(project).assets, `${key}.svg`);
+  const file = assetPath(project, key);
   const result = await reviewFile(file, key, await readBible(project));
   if ('fatal' in result) throw createError({ statusCode: 422, message: result.fatal });
   await writeAsset(project, key, await readFile(file, 'utf8'), { source: 'user', lint: result.report });
@@ -85,7 +85,7 @@ export async function rereview(project: Project, key: string) {
 
 export async function exportAssets(project: Project, keys: string[], scales: number[]) {
   if (!scales.length || scales.some((scale) => !(scale >= 0.25 && scale <= 4))) throw createError({ statusCode: 400, message: 'scales must be numbers between 0.25 and 4.' });
-  const { assets, exports } = dirs(project);
+  const { exports } = dirs(project);
   // Mockups show the kit in context; they are not shipped to the engine.
   const list = keys.length ? keys.map(assertKey) : listAssets(project).filter((asset) => asset.type !== 'mockup').map((asset) => asset.key);
   await mkdir(exports, { recursive: true });
@@ -93,7 +93,7 @@ export async function exportAssets(project: Project, keys: string[], scales: num
   const manifest = JSON.parse(await readFile(manifestFile, 'utf8').catch(() => '{"assets":{}}'));
   const written: string[] = [];
   for (const key of list) {
-    const file = path.join(assets, `${key}.svg`);
+    const file = assetPath(project, key);
     const { report } = await captureAsset(file, { id: key, times: [] });
     if (report.fatal) throw createError({ statusCode: 422, message: `${key}: ${report.fatal}` });
     const { meta } = report;

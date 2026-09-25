@@ -122,12 +122,12 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'save_asset',
-    description: 'Create or update an asset from a complete SVG document; returns lint results and a review sheet image to critique. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|mockup|other), optional data-style, data-bleed (deliberate full-bleed art such as skill icons), data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed". A mockup composes other assets with <image href="other-id.svg"> to judge the set in context.',
+    description: 'Create or update an asset from a complete document and get lint results plus a review sheet image to critique. Prefer HTML built on the Gesso Kit (read_guide(["kit"])): <html data-type data-width data-height> linking /kit/gesso.css for materials, components, fonts and silhouette icons, or /kit/gesso.mjs with Pixi or three for VFX and rendered 3D. SVG documents are also accepted. Put metadata on the root <svg>: data-type (button|panel|frame|bar|icon|vfx|background|mockup|other), optional data-style, data-bleed (deliberate full-bleed art such as skill icons), data-nine-slice="top right bottom left", and for animations data-duration="seconds" plus data-frames="count". Prefix every id with the asset id. States are separate ids: "btn-play.pressed". A mockup composes other assets with <image href="other-id.svg"> to judge the set in context.',
     inputSchema: {
       type: 'object',
       properties: {
         id: { type: 'string', description: 'kebab-case asset id, e.g. "btn-play" or "btn-play.pressed"' },
-        svg: { type: 'string', description: 'The complete SVG document' },
+        svg: { type: 'string', description: 'The complete HTML or SVG document' },
         note: { type: 'string', description: 'One line: what changed in this revision' },
         critique: {
           type: 'object',
@@ -153,6 +153,15 @@ const TOOLS: Tool[] = [
     }
   },
   {
+    name: 'search_icons',
+    description: 'Search professional silhouettes to build icons from instead of drawing shapes by hand: game-icons (4000+ game silhouettes: weapons, potions, creatures, magic, tools; CC BY 3.0, credit game-icons.net) or lucide (UI glyphs). Use a result as /kit/icons/<set>/<name>.svg, e.g. as the --icon of a .g-icon in an HTML asset.',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: 'words that must all appear, e.g. "potion" or "sword broken"' }, set: { type: 'string', enum: ['game-icons', 'lucide'] } }, required: ['query'] },
+    async handler({ query, set }) {
+      const names = await searchIcons(String(query ?? ''), set === 'lucide' ? 'lucide' : 'game-icons');
+      return [text(names.length ? names.map((name) => `/kit/icons/${set === 'lucide' ? 'lucide' : 'game-icons'}/${name}.svg`).join('\n') : 'No icons match; try fewer or broader words.')];
+    }
+  },
+  {
     name: 'view_assets',
     description: 'Render existing assets side by side in one image, to check a set for consistency or to look at assets the user edited. Omit ids to view everything (max 24).',
     inputSchema: { type: 'object', properties: { ids: { type: 'array', items: { type: 'string' } }, time: { type: 'number', description: 'seconds, for animated assets' } } },
@@ -164,7 +173,7 @@ const TOOLS: Tool[] = [
       for (const key of keys.slice(0, 24)) {
         // Animated assets default to a representative frame instead of the (often empty) first one.
         const at = time === undefined ? (getAssetRow(project, key)?.duration ?? 0) * 0.25 : Number(time) || 0;
-        const shot = await captureAsset(path.join(dirs(project).assets, `${key}.svg`), { id: key, fit: 204, times: [at] });
+        const shot = await captureAsset(assetPath(project, key), { id: key, fit: 204, times: [at] });
         if (shot.report.fatal) throw new Error(`${key}: ${shot.report.fatal}`);
         items.push({ id: key, meta: shot.report.meta, frame: shot.frames[0]! });
       }

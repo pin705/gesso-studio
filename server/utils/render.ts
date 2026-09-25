@@ -2,7 +2,8 @@
 // so what the agent reviews is exactly what the user sees.
 // @ts-nocheck -- in-page functions run in the browser and are serialized by Playwright; kept as plain JS.
 import { chromium } from 'playwright-core';
-import { pathToFileURL } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 
 export const ASSET_TYPES: string[] = ['button', 'panel', 'frame', 'bar', 'icon', 'vfx', 'background', 'mockup', 'other'];
 
@@ -137,10 +138,46 @@ function lintInPage({ id, types }) {
   };
 }
 
-function seekInPage(time) {
-  const svg = document.documentElement;
-  svg.pauseAnimations?.();
-  svg.setCurrentTime?.(time);
+/** Lint for HTML/CSS assets: the canvas size and metadata live on <html>. */
+function lintHtmlInPage({ types }) {
+  const root = document.documentElement;
+  const errors = [];
+  const warnings = [];
+  const width = Number(root.dataset.width);
+  const height = Number(root.dataset.height);
+  if (!(width > 0 && height > 0)) return { fatal: 'Set data-width and data-height (1x pixels) on <html>.' };
+  if (width > 4096 || height > 4096) errors.push(`Canvas ${width}x${height} is too large: author at 1x (max 4096px) and export @2x.`);
+  const type = root.dataset.type ?? '';
+  if (!types.includes(type)) warnings.push(`Set data-type on <html> to one of: ${types.join(', ')}.`);
+  if (window.__gessoError) errors.push(`Script error: ${window.__gessoError}`);
+  const duration = Number.parseFloat(root.dataset.duration ?? '');
+  const animated = document.getAnimations().length > 0 || !!document.querySelector('animate, animateTransform, animateMotion') || (typeof window.gesso?.render === 'function' && duration > 0);
+  if (animated && !(duration > 0)) warnings.push('Animated asset: set data-duration="<seconds>" on <html> so frames can be reviewed and exported.');
+  if (!document.querySelector('link[href*="/kit/gesso.css"]') && !document.querySelector('script[src*="/kit/"], script[type="module"]')) warnings.push('Not using the Gesso Kit: link /kit/gesso.css (materials, components, fonts) unless this asset needs none of it.');
+  if (['button', 'panel', 'frame', 'bar'].includes(type) && document.body.innerText.trim()) warnings.push('UI chrome contains text: labels are rendered and localized by the engine. Keep the art textless unless it is a logo or a mockup.');
+  let nineSlice = null;
+  const slice = (root.dataset.nineSlice ?? '').trim();
+  if (slice) {
+    const values = slice.split(/[\s,]+/).map(Number);
+    if (values.length > 4 || values.some((value) => !(value >= 0))) errors.push('data-nine-slice must be 1-4 non-negative numbers: "top right bottom left".');
+    else {
+      const [top, right = top, bottom = top, left = right] = values;
+      nineSlice = [top, right, bottom, left];
+    }
+  }
+  return {
+    meta: { width, height, type, style: root.dataset.style ?? '', bleed: 'bleed' in root.dataset, animated, duration: duration > 0 ? duration : 0, frames: Number.parseInt(root.dataset.frames ?? '', 10) || 0, nineSlice, bounds: null, elements: document.querySelectorAll('*').length },
+    errors,
+    warnings
+  };
+}
+
+async function seekInPage(time) {
+  if (typeof window.gesso?.render === 'function') await window.gesso.render(time);
+  for (const svg of [document.documentElement, ...document.querySelectorAll('svg')]) {
+    svg.pauseAnimations?.();
+    svg.setCurrentTime?.(time);
+  }
   for (const animation of document.getAnimations()) {
     animation.pause();
     animation.currentTime = time * 1000;
@@ -154,28 +191,76 @@ function resizeInPage(scale) {
   svg.setAttribute('height', String(svg.height.baseVal.value * scale));
 }
 
+const ORIGIN = 'http://gesso.render';
+
 /**
- * Open an SVG file as its own document, lint it, then screenshot it.
+ * Serve the asset folder and the kit to the page and nothing else: assets cannot reach the network or the
+ * Gesso API, and relative references (mockups) resolve to sibling assets.
+ */
+async function sandbox(page, dir) {
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url());
+    if (url.origin !== ORIGIN) return route.abort();
+    if (url.pathname.startsWith('/kit/')) {
+      const file = await kitFile(decodeURIComponent(url.pathname.slice(5)));
+      return file ? route.fulfill({ status: 200, contentType: file.type, body: file.body }) : route.fulfill({ status: 404 });
+    }
+    if (url.pathname.startsWith('/asset/')) {
+      const name = decodeURIComponent(url.pathname.slice(7));
+      if (name.includes('/') || name.includes('..')) return route.fulfill({ status: 404 });
+      const body = await readFile(path.join(dir, name)).catch(() => null);
+      const type = name.endsWith('.svg') ? 'image/svg+xml' : name.endsWith('.html') ? 'text/html; charset=utf-8' : name.endsWith('.png') ? 'image/png' : 'application/octet-stream';
+      return body ? route.fulfill({ status: 200, contentType: type, body }) : route.fulfill({ status: 404 });
+    }
+    return route.abort();
+  });
+}
+
+const htmlSize = (source) => {
+  const tag = source.match(/<html\b[^>]*>/i)?.[0] ?? '';
+  const read = (name) => Number(tag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1]);
+  return { width: read('data-width'), height: read('data-height') };
+};
+
+/**
+ * Open an asset (SVG or HTML) as its own document, lint it, then screenshot it.
  * `scale` is explicit; otherwise `fit` is the target size of the longer side (capped at 2x).
  * `times` are seconds; one transparent PNG is returned per time.
  */
-export function captureAsset(file: string, { id, scale, fit = 0, times = [0] }: { id: string; scale?: number; fit?: number; times?: number[] }): Promise<{ report: any; frames: Buffer[]; scale: number }> {
-  return withPage(async (page) => {
-    await page.goto(pathToFileURL(file).href);
-    const report = await page.evaluate(lintInPage, { id, types: ASSET_TYPES });
+export async function captureAsset(file: string, { id, scale, fit = 0, times = [0] }: { id: string; scale?: number; fit?: number; times?: number[] }): Promise<{ report: any; frames: Buffer[]; scale: number }> {
+  const html = file.endsWith('.html');
+  // HTML scales with the device pixel ratio (canvas libraries honour it); SVG scales its own width/height.
+  const size = html ? htmlSize(await readFile(file, 'utf8')) : null;
+  const factorFor = (width, height) => scale ?? (fit ? Math.min(2, Math.max(0.25, fit / Math.max(width, height))) : 1);
+  const dpr = html && size.width > 0 ? factorFor(size.width, size.height) : 1;
+  const browserInstance = await browser();
+  const page = await browserInstance.newPage({ viewport: html && size.width > 0 ? { width: Math.ceil(size.width), height: Math.ceil(size.height) } : { width: 1600, height: 1600 }, deviceScaleFactor: dpr });
+  try {
+    await sandbox(page, path.dirname(file));
+    if (html) await page.addInitScript(() => window.addEventListener('error', (event) => (window.__gessoError ??= event.message)));
+    await page.goto(`${ORIGIN}/asset/${encodeURIComponent(path.basename(file))}`, { waitUntil: 'load' });
+    if (html) {
+      // mockups embed other HTML assets in iframes: wait for every frame's scripts and fonts
+      for (const frame of page.frames()) await frame.evaluate(async () => { await window.gesso?.ready; await document.fonts?.ready; }).catch(() => undefined);
+    }
+    else await page.evaluate(() => document.fonts?.ready);
+    const report = await page.evaluate(html ? lintHtmlInPage : lintInPage, { id, types: ASSET_TYPES });
     if (report.fatal || !times.length) return { report, frames: [], scale: 1 };
     const { width, height } = report.meta;
-    const factor = scale ?? Math.min(2, Math.max(0.25, fit / Math.max(width, height)));
-    if (factor !== 1) await page.evaluate(resizeInPage, factor);
-    await page.setViewportSize({ width: Math.ceil(width * factor), height: Math.ceil(height * factor) });
-    await page.evaluate(() => document.fonts?.ready);
+    const factor = html ? dpr : factorFor(width, height);
+    if (!html) {
+      if (factor !== 1) await page.evaluate(resizeInPage, factor);
+      await page.setViewportSize({ width: Math.ceil(width * factor), height: Math.ceil(height * factor) });
+    }
     const frames = [];
     for (const time of times) {
       await page.evaluate(seekInPage, time);
       frames.push(await page.screenshot({ omitBackground: true }));
     }
     return { report, frames, scale: factor };
-  });
+  } finally {
+    await page.close();
+  }
 }
 
 const PAGE_STYLE = `

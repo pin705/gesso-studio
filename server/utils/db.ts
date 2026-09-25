@@ -65,7 +65,9 @@ const MIGRATIONS = [
      created_at INTEGER NOT NULL
    );
    CREATE INDEX activity_project ON activity (project_id, id DESC);
-   CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`
+   CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`,
+  // 2: assets can be authored as HTML/CSS (Gesso Kit, Pixi, three) as well as SVG
+  `ALTER TABLE assets ADD COLUMN format TEXT NOT NULL DEFAULT 'svg';`
 ];
 
 let db: DatabaseSync | undefined;

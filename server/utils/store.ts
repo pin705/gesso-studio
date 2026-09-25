@@ -29,6 +29,17 @@ export interface AssetRow {
   status: AssetStatus;
   hash: string;
   updated_at: number;
+  format: AssetFormat;
+}
+
+export type AssetFormat = 'svg' | 'html';
+/** HTML/CSS assets (Gesso Kit, Pixi, three) or SVG, told apart by their root element. */
+export const detectFormat = (content: string): AssetFormat => (/^\s*(<!doctype html|<html\b)/i.test(content) ? 'html' : 'svg');
+
+/** Current file of an asset, whichever format it was saved in. */
+export function assetPath(project: Project, key: string): string {
+  const format = getAssetRow(project, key)?.format ?? (existsSync(path.join(dirs(project).assets, `${key}.html`)) ? 'html' : 'svg');
+  return path.join(dirs(project).assets, `${key}.${format}`);
 }
 
 export const KEY = /^[a-z0-9][a-z0-9._-]{0,79}$/;
@@ -124,7 +135,8 @@ export async function writeBible(project: Project, markdown: string, actor: 'use
 // ---------- assets ----------
 
 export function parseMeta(svg: string) {
-  const tag = svg.match(/<svg\b[^>]*>/i)?.[0] ?? '';
+  const format = detectFormat(svg);
+  const tag = svg.match(format === 'html' ? /<html\b[^>]*>/i : /<svg\b[^>]*>/i)?.[0] ?? '';
   const attr = (name: string) => tag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1];
   const viewBox = attr('viewBox')?.trim().split(/[\s,]+/).map(Number) ?? [];
   const slice = attr('data-nine-slice')?.trim().split(/[\s,]+/).map(Number).filter((value) => value >= 0);
@@ -132,11 +144,12 @@ export function parseMeta(svg: string) {
   return {
     type: attr('data-type') ?? 'other',
     style: attr('data-style') ?? '',
-    width: Number.parseFloat(attr('width') ?? '') || viewBox[2] || 0,
-    height: Number.parseFloat(attr('height') ?? '') || viewBox[3] || 0,
+    width: Number.parseFloat(attr(format === 'html' ? 'data-width' : 'width') ?? '') || viewBox[2] || 0,
+    height: Number.parseFloat(attr(format === 'html' ? 'data-height' : 'height') ?? '') || viewBox[3] || 0,
     duration: Number.parseFloat(attr('data-duration') ?? '') || 0,
     frames: Number.parseInt(attr('data-frames') ?? '', 10) || 0,
-    nine_slice: nineSlice ? JSON.stringify(nineSlice) : null
+    nine_slice: nineSlice ? JSON.stringify(nineSlice) : null,
+    format
   };
 }
 
@@ -165,13 +178,13 @@ function recordRevision(project: Project, key: string, svg: string, input: Revis
   let row = getAssetRow(project, key);
   const status: AssetStatus = input.source === 'ai' || input.source === 'restore' ? 'review' : (row?.status ?? 'draft');
   if (!row) {
-    db.prepare(`INSERT INTO assets (project_id, key, type, style, width, height, duration, frames, nine_slice, status, hash, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .run(project.id, key, meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now());
+    db.prepare(`INSERT INTO assets (project_id, key, type, style, width, height, duration, frames, nine_slice, status, hash, updated_at, format)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(project.id, key, meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now(), meta.format);
     row = getAssetRow(project, key)!;
   } else if (row.hash !== digest) {
-    db.prepare(`UPDATE assets SET type = ?, style = ?, width = ?, height = ?, duration = ?, frames = ?, nine_slice = ?, status = ?, hash = ?, updated_at = ? WHERE id = ?`)
-      .run(meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now(), row.id);
+    db.prepare(`UPDATE assets SET type = ?, style = ?, width = ?, height = ?, duration = ?, frames = ?, nine_slice = ?, status = ?, hash = ?, updated_at = ?, format = ? WHERE id = ?`)
+      .run(meta.type, meta.style, meta.width, meta.height, meta.duration, meta.frames, meta.nine_slice, status, digest, now(), meta.format, row.id);
   }
   const last = db.prepare('SELECT number, hash FROM revisions WHERE asset_id = ? ORDER BY number DESC LIMIT 1').get(row.id) as { number: number; hash: string } | undefined;
   if (last?.hash === digest) {
@@ -191,10 +204,13 @@ function recordRevision(project: Project, key: string, svg: string, input: Revis
 export async function writeAsset(project: Project, key: string, svg: string, input: RevisionInput): Promise<number> {
   const { assets } = dirs(project);
   await mkdir(assets, { recursive: true });
-  const file = path.join(assets, `${key}.svg`);
+  const format = detectFormat(svg);
+  const file = path.join(assets, `${key}.${format}`);
   const temp = path.join(assets, `.${key}.${process.pid}.tmp`);
   await writeFile(temp, svg);
   await rename(temp, file);
+  // switching format replaces the old file
+  await rm(path.join(assets, `${key}.${format === 'html' ? 'svg' : 'html'}`), { force: true });
   const number = recordRevision(project, key, svg, input);
   emit({ type: 'asset', project: project.id, asset: key });
   return number;
@@ -202,6 +218,7 @@ export async function writeAsset(project: Project, key: string, svg: string, inp
 
 export async function deleteAsset(project: Project, key: string): Promise<void> {
   await rm(path.join(dirs(project).assets, `${key}.svg`), { force: true });
+  await rm(path.join(dirs(project).assets, `${key}.html`), { force: true });
   useDb().prepare('DELETE FROM assets WHERE project_id = ? AND key = ?').run(project.id, key);
   logActivity(project, 'user', 'delete', `Deleted ${key}`, key);
   emit({ type: 'asset', project: project.id, asset: key });
@@ -211,10 +228,11 @@ export async function deleteAsset(project: Project, key: string): Promise<void> 
 export async function syncProject(project: Project): Promise<string[]> {
   const { assets } = dirs(project);
   const names = await readdir(assets).catch(() => [] as string[]);
-  const keys = names.filter((name) => name.endsWith('.svg') && !name.startsWith('.')).map((name) => name.slice(0, -4)).filter((key) => KEY.test(key));
+  const files = names.filter((name) => /\.(svg|html)$/.test(name) && !name.startsWith('.'));
+  const keys = [...new Set(files.map((name) => name.replace(/\.(svg|html)$/, '')))].filter((key) => KEY.test(key));
   const changed: string[] = [];
   for (const key of keys) {
-    const svg = await readFile(path.join(assets, `${key}.svg`), 'utf8').catch(() => null);
+    const svg = await readFile(files.includes(`${key}.html`) ? path.join(assets, `${key}.html`) : path.join(assets, `${key}.svg`), 'utf8').catch(() => null);
     if (svg === null) continue;
     if (getAssetRow(project, key)?.hash === hash(svg)) continue;
     recordRevision(project, key, svg, { source: 'disk' });

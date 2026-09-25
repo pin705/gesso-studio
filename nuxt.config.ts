@@ -25,7 +25,8 @@ export default defineNuxtConfig({
   nitro: {
     serverAssets: [
       { baseName: 'knowledge', dir: dir('./knowledge') },
-      { baseName: 'samples', dir: dir('./examples') }
+      { baseName: 'samples', dir: dir('./examples') },
+      { baseName: 'kit', dir: dir('./kit') }
     ]
   },
   runtimeConfig: { public: { version } },

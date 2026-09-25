@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
   const body = await readFile(file).catch(() => null);
   if (!body) throw createError({ statusCode: 404 });
   if (file.endsWith('.svg')) return sendSvg(event, body.toString('utf8'));
+  if (file.endsWith('.html')) return sendHtml(event, body.toString('utf8'));
   setResponseHeaders(event, { 'content-type': TYPES[path.extname(file)] ?? 'application/octet-stream', 'x-content-type-options': 'nosniff', 'cache-control': 'no-store' });
   if (getQuery(event).download !== undefined) setResponseHeader(event, 'content-disposition', `attachment; filename="${path.basename(file)}"`);
   return body;
