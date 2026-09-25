@@ -13,16 +13,24 @@ export async function readTopic(topic: string): Promise<string> {
   return String(await knowledge().getItem(`${topic.replaceAll('/', ':')}.md`));
 }
 
-/** Copy the bundled showcase into the data folder and register it. */
-export async function installSample(): Promise<Project> {
+/** Bundled example projects: folder name and the title line of their art bible. */
+export async function listSamples(): Promise<{ name: string; title: string }[]> {
   const samples = useStorage('assets:samples');
-  const target = path.join(dataDir(), 'samples', 'showcase');
-  for (const key of await samples.getKeys('showcase')) {
+  const names = [...new Set((await samples.getKeys()).map((key) => key.split(':')[0]!))].sort();
+  return Promise.all(names.map(async (name) => ({ name, title: String((await samples.getItem(`${name}:STYLE.md`)) ?? name).split('\n')[0]!.replace(/^#\s*/, '').replace(/ - Art Bible$/, '') })));
+}
+
+/** Copy a bundled example into the data folder and register it. */
+export async function installSample(name = 'meadow-farm'): Promise<Project> {
+  if (!(await listSamples()).some((sample) => sample.name === name)) throw createError({ statusCode: 404, message: `Unknown sample: ${name}` });
+  const samples = useStorage('assets:samples');
+  const target = path.join(dataDir(), 'samples', name);
+  for (const key of (await samples.getKeys(name)).filter((key) => !key.split(':').includes('exports'))) {
     const file = path.join(target, ...key.split(':').slice(1));
     await mkdir(path.dirname(file), { recursive: true });
     const raw = await samples.getItemRaw(key);
     await writeFile(file, typeof raw === 'string' ? raw : Buffer.from(raw as Uint8Array));
   }
-  const project = await addProject(target, 'Showcase');
+  const project = await addProject(target, (await listSamples()).find((sample) => sample.name === name)?.title ?? name);
   return touchProject(project);
 }

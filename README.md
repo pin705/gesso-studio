@@ -21,6 +21,7 @@ You review, comment, approve and export in a live local studio.
 
 *Gesso* is the primer painters brush onto a canvas so the paint sits right. Gesso does the same for AI-made game art. Without it, an agent draws "programmer art": one gradient per shape, glow on everything, clip-art stars. With it, the agent works like a game artist does:
 
+- **It builds on the whole web platform instead of hand-typing shapes.** The Gesso Kit gives the agent tuned CSS materials (wood, gold, hammered iron, jade, parchment, candy, hologram…), self-hosted game fonts, 4000+ professional silhouettes from game-icons.net, and PixiJS and three.js for VFX and rendered 3D. Fast, free and local, with no image-generation API.
 - **It follows a craft, not a template.** The knowledge base covers the production workflow, light and value, hue-shifted color ramps, shape language, material recipes (gold, jade, glass, iron, energy…), SVG technique, a spec for each asset type, and genre style packs. Nothing in the code is tied to a genre; each project has its own **art bible**.
 - **It sees its own work.** Every save is rendered in headless Chromium and returned to the agent as a review sheet: the render, a grayscale value check, 64 px and 32 px readability previews, and animation frames. Lint catches palette drift, clipping, broken 9-slice insets, silently ignored animation timing and unsafe SVG. The agent scores itself against a rubric and iterates.
 - **You stay the art director.** The studio shows work as it happens. Approve it, request changes, or pin a comment on the exact pixel. The agent reads your feedback, fixes it and replies. Every revision is kept, so you can compare revisions with a swipe slider and restore any of them.
@@ -30,6 +31,22 @@ You review, comment, approve and export in a live local studio.
   <tr>
     <td width="50%"><img src="docs/images/review.png" alt="Pinned feedback on an asset" /><br/><sub><b>Review:</b> pin feedback on the canvas; your agent picks it up via <code>get_feedback</code>.</sub></td>
     <td width="50%"><img src="docs/images/nine-slice.png" alt="9-slice stretch test" /><br/><sub><b>Stretch test:</b> see a 9-slice button stretched the way your engine will stretch it.</sub></td>
+  </tr>
+</table>
+
+## The Gesso Kit
+
+<img src="docs/images/kit-sampler.png" alt="Kit materials, silhouette icons and game fonts" width="100%" />
+
+Assets are small HTML documents (or plain SVG) rendered by Chromium. The kit turns a silhouette plus a material into a shaded, outlined, rim-lit icon, gives UI parts real textures and bevels, and lets VFX use Pixi particles, bloom and shockwaves while Gesso drives time for deterministic sprite-sheet export. See the [`kit` guide](knowledge/kit.md).
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/kit-before-after.png" alt="Hand-typed SVG versus Gesso Kit" /><br/><sub><b>Before and after:</b> the same Meadow Farm assets, hand-typed SVG (left) and rebuilt on the kit (right).</sub></td>
+    <td width="50%"><img src="docs/images/meadow-mockup.png" alt="Meadow Farm main menu mockup" /><br/><sub><b>In context:</b> a main-menu mockup composed from the real assets, with kit fonts.</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/images/vfx-pixi.jpg" alt="Pixi VFX review sheet" /><br/><sub><b>Pixi VFX</b> with bloom and streak particles: the review sheet shows the frames Gesso will export.</sub></td>
   </tr>
 </table>
 
@@ -88,7 +105,7 @@ Then ask your agent something like:
 ```
 
 1. **Art bible first.** With no `STYLE.md`, the agent reads the workflow guide and the closest style pack, agrees on a direction with you, and writes the art bible. Its hex codes become the palette that lint enforces.
-2. **Draw, look, critique, repeat.** For each asset the agent reads the asset-type guide, writes SVG and calls `save_asset`. It critiques the review sheet it gets back, submits rubric scores, and revises until every score passes.
+2. **Draw, look, critique, repeat.** For each asset the agent reads the asset-type guide, builds it on the Gesso Kit (HTML/CSS, silhouettes, Pixi or three.js) or as SVG, and calls `save_asset`. It critiques the review sheet it gets back, submits rubric scores, and revises until every score passes.
 3. **Review in the studio.** New revisions appear live. You approve them or leave feedback, which the agent reads and resolves.
 4. **Export** engine-ready files when the set is approved.
 
@@ -98,9 +115,9 @@ Your art stays as plain SVG files in your project folder, so it can live in the 
 
 | Area | Guides |
 | --- | --- |
-| Process | `workflow`, `critique` (rubric + anti-slop list), `art-bible` (template) |
+| Process | `workflow`, `kit`, `critique` (rubric + anti-slop list), `art-bible` (template) |
 | Fundamentals | `light-value`, `color`, `shape`, `materials`, `svg-craft` |
-| Asset types | `button`, `panel`, `icon`, `bar`, `vfx` |
+| Asset types | `button`, `panel`, `icon`, `bar`, `vfx`, `mockup` |
 | Style packs | `xianxia`, `dark-fantasy`, `heroic-fantasy`, `sci-fi`, `casual`, `pixel` |
 
 Guides live in [`knowledge/`](knowledge/) and can be browsed in the studio. They are the highest-leverage place to contribute: a better material recipe improves every future asset. See [Writing knowledge](docs/knowledge-authoring.md).
@@ -138,7 +155,8 @@ The stack is Nuxt 4 (Vue 3, Nitro), Tailwind CSS 4, shadcn-vue, SQLite through `
 
 ## Roadmap
 
-- Optional raster backends (for example local ComfyUI) for painterly art, composited into SVG and reviewed through the same loop.
+- A brilliant-cut gem generator, coin and bottle presets for three.js items, and more Pixi VFX recipes in the kit.
+- Calibrated critique: anchor examples for each score so self-review cannot drift upward.
 - More style packs and asset types: characters, tilesets, cards, map markers.
 - Engine exporters for Godot, Unity and Defold import settings.
 - An npm release, so `npx gesso-studio` works without cloning.
@@ -146,3 +164,5 @@ The stack is Nuxt 4 (Vue 3, Nitro), Tailwind CSS 4, shadcn-vue, SQLite through `
 ## License
 
 Gesso is licensed under the [Apache License 2.0](LICENSE). Assets you and your agent create are yours.
+
+The kit redistributes third-party fonts (SIL OFL 1.1, Apache-2.0), icons (game-icons.net under CC BY 3.0, Lucide under ISC) and libraries (PixiJS, three.js, Rough.js under MIT); see [NOTICE](NOTICE). Games that ship game-icons silhouettes must credit game-icons.net; `export_assets` writes the credits into the manifest.

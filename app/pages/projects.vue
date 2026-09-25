@@ -7,13 +7,14 @@ useHead({ title: 'Projects · Gesso' });
 const { projects, loaded, refresh } = useProjects();
 const addOpen = ref(false);
 const installing = ref(false);
+const { data: samples } = await useFetch<{ name: string; title: string }[]>('/api/samples', { default: () => [] });
 const renaming = ref<ProjectSummary | null>(null);
 const newName = ref('');
 
-async function installSample() {
+async function installSample(name?: string) {
   installing.value = true;
   try {
-    const project = await $fetch<{ id: string }>('/api/samples', { method: 'POST' });
+    const project = await $fetch<{ id: string }>('/api/samples', { method: 'POST', body: { name } });
     await refresh();
     await navigateTo(`/p/${project.id}`);
   } catch (error) {
@@ -40,6 +41,10 @@ async function rename() {
 
 <template>
   <PageHeader :crumbs="[{ label: 'Projects' }]">
+    <DropdownMenu>
+      <DropdownMenuTrigger as-child><Button variant="outline" size="sm" :disabled="installing"><Sparkles class="size-4" /> Samples</Button></DropdownMenuTrigger>
+      <DropdownMenuContent align="end"><DropdownMenuItem v-for="sample in samples" :key="sample.name" @select="installSample(sample.name)">{{ sample.title }}</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
     <Button size="sm" @click="addOpen = true"><Plus class="size-4" /> Add project</Button>
   </PageHeader>
 
@@ -55,7 +60,10 @@ async function rename() {
       <p class="mt-1 max-w-md text-sm text-muted-foreground">Add your game's art folder, or explore the showcase to see what your AI can make with the knowledge base.</p>
       <div class="mt-6 flex gap-2">
         <Button @click="addOpen = true"><Plus class="size-4" /> Add project</Button>
-        <Button variant="outline" :disabled="installing" @click="installSample"><Sparkles class="size-4" /> {{ installing ? 'Installing…' : 'Open the showcase' }}</Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child><Button variant="outline" :disabled="installing"><Sparkles class="size-4" /> {{ installing ? 'Installing…' : 'Open a sample project' }}</Button></DropdownMenuTrigger>
+          <DropdownMenuContent><DropdownMenuItem v-for="sample in samples" :key="sample.name" @select="installSample(sample.name)">{{ sample.title }}</DropdownMenuItem></DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
 

@@ -83,7 +83,9 @@ export function requireProject(ref: string): Project {
 export async function addProject(folder: string, name?: string): Promise<Project> {
   const target = path.resolve(folder.replace(/^~(?=$|\/)/, homedir()));
   const home = homedir();
-  if (target !== home && !target.startsWith(home + path.sep) && !process.env.GESSO_ALLOW_ANY_PATH) {
+  const inside = (root: string) => target === root || target.startsWith(root + path.sep);
+  // the home folder, or Gesso's own data folder (where samples are installed)
+  if (!inside(home) && !inside(dataDir()) && !process.env.GESSO_ALLOW_ANY_PATH) {
     throw createError({ statusCode: 400, message: `Projects must live inside your home folder (${home}).` });
   }
   const existing = findProject(target);

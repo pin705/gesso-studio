@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+- **Gesso Kit** at `/kit`: CSS materials and components (`gesso.css`), procedural textures, 13 self-hosted game fonts, game-icons and lucide silhouettes, and browser builds of PixiJS, pixi-filters, three.js and Rough.js.
+- HTML assets alongside SVG, rendered on an isolated origin; `defineAsset()` runtime for deterministic Pixi and three.js frames.
+- `search_icons` MCP tool, `kit` and `asset-types/mockup` guides, mockup asset type.
+- Server-rendered thumbnails for every format, revision and scale.
+- Export manifests carry CC BY 3.0 credits for silhouettes used.
+
+### Fixed
+- Content bounds are measured from rendered pixels, so clip paths and glows no longer cause false edge warnings; `data-bleed` marks intentional full-bleed art.
+- A file removed on disk no longer deletes its history: the asset is hidden and revived with all revisions when the file returns.
+- `view_assets` shows animated assets at a representative frame.
+
 ## [0.3.0] - 2026-09-25
 
 ### Added

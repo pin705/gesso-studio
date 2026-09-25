@@ -12,7 +12,8 @@ The server sends workflow instructions during `initialize`. Agents that honour s
 | `read_guide` | `topics?: string[]` | Knowledge base index, or the requested guides (`workflow`, `asset-types/button`, `styles/xianxia`…). |
 | `write_art_bible` | `markdown` | Saves `STYLE.md`; reports the palette that lint will enforce. |
 | `read_asset` | `id`, `revision?` | SVG source of the latest or a given revision. |
-| `save_asset` | `id`, `svg`, `note?`, `critique?` | Lint summary and a JPEG review sheet. `critique` is `{ scores: { readability, value, form, material, color, craft, fitness }, notes }`. |
+| `save_asset` | `id`, `svg` (a complete HTML or SVG document), `note?`, `critique?` | Lint summary and a JPEG review sheet. `critique` is `{ scores: { readability, value, form, material, color, craft, fitness }, notes }`. |
+| `search_icons` | `query`, `set?` | Silhouette paths under `/kit/icons/…` (game-icons: 4000+ game silhouettes, CC BY 3.0; lucide: UI glyphs). |
 | `view_assets` | `ids?`, `time?` | One contact-sheet image of several assets, for checking a set's consistency. |
 | `get_feedback` | `id?` | Open feedback, with pinned points in asset pixels. |
 | `resolve_feedback` | `feedback_id`, `reply` | Marks feedback resolved; the reply is shown to the user. |
