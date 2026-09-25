@@ -9,7 +9,7 @@ Work like a professional game artist:
 1. Call get_project first (it also lists open feedback). With no art bible (STYLE.md), read_guide(["workflow", "art-bible"]) plus the closest styles/* pack, agree on the direction with the user, then write_art_bible.
 2. Build assets on the Gesso Kit (read_guide(["kit"])): HTML with /kit/gesso.css materials and components, get_template for genre UI starting points, search_icons silhouettes instead of hand-drawn shapes, Pixi for VFX (/kit/vfx.mjs recipes) and three.js for rendered items (/kit/items.mjs). Read the asset-types/* guide and the fundamentals you need. Follow STYLE.md exactly.
 3. Write the complete document and call save_asset with a one-line note of what changed. It returns lint results and a review sheet (render, grayscale value check, 64/32px readability, animation frames).
-4. Critique every review sheet with read_guide(["critique"]) and compare it with the anchor sheets it returns; pass your scores in save_asset's critique field. Fix the weakest dimension and save again. Aim for 4 on every dimension; when a score stays at 3 after two passes, stop and tell the user what would lift it.
+4. Critique every review sheet with read_guide(["critique"]) and compare it with the anchor sheets it returns; pass your scores in save_asset's critique field. Fix the weakest dimension and save again. Aim for 5 on every dimension (shippable beside the genre reference in critique.md); when a score stays at 3 after two passes, stop and tell the user what would lift it.
 5. The user leaves feedback in the studio. Check get_feedback before and after each round, address it, then resolve_feedback with a one-line reply.
 6. For a set, view_assets to compare consistency. Call export_assets only once the user approves.
 Assets are game-ready: transparent canvas, no presentation background, captions or watermarks; UI chrome is textless (the engine renders labels).`;
@@ -86,7 +86,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: 'read_guide',
-    description: 'Read the game-art knowledge base: production workflow, critique rubric (with anchor images of real assets at scores 2, 3 and 4), art fundamentals, asset-type specs and genre style packs. Call with no topics for the index.',
+    description: 'Read the game-art knowledge base: production workflow, critique rubric (with anchor images of real assets at scores 2, 3 and 4 plus the 5/5 shipped-game reference bar), art fundamentals, asset-type specs and genre style packs. Call with no topics for the index.',
     inputSchema: { type: 'object', properties: { topics: { type: 'array', items: { type: 'string' }, description: 'e.g. ["workflow", "asset-types/button", "styles/xianxia"]' } } },
     async handler({ topics }) {
       const wanted = listArg(topics);

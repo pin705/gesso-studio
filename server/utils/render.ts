@@ -155,6 +155,9 @@ function lintHtmlInPage({ types }) {
   if (animated && !(duration > 0)) warnings.push('Animated asset: set data-duration="<seconds>" on <html> so frames can be reviewed and exported.');
   if (!document.querySelector('link[href*="/kit/gesso.css"]') && !document.querySelector('script[src*="/kit/"], script[type="module"]')) warnings.push('Not using the Gesso Kit: link /kit/gesso.css (materials, components, fonts) unless this asset needs none of it.');
   if (['button', 'panel', 'frame', 'bar'].includes(type) && document.body.innerText.trim()) warnings.push('UI chrome contains text: labels are rendered and localized by the engine. Keep the art textless unless it is a logo or a mockup.');
+  // ponytail: one guard for AAA volume on UI chrome; pixel art and icons/VFX are exempt (own shading).
+  const style = root.dataset.style ?? '';
+  if (!style.includes('pixel') && ['button', 'panel', 'frame', 'bar'].includes(type) && document.querySelector('[class*="g-mat-"]') && !document.querySelector('.g-form, .g-core, .g-gloss, .t-shine, .g-panel')) warnings.push('Flat material without form volume: add g-form (top-left light + bottom-right shade) or g-core, otherwise Form caps at 3.');
   let nineSlice = null;
   const slice = (root.dataset.nineSlice ?? '').trim();
   if (slice) {

@@ -20,6 +20,7 @@ Ornament lives in the corners, edges are uniform along their length, the center 
 2. Outer rim or base: silhouette in the darkest ramp step, the "outline".
 3. Side or lip for chunky styles: a darker copy offset 4-10px down, giving thickness.
 4. Face: material fill (see `materials`), shaded for its form (convex face lighter at top).
+   On the kit: put `g-form` (or `g-core`) on the face — top-left light falling to a bottom-right core shadow. A single vertical gradient without it caps Form at 3 and trips lint.
 5. Bevel lips: light top edge, dark bottom edge (`svg-craft`).
 6. Face detail: inner line or inset frame, material texture, ornaments in the corners.
 7. Highlights: gloss or reflection band at the top (style dependent), one or two specular pops.

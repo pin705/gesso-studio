@@ -13,6 +13,7 @@
 1. Drop shadow (soft, below).
 2. Outer rim: darkest step, defines the silhouette.
 3. Frame band: the material (metal, wood, lacquer, holo line) with bevel lips and edge highlights.
+   On the kit: `g-form` on the frame band (or build on `g-panel`, which already separates frame and well). Flat bands without top-left light cap at 3.
 4. Inner rim: a thin dark line or a lighter pinline separating frame and content.
 5. Content well: calm, lower contrast than the frame, with an inner shadow along its top edge so it sits below the frame.
 

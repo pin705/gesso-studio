@@ -16,11 +16,16 @@
 </head>
 <body><div class="g-canvas">
 <div class="outlined" style="position:absolute;inset:14px 10px 18px">
-  <div class="g-mat-iron iron g-chamfer" style="position:absolute;inset:0;--cut:14px"></div>
-  <div class="g-mat-lacquer blood g-chamfer" style="position:absolute;inset:11px 26px;--cut:8px;box-shadow:none"></div>
+  <div class="g-mat-iron iron g-chamfer g-form g-wear" style="position:absolute;inset:0;--cut:14px"></div>
+  <div class="g-mat-lacquer blood g-chamfer g-form" style="position:absolute;inset:11px 26px;--cut:8px;box-shadow:inset 1.5px 1.5px 0 rgba(255,217,160,.5), inset -2px -3px 0 #1f0405, inset 0 -5px 10px rgba(31,4,5,.6), inset 0 0 0 1px rgba(31,4,5,.6)"></div>
+  <div class="g-chamfer" style="position:absolute;inset:11px 26px;--cut:8px;background:linear-gradient(135deg, rgba(255,255,255,.22), transparent 42%);pointer-events:none"></div>
 </div>
 
 <div class="t-nail rivet" style="left:22px;top:50px"></div><div class="t-nail rivet" style="left:287px;top:50px"></div>
-<style>.is-pressed .g-mat-lacquer { filter: brightness(.8); transform: translateY(2px); }</style>
+<style>
+.is-pressed .g-mat-lacquer { filter: brightness(.78) saturate(1.1); transform: translateY(2px); }
+.is-pressed .outlined { filter: drop-shadow(2.5px 0 0 #0b0d10) drop-shadow(-2.5px 0 0 #0b0d10) drop-shadow(0 2.5px 0 #0b0d10) drop-shadow(0 -2.5px 0 #0b0d10) drop-shadow(0 3px 3px rgba(0,0,0,.6)); }
+body.is-disabled .g-canvas { filter: grayscale(.9) brightness(.82) contrast(.88); }
+</style>
 </div></body>
 </html>

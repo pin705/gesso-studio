@@ -1,9 +1,10 @@
 # Style pack: Dark fantasy (grim, gothic, action RPG)
 
 **Mood**: heavy, dangerous, worn, sacred-and-profane. Forged iron, cracked bone, old leather and a single ember of warmth.
+**Reference bar for 5/5**: `Darkest Dungeon` UI chrome, `Hades` icons and VFX. A 5 must sit beside them without looking procedural.
 
 ## Light
-One dramatic warm key from the top-left, about 60-70% of each form in shadow. Deep shadows lean cool blue-violet; a faint cool rim on the shadow side separates forms from dark backgrounds. Embers and magic are the only saturated light.
+One dramatic warm key from the top-left, about 60-70% of each form in shadow. Deep shadows lean cool blue-violet; a faint cool rim on the shadow side separates forms from dark backgrounds. Embers and magic are the only saturated light. Build every material as lit top-left plane + core shadow terminator + dark bottom-right + occlusion in recesses; a single vertical gradient caps at 3.
 
 ## Palette (ramps, dark to light)
 - Iron: #0b0d10 #171b20 #262c33 #3c444d #5f6973 #9aa3aa

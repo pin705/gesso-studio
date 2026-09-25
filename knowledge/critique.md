@@ -7,7 +7,8 @@ Score every review sheet honestly on each dimension (1 = broken, 3 = passable, 5
 - **2, reject:** hand-typed SVG look. Flat fills, one gradient, thin uniform strokes, clip-art motifs, glow everywhere.
 - **3, passable prototype:** readable and has a material, but generic shapes, gradient shading, texture that reads as noise.
 - **4, good:** instant read at 32 px, a material you can name, one light direction, clean construction, states and 9-slice safe.
-- **5, shippable:** it would sit unnoticed next to a shipped commercial game in the same genre. None of the anchors is a 5.
+- **5, shippable:** it would sit unnoticed next to a shipped commercial game in the same genre. Reference bar per genre:
+  cozy `Stardew Valley`, dark-fantasy `Darkest Dungeon / Hades`, heroic-fantasy `World of Warcraft`, sci-fi `Dead Space`, casual `Candy Crush Saga`, xianxia `Gujian 3`, pixel `Dead Cells`. None of the anchors is a 5 yet.
 
 ## Hard gates
 Scores are capped by facts, whatever the render looks like to you:

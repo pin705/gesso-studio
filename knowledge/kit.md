@@ -109,6 +109,7 @@ Each recipe returns a `{ setup, render }` pair; pass it straight to `defineAsset
 | `flame` | looping fire: nested tongues, detached licks, embers | `stops` (hot to cool), `embers`, `width`, `height` |
 | `aura` | looping buff, heal or shield on the ground | `core`, `color`, `edge`, `motes` |
 | `hit` | short impact: star flash, shock ring, streaks | `core`, `color`, `edge`, `streaks` |
+| `projectile` | traveling bolt: bright head, fading trail, arrival flash (lays along x) | `core`, `color`, `edge`, `trail` |
 Recipes are a starting point. When one is not enough, copy its code from `/kit/vfx.mjs` into the asset and change the shapes.
 
 ### Rendered items (`/kit/items.mjs`)
@@ -130,6 +131,7 @@ three.js presets lit for the studio environment. Each returns a group about 2 un
 - `gem(THREE, { color, cut: 'round' | 'oval', glow })`: faceted brilliant cut.
 - `await coin(THREE, { color, emblem, roughness })`: rim and embossed emblem; `emblem` is a silhouette URL such as `/kit/icons/game-icons/crown.svg`.
 - `potion(THREE, { liquid, glow, level, glass, cork })`: round flask with glowing liquid.
+- `orb(THREE, { liquid, glow, glass, base })`: HUD orb — glass sphere, glowing liquid core, iron base ring. For health/mana orbs.
 - Item icons get the project outline with a filter on the canvas: `canvas { filter: drop-shadow(2.5px 0 0 #0b0d10) drop-shadow(-2.5px 0 0 #0b0d10) drop-shadow(0 2.5px 0 #0b0d10) drop-shadow(0 -2.5px 0 #0b0d10); }`.
 - A still (no `data-duration`) is rendered once, then swapped for an image so its WebGL context is freed. A page gets about 16 live contexts, so this is what lets a mockup embed many rendered items. Each item still costs a second or two to render, so keep a mockup to about 30.
 

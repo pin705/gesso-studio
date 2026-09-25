@@ -2,6 +2,8 @@
 
 A material is identified by three things: its value range (contrast), its edge sharpness, and the shape of its highlights. Get those right and the color can vary with the art bible. Light is top-left in every recipe; mirror it if the art bible says otherwise. Hex values are examples; take real ones from the project ramps.
 
+Texture scale matters more than texture choice: tile `grain / hammered / brushed / stone / veins` at 260-320px for UI chrome (100-400px assets). At 1024px the relief vanishes and reads as flat plastic — the most common reason good ramps still score 3. The kit defaults to this range; keep it.
+
 ## Polished gold
 - Full value range: near-black warm brown to near-white yellow. Shadows are warm (brown, red-orange), never gray.
 - Reflections band: multi-stop linear gradient across the form, alternating light and dark (e.g. offsets 0 light, .3 dark, .45 bright, .7 mid, 1 darkest). Bands follow the form: angle them along cylinders, curve them on spheres (radial with an off-center focus).

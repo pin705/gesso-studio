@@ -1,10 +1,10 @@
 /* Shared pieces used by the genre templates in /kit/templates. Link after gesso.css.
    States: add is-pressed or is-disabled to <body>; each button template defines what pressed does. */
 body.is-disabled .g-canvas { filter: grayscale(.85) brightness(.9) contrast(.85); }
-.t-nail { position: absolute; width: var(--n, 14px); height: var(--n, 14px); border-radius: 50%; background: radial-gradient(circle at 38% 35%, var(--nail-hi, #f3d9a4) 0 14%, var(--nail, #b98347) 24%, var(--nail-lo, #8a5a2e) 42%, var(--outline) 56%); box-shadow: 0 2px 2px rgba(0,0,0,.35); }
-.t-gem { position: absolute; width: var(--g, 18px); height: var(--g, 18px); transform: rotate(45deg); border-radius: 3px; box-shadow: 0 0 0 2px var(--outline), 0 3px 4px rgba(0,0,0,.4);
-  background: conic-gradient(from 45deg, var(--gem-hi, #9cc2ff) 0 25%, var(--gem, #2553b8) 0 50%, var(--gem-lo, #0c1a45) 0 75%, var(--gem, #2553b8) 0); }
-.t-gem::after { content: ''; position: absolute; left: 22%; top: 22%; width: 28%; height: 28%; border-radius: 50%; background: rgba(255,255,255,.85); }
+.t-nail { position: absolute; width: var(--n, 14px); height: var(--n, 14px); border-radius: 50%; background: radial-gradient(circle at 36% 30%, var(--nail-hi, #f3d9a4) 0 12%, var(--nail, #b98347) 26%, color-mix(in oklab, var(--nail, #b98347) 55%, black) 46%, var(--nail-lo, #8a5a2e) 52%, var(--outline) 62%); box-shadow: 0 2px 2px rgba(0,0,0,.35), inset -1px -1px 1px rgba(0,0,0,.5); }
+.t-gem { position: absolute; width: var(--g, 18px); height: var(--g, 18px); transform: rotate(45deg); border-radius: 3px; box-shadow: 0 0 0 2px var(--outline), 0 3px 4px rgba(0,0,0,.4), inset 1px 1px 0 rgba(255,255,255,.6), inset -2px -2px 0 rgba(0,0,0,.45);
+  background: conic-gradient(from 200deg, var(--gem-hi, #9cc2ff) 0 22%, var(--gem, #2553b8) 0 48%, var(--gem-lo, #0c1a45) 0 74%, var(--gem, #2553b8) 0); }
+.t-gem::after { content: ''; position: absolute; left: 20%; top: 16%; width: 26%; height: 26%; border-radius: 50%; background: rgba(255,255,255,.9); }
 .t-fill { position: absolute; inset: 0; border-radius: inherit; }
 .t-segments { background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--seg, 24px) - 3px), rgba(0,0,0,.55) calc(var(--seg, 24px) - 3px) var(--seg, 24px)); }
 .t-shine { background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.05) 45%, transparent 55%); }

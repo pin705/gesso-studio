@@ -63,7 +63,8 @@ export function slash({ core = 0xffffff, color = 0x5fb8ff, edge = 0x1b3d9a, radi
       const mid = start + sweep / 2;
       const centre = { x: middle.x - Math.cos(mid) * r * 0.45, y: middle.y - Math.sin(mid) * r * 0.45 };
       const head = ease.outCubic(ease.window(t, 0.02, 0.32));
-      const tail = ease.inOutSine(ease.window(t, 0.3, 0.92));
+      // ponytail: tail starts late so the full crescent holds ~2 frames before erasing.
+      const tail = ease.inOutSine(ease.window(t, 0.38, 0.92));
       g.clear();
       if (head > tail) {
         // one filled band per layer: edge (wide, dark), colour, white-hot core (thin)
@@ -287,8 +288,7 @@ export function aura({ core = 0xffffff, color = 0x6cf0a0, edge = 0x1f8a52, motes
 }
 
 /** Short impact: star flash, shock ring and fast streaks. */
-export function hit({ core = 0xffffff, color = 0xffc23a, edge = 0xff5a1a, streaks = 18, seed = 5 } = {}) {
-  return {
+export function hit({ core = 0xffffff, color = 0xffc23a, edge = 0xff5a1a, streaks = 18, seed = 5 } = {}) {  return {
     async setup() {
       const s = await stage();
       const rng = random(seed);
@@ -308,7 +308,8 @@ export function hit({ core = 0xffffff, color = 0xffc23a, edge = 0xff5a1a, streak
       const t = time / duration;
       const unit = Math.min(size.width, size.height);
       const pop = ease.window(t, 0, 0.18);
-      const fade = 1 - ease.window(t, 0.18, 0.92);
+      // ponytail: peak held ~2 frames at 12fps export so the impact reads; then dissipate long.
+      const fade = 1 - ease.window(t, 0.3, 0.92);
       flash.scale.set((0.4 + ease.outBack(pop) * 0.9) * unit / 256);
       flash.alpha = fade;
       star.clear();
@@ -324,6 +325,52 @@ export function hit({ core = 0xffffff, color = 0xffc23a, edge = 0xff5a1a, streak
         bit.sprite.rotation = bit.angle;
         bit.sprite.scale.set(bit.scale * (1.3 - local), bit.scale * 0.8);
         bit.sprite.alpha = local < 1 ? 1 - local : 0;
+      }
+      app.render();
+    }
+  };
+}
+
+/** Traveling bolt: bright head with a fading trail, arrival flash. Lays along x; rotate the asset for other paths.
+ *  head at u=0 is left edge, u=1 right edge; trail lags behind. Pure function of t. */
+export function projectile({ core = 0xffffff, color = 0x5fb8ff, edge = 0x1b3d9a, trail = 22, seed = 9 } = {}) {
+  return {
+    async setup() {
+      const s = await stage();
+      const rng = random(seed);
+      const head = sprite(s.PIXI, s.glow, s.world, { tint: core });
+      const halo = sprite(s.PIXI, s.glow, s.world, { tint: color });
+      const flash = sprite(s.PIXI, s.glow, s.world, { tint: core });
+      flash.position.set(s.centre.x + Math.min(size.width, size.height) * 0.4, s.centre.y);
+      const bits = Array.from({ length: trail }, (_, i) => ({
+        sprite: sprite(s.PIXI, s.streak, s.world, { tint: rng() < 0.4 ? core : rng() < 0.7 ? color : edge, anchor: [1, 0.5] }),
+        lag: 0.02 + (i / trail) * 0.22, jitter: (rng() - 0.5) * 0.04, scale: 0.12 + rng() * 0.18
+      }));
+      return { ...s, head, halo, flash, bits };
+    },
+    render(time, { app, head, halo, flash, bits, centre }) {
+      const t = time / duration;
+      const unit = Math.min(size.width, size.height);
+      const at = (u) => ({ x: centre.x + (u - 0.5) * unit * 0.84, y: centre.y + Math.sin(u * Math.PI) * -unit * 0.04 });
+      const u = ease.window(t, 0.02, 0.82);
+      const p = at(u);
+      const gone = ease.window(t, 0.82, 1);
+      head.position.set(p.x, p.y);
+      head.scale.set((unit / 256) * (0.34 + 0.1 * Math.sin(t * 40)));
+      head.alpha = 1 - gone;
+      halo.position.set(p.x, p.y);
+      halo.scale.set((unit / 256) * 1.0);
+      halo.alpha = 0.45 * (1 - gone);
+      flash.alpha = ease.window(t, 0.8, 0.88) * (1 - ease.window(t, 0.88, 1));
+      flash.scale.set((unit / 256) * 1.6);
+      for (const bit of bits) {
+        const bu = Math.max(0, u - bit.lag);
+        const bp = at(bu);
+        const fade = bu <= 0 ? 0 : (1 - bit.lag * 2.2) * (1 - gone);
+        bit.sprite.position.set(bp.x, bp.y + bit.jitter * unit);
+        bit.sprite.rotation = 0;
+        bit.sprite.scale.set(bit.scale * (0.4 + bu), bit.scale * 0.7);
+        bit.sprite.alpha = Math.max(0, fade);
       }
       app.render();
     }

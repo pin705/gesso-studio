@@ -48,11 +48,15 @@ export function gem(THREE, { color = 0xb00020, cut = 'round', glow = 0x4a0010 } 
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geometry.computeVertexNormals();
   const material = new THREE.MeshPhysicalMaterial({
-    color, emissive: glow, metalness: 0.1, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02,
+    color, emissive: glow, emissiveIntensity: 0.55, metalness: 0.1, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02,
     ior: 2.0, specularIntensity: 1, specularColor: 0xffffff, envMapIntensity: 2.6, flatShading: true, side: THREE.DoubleSide
   });
   const group = new THREE.Group();
   group.add(new THREE.Mesh(geometry, material));
+  // Refraction cue per materials.md: bright internal glow opposite the key light.
+  const inner = new THREE.PointLight(glow, 2.2, 2.5);
+  inner.position.set(0.5, -0.4, -0.3);
+  group.add(inner);
   group.rotation.set(0.42, 0.25, -0.1);
   return group;
 }
@@ -114,14 +118,35 @@ export function potion(THREE, { liquid = 0x8e0c18, glow = 0xff3a1a, level = 0.62
   inner.push(radiusAtTop, new THREE.Vector2(0, top));
   const liquidMaterial = new THREE.MeshPhysicalMaterial({ color: liquid, emissive: glow, emissiveIntensity: 0.32, metalness: 0, roughness: 0.15, clearcoat: 1, envMapIntensity: 1.2 });
   const fill = new THREE.Mesh(new THREE.LatheGeometry(inner, 64), liquidMaterial);
-  const surface = new THREE.Mesh(new THREE.CircleGeometry(radiusAtTop.x * 0.99, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(liquid).lerp(new THREE.Color(glow), 0.6) }));
+  const surface = new THREE.Mesh(new THREE.CircleGeometry(radiusAtTop.x * 0.97, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(liquid).lerp(new THREE.Color(glow), 0.6) }));
   surface.rotation.x = -Math.PI / 2;
-  surface.position.y = top;
+  surface.position.y = top + 0.025; // ponytail: clear of the lathe cap fan; sub-pixel gaps z-fight into radial streaks.
   const corkMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.22, 0.34, 32), new THREE.MeshStandardMaterial({ color: cork, roughness: 0.85 }));
   corkMesh.position.y = 1.08;
   const light = new THREE.PointLight(glow, 6, 3);
   light.position.set(0.1, -0.5, 0.3);
   group.add(fill, surface, body, corkMesh, light);
   group.rotation.set(0.12, 0, -0.14);
+  return group;
+}
+
+/** HUD orb: glass sphere with glowing liquid, iron base ring and rim. For health/mana orbs.
+ *  ponytail: reuses potion's glass+emissive pattern; add lathe-etched runes only if one game needs them. */
+export function orb(THREE, { liquid = 0x8e0c18, glow = 0xff3a1a, glass = 0xdfeeff, base = 0x323a44 } = {}) {
+  const group = new THREE.Group();
+  const liquidMaterial = new THREE.MeshPhysicalMaterial({ color: liquid, emissive: glow, emissiveIntensity: 0.5, metalness: 0, roughness: 0.2, clearcoat: 1, envMapIntensity: 1.1 });
+  const fill = new THREE.Mesh(new THREE.SphereGeometry(0.68, 48, 32), liquidMaterial);
+  const glassMaterial = new THREE.MeshPhysicalMaterial({ color: glass, metalness: 0, roughness: 0.03, transparent: true, opacity: 0.18, clearcoat: 1, envMapIntensity: 3, side: THREE.DoubleSide, depthWrite: false });
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(0.82, 48, 32), glassMaterial);
+  const metal = new THREE.MeshStandardMaterial({ color: base, metalness: 0.9, roughness: 0.42 });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.1, 24, 72), metal);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = -0.62;
+  const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.72, 0.3, 48), metal);
+  foot.position.y = -0.85;
+  const light = new THREE.PointLight(glow, 5, 3.5);
+  light.position.set(0, -0.1, 0.4);
+  group.add(fill, shell, ring, foot, light);
+  group.rotation.set(0.1, 0, 0);
   return group;
 }
